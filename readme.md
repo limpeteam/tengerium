@@ -6,3 +6,7 @@
 Designed in Material Design style.
 
 Allows you to stay connected to MSN Messenger even on new devices where good performance of Mercury Messenger is not guaranteed.
+
+## Built with
+
+- [msnp11-sdk](https://github.com/campos02/msnp11-sdk) — MSNP11 client SDK written in Rust with Kotlin bindings
