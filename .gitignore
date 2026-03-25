@@ -24,3 +24,4 @@ temp/MSNPSessionManager.kt.old
 temp/MSNPSoapManager.kt.old
 temp/MSNPSwitchboardSession.kt.old
 temp/switchboard/MSNPSwitchboardMessageParser.kt.old
+*.keystore
