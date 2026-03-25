@@ -1,0 +1,113 @@
+<resources>
+    <string name="app_name">Tengerium</string>
+    <string name="action_settings">Налаштування</string>
+    <string name="profile_title">Профіль</string>
+    <string name="nickname_hint">Нікнейм</string>
+    <string name="update_nickname">Оновити нікнейм</string>
+    <string name="logout">Вийти</string>
+    <string name="status_settings">Налаштування статусу</string>
+    <string name="app_settings">Налаштування програми</string>
+    <string name="online">У мережі</string>
+    <string name="busy">Зайнятий</string>
+    <string name="away">Відсутній</string>
+    <string name="offline">Поза мережею</string>
+    <string name="brb">Скоро повернуся</string>
+    <string name="on_phone">Розмовляю по телефону</string>
+    <string name="out_to_lunch">Пішов на обід</string>
+    <string name="theme_settings">Тема</string>
+    <string name="language_settings">Мова</string>
+    <string name="notifications">Сповіщення</string>
+    <string name="nickname_updated">Нікнейм оновлено</string>
+
+    <string name="default_android_style">Стандартний стиль Android</string>
+    <string name="use_material_you">Використовувати Material You (Android 12+)</string>
+    <string name="theme_presets">Набори тем</string>
+    <string name="preview">Попередній перегляд</string>
+    <string name="choose_background">Вибрати фон чату</string>
+    <string name="enable_debug_popups">Увімкнути налагоджувальні вікна</string>
+    <string name="language">Мова</string>
+    <string name="current_language">Змінити мову</string>
+    <string name="background_updated">Фон оновлено</string>
+    <string name="background_removed">Фон видалено</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">Класична</string>
+    <string name="theme_emerald">Смарагдова</string>
+    <string name="theme_lavender">Лавандова</string>
+    <string name="theme_dark">Темна</string>
+    <string name="preview_incoming">Бульбашка вхідного повідомлення</string>
+    <string name="preview_outgoing">Бульбашка вихідного повідомлення</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Акаунт Hotmail</string>
+    <string name="password_hint">Пароль</string>
+    <string name="remember_me">Запам\'ятати мене</string>
+    <string name="sign_in">Увійти</string>
+    <string name="fill_all_fields">Будь ласка, заповніть усі поля</string>
+    <string name="logged_in_as">Ви увійшли як %1$s</string>
+    <string name="login_error">Помилка: %1$s</string>
+    <string name="connection_settings">Налаштування підключення</string>
+    <string name="settings_saved">Налаштування збережено</string>
+
+    <!-- Chat -->
+    <string name="today">Сьогодні</string>
+    <string name="yesterday">Вчора</string>
+    <string name="copy">Копіювати</string>
+    <string name="copied">Скопійовано</string>
+    <string name="type_message">Введіть повідомлення...</string>
+    <string name="empty_chats">Немає нещодавніх чатів</string>
+    <string name="empty_chats_title">Повідомлень поки немає</string>
+    <string name="empty_chats_message">Почніть розмову з кимось із ваших контактів!</string>
+    <string name="error_decrypting">Помилка розшифрування</string>
+    <string name="not_in_contacts">Цієї людини немає у вашому списку контактів</string>
+    <string name="add_to_contacts">Додати до контактів</string>
+    <string name="block">Заблокувати</string>
+    <string name="contact_unavailable">Співрозмовник недоступний</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">Додати друга</string>
+    <string name="enter_msn_account">Введіть акаунт MSN:</string>
+    <string name="add">Додати</string>
+    <string name="contacts_settings">Налаштування контактів</string>
+    <string name="show_online_first">Спочатку ті, хто в мережі</string>
+    <string name="empty_contacts_title">Тут поки тихо...</string>
+    <string name="empty_contacts_message">Контактів поки немає. Натисніть кнопку «+», щоб додати першого друга!</string>
+    <string name="contact_requests">Запити контактів</string>
+    <string name="accept">Прийняти</string>
+    <string name="decline">Відхилити</string>
+    <string name="new_contact_request">%1$s хоче додати вас до контактів</string>
+    <string name="delete">Видалити</string>
+    <string name="no_requests">Немає очікуваних запитів</string>
+    <string name="search">Пошук</string>
+    <string name="press_to_add">Користувача знайдено, натисніть для додавання</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">Контакти</string>
+    <string name="tab_chats">Чати</string>
+    <string name="tab_profile">Профіль</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">Інформація про контакт</string>
+    <string name="email">Email</string>
+
+    <!-- Misc -->
+    <string name="system_default">Системна тема</string>
+    <string name="app_version_format">v%1$s</string>
+
+    <!-- Navigation -->
+    <string name="next">Далі</string>
+    <string name="previous">Назад</string>
+    <string name="first_fragment_label">Перший фрагмент</string>
+    <string name="second_fragment_label">Другі фрагмент</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">Потрібне оновлення</string>
+    <string name="app_expired_message">Термін дії цієї версії програми закінчився. Будь ласка, оновіться до останньої версії.</string>
+    <string name="update">Оновити</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">Зібрати логи для підтримки</string>
+    <string name="logs_report_title">Звіт про помилку Tengerium</string>
+    <string name="no_logs_available">Інформація про логи недоступна</string>
+    <string name="error_collecting_logs">Помилка збору логів: %1$s</string>
+</resources>

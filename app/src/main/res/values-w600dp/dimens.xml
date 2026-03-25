@@ -1,0 +1,9 @@
+<resources>
+    <dimen name="fab_margin">48dp</dimen>
+
+    <!-- OOBE/Auth Adaptivity (Tablet: CARD EFFECT) -->
+    <dimen name="oobe_card_margin">24dp</dimen>
+    <dimen name="oobe_card_radius">24dp</dimen>
+    <dimen name="oobe_card_elevation">2dp</dimen>
+    <dimen name="oobe_card_padding">32dp</dimen>
+</resources>

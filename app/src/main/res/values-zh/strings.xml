@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tengerium</string>
+    <string name="action_settings">设置</string>
+    <string name="profile_title">个人资料</string>
+    <string name="nickname_hint">昵称</string>
+    <string name="update_nickname">更新昵称</string>
+    <string name="logout">注销</string>
+    <string name="status_settings">状态设置</string>
+    <string name="app_settings">应用设置</string>
+    <string name="online">联机</string>
+    <string name="busy">忙碌</string>
+    <string name="away">离开</string>
+    <string name="offline">脱机</string>
+    <string name="brb">马上回来</string>
+    <string name="on_phone">正在通话</string>
+    <string name="out_to_lunch">外出午餐</string>
+    <string name="theme_settings">主题</string>
+    <string name="language_settings">语言</string>
+    <string name="notifications">通知</string>
+    <string name="nickname_updated">昵称已更新</string>
+    <string name="avatar_updated">头像已更新</string>
+
+    <string name="default_android_style">Android 标准样式</string>
+    <string name="use_material_you">使用 Material You (Android 12+)</string>
+    <string name="theme_presets">主题预设</string>
+    <string name="preview">预览</string>
+    <string name="choose_background">选择聊天背景</string>
+    <string name="enable_debug_popups">启用调试弹窗</string>
+    <string name="language">语言</string>
+    <string name="current_language">更改语言</string>
+    <string name="background_updated">背景已更新</string>
+    <string name="background_removed">背景已移除</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">经典</string>
+    <string name="theme_emerald">翡翠</string>
+    <string name="theme_lavender">薰衣草</string>
+    <string name="theme_dark">深色</string>
+    <string name="preview_incoming">接收消息气泡</string>
+    <string name="preview_outgoing">发送消息气泡</string>
+    <string name="theme">主题</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Hotmail 账号</string>
+    <string name="password_hint">密码</string>
+    <string name="remember_me">记住我</string>
+    <string name="sign_in">登录</string>
+    <string name="fill_all_fields">请填写所有字段</string>
+    <string name="logged_in_as">已登录为 %1$s</string>
+    <string name="login_error">错误：%1$s</string>
+    <string name="error_invalid_password">密码无效</string>
+    <string name="error_connection_failed">连接到 MSN 服务失败</string>
+    <string name="session_expired_title">会话已过期</string>
+    <string name="session_expired_message">您的会话已过期。请重新登录。</string>
+    <string name="connection_settings">连接设置</string>
+    <string name="settings_saved">设置已保存</string>
+    <string name="connecting">正在连接...</string>
+    <string name="connecting_to_msn">正在连接到 MSN...</string>
+    <string name="host_hint">主机 (如 messenger.hotmail.com)</string>
+    <string name="nexus_hint">Nexus 域名 (如 m1.escargot.chat)</string>
+
+    <!-- Chat -->
+    <string name="today">今天</string>
+    <string name="yesterday">昨天</string>
+    <string name="copy">复制</string>
+    <string name="copied">已复制</string>
+    <string name="type_message">输入消息...</string>
+    <string name="empty_chats">无最近聊天</string>
+    <string name="empty_chats_title">暂无消息</string>
+    <string name="empty_chats_message">开始与您的联系人对话吧！</string>
+    <string name="error_decrypting">解密错误</string>
+    <string name="not_in_contacts">此人不在您的联系人列表中</string>
+    <string name="add_to_contacts">添加到联系人</string>
+    <string name="block">屏蔽</string>
+    <string name="contact_unavailable">联系人不可用</string>
+    <string name="is_typing">正在输入...</string>
+    <string name="send_nudge">发送抖动窗口</string>
+    <string name="nudge_received">收到抖动窗口！</string>
+    <string name="nudge_sent_sys">您发送了一个抖动窗口！</string>
+    <string name="nudge_received_sys">%1$s 向您发送了一个抖动窗口！</string>
+    <string name="add_participant">添加参与者</string>
+    <string name="group_chat">群聊</string>
+    <string name="user_joined_chat">%1$s 加入了聊天</string>
+    <string name="user_left_chat">%1$s 离开了聊天</string>
+    <string name="no_available_contacts">无可用联系人</string>
+    <string name="reply">回复</string>
+    <string name="type_reply">输入回复...</string>
+    <string name="send_by_enter">按 Enter 键发送</string>
+    <string name="link_preview">链接预览</string>
+    <string name="open_chats_by_default">默认打开聊天</string>
+    <string name="chat_header">聊天</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">添加好友</string>
+    <string name="enter_msn_account">输入 MSN 账号：</string>
+    <string name="add">添加</string>
+    <string name="contacts_settings">联系人设置</string>
+    <string name="show_online_first">优先显示联机联系人</string>
+    <string name="empty_contacts_title">这里很安静...</string>
+    <string name="empty_contacts_message">暂无联系人。点击“+”按钮添加您的第一个朋友！</string>
+    <string name="not_connected_message">您尚未登录。</string>
+    <string name="contact_requests">联系人请求</string>
+    <string name="accept">接受</string>
+    <string name="decline">拒绝</string>
+    <string name="new_contact_request">%1$s 想将您添加为联系人</string>
+    <string name="delete">删除</string>
+    <string name="no_requests">无待处理请求</string>
+    <string name="search">搜索</string>
+    <string name="press_to_add">已找到用户，点击添加</string>
+    <string name="invalid_email">电子邮件地址无效</string>
+    <string name="other_contacts">其他联系人</string>
+    <string name="group_count_format">(%1$d/%2$d)</string>
+    <string name="create_group">创建群组</string>
+    <string name="delete_group">删除群组</string>
+    <string name="delete_group_confirm">您确定要删除此群组吗？</string>
+    <string name="no_groups_error">无可用群组。请先创建一个。</string>
+    <string name="contact_guid_error">错误：未找到联系人 GUID。请尝试重新连接。</string>
+    <string name="move_to_group_title">将 %1$s 移动到群组</string>
+    <string name="user_is_now_online">%1$s 现已上线</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">联系人</string>
+    <string name="tab_chats">聊天</string>
+    <string name="tab_services">服务</string>
+    <string name="tab_profile">个人资料</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">联系人信息</string>
+    <string name="email">电子邮件</string>
+    <string name="privacy">隐私</string>
+    <string name="edit_profile">编辑个人资料</string>
+    <string name="personal_message_hint">个人消息（状态）</string>
+    <string name="save_error">保存错误：%1$s</string>
+    <string name="saved_to_downloads">已保存到下载文件夹</string>
+    <string name="download">下载</string>
+    <string name="chat_settings">聊天设置</string>
+
+    <!-- About -->
+    <string name="about_app">关于应用</string>
+    <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
+    <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
+    <string name="about_description">一个用于 MSN Messenger 服务器的开源客户端，专为现代设备通讯而设计。</string>
+    <string name="about_library_title">使用的库：</string>
+    <string name="about_library_name">campos02 的 MSNP-11 库</string>
+    <string name="about_testers_title">活跃测试人员：</string>
+    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_developed_by">由 Vasek Lednikofff 开发</string>
+    <string name="about_limpe_support">由 Limpe 团队提供支持</string>
+
+    <!-- Storage -->
+    <string name="storage">存储</string>
+    <string name="storage_usage">存储使用情况</string>
+    <string name="app_memory_percent">应用占用 %1$s%% 的设备内存 (%2$s)</string>
+    <string name="cache_label">缓存 (头像、预览)：%1$s</string>
+    <string name="messages_label">消息历史：%1$s</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="clear_history">清除消息记录</string>
+    <string name="clear_history_title">清除历史记录？</string>
+    <string name="clear_history_message">这将永久删除所有聊天中的所有消息。</string>
+    <string name="cache_cleared">缓存已清除</string>
+    <string name="history_cleared">历史记录已清除</string>
+
+    <!-- Settings / Privacy / Notifications -->
+    <string name="dark_theme">深色主题</string>
+    <string name="system_theme">系统主题</string>
+    <string name="interface_header">界面</string>
+    <string name="privacy_allow_only_contacts">仅允许联系人</string>
+    <string name="privacy_description">如果启用，只有您联系人列表中的用户才能看到您并向您发送消息。</string>
+    <string name="notify_messages">消息</string>
+    <string name="notify_login">登录</string>
+    <string name="notify_nudge">抖动窗口</string>
+    <string name="notify_added_by">被添加</string>
+    <string name="vibration_enabled">应用内振动</string>
+
+    <!-- OOBE -->
+    <string name="oobe_welcome_title">让我们开始吧！</string>
+    <string name="oobe_welcome_description">免费开源的 MSN Messenger 客户端</string>
+    <string name="oobe_welcome_question">您想现在就开始使用吗？</string>
+    <string name="oobe_nickname_title">我们该如何称呼您？</string>
+    <string name="oobe_nickname_hint">您的名字</string>
+    <string name="oobe_nickname_description">您的联系人将看到此名字。您稍后可以在设置中进行更改。</string>
+    <string name="enter_name_error">请输入名字</string>
+    <string name="oobe_notifications_title">通知</string>
+    <string name="oobe_notifications_description">允许发送通知，以免错过来自好友的新消息。</string>
+    <string name="oobe_phone_title">通话状态</string>
+    <string name="oobe_phone_description">允许访问电话状态，以便应用在通话期间自动将您的状态更改为“正在通话”。</string>
+    <string name="allow">允许</string>
+    <string name="skip">跳过</string>
+    <string name="oobe_permissions_title">权限</string>
+    <string name="oobe_permissions_description">我们需要一些权限来提供最佳体验。</string>
+
+    <!-- WebView / External Links -->
+    <string name="leaving_app_title">您正在离开 @string/app_name</string>
+    <string name="leaving_app_message">此链接将带您访问外部网站：\n%1$s\n\n是否继续？</string>
+    <string name="leave">离开</string>
+    <string name="stay">留在这里</string>
+
+    <!-- Crash Report -->
+    <string name="crash_title">糟糕！发生了一个错误</string>
+    <string name="crash_message">@string/app_name 已崩溃。我们收集了技术信息，这将帮助我们修复问题。</string>
+    <string name="restart">重新启动</string>
+    <string name="send_report">发送报告</string>
+    <string name="crash_report_subject">@string/app_name 错误报告</string>
+    <string name="send_report_via">通过以下方式发送报告...</string>
+    <string name="no_trace_available">无可用追踪信息</string>
+    <string name="crash_report_body_format">设备：%1$s\nAndroid：%2$s\n\n%3$s</string>
+
+    <!-- Service -->
+    <string name="status_trying_to_connect">正在尝试连接...</string>
+    <string name="status_offline">脱机</string>
+    <string name="channel_connection_status">连接状态</string>
+    <string name="channel_messages">消息</string>
+    <string name="channel_contact_events">联系人事件</string>
+    <string name="error_logged_in_another_device">已在另一台设备上登录</string>
+    <string name="error_auth_failed">身份验证失败</string>
+
+    <!-- Services -->
+    <string name="services_title">可用服务</string>
+    <string name="services_not_found">未找到服务</string>
+
+    <!-- Misc -->
+    <string name="system_default">系统默认</string>
+    <string name="app_version_format">v%1$s</string>
+    <string name="session_failed">会话失败</string>
+
+    <!-- Navigation -->
+    <string name="next">下一步</string>
+    <string name="previous">上一步</string>
+    <string name="first_fragment_label">第一个片段</string>
+    <string name="second_fragment_label">第二个片段</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">需要更新</string>
+    <string name="app_expired_message">此应用版本已过期。请更新到最新版本以继续使用。</string>
+    <string name="update">更新</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">收集日志以进行支持</string>
+    <string name="logs_report_title">@string/app_name 错误报告</string>
+    <string name="no_logs_available">无可用日志信息</string>
+    <string name="error_collecting_logs">收集日志时出错：%1$s</string>
+</resources>

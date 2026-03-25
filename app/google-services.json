@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "530802917131",
+    "project_id": "tengerium",
+    "storage_bucket": "tengerium.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:530802917131:android:e5829e4d1a2d597ed6ac0e",
+        "android_client_info": {
+          "package_name": "com.limpe.tengerium"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCuU9_2P_EzU-gW3ktghlWu9sgxS6KsVSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

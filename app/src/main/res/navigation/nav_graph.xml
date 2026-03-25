@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/OobeFragment">
+
+    <fragment
+        android:id="@+id/OobeFragment"
+        android:name="com.limpe.tengerium.ui.oobe.OobeFragment"
+        android:label="OOBE"
+        tools:layout="@layout/fragment_oobe">
+        <action
+            android:id="@+id/action_OobeFragment_to_AuthFragment"
+            app:destination="@id/AuthFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit"
+            app:popUpTo="@id/OobeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_OobeFragment_to_MainFragment"
+            app:destination="@id/MainFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit"
+            app:popUpTo="@id/OobeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/AuthFragment"
+        android:name="com.limpe.tengerium.ui.AuthFragment"
+        android:label="@string/sign_in"
+        tools:layout="@layout/fragment_auth">
+        <action
+            android:id="@+id/action_AuthFragment_to_MainFragment"
+            app:destination="@id/MainFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit"
+            app:popUpTo="@id/AuthFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_AuthFragment_to_OobeFragment"
+            app:destination="@id/OobeFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/MainFragment"
+        android:name="com.limpe.tengerium.ui.MainFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_main_with_tabs">
+        <argument
+            android:name="account"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_MainFragment_to_ChatFragment"
+            app:destination="@id/ChatFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_ChatSettingsFragment"
+            app:destination="@id/ChatSettingsFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_RequestsFragment"
+            app:destination="@id/RequestsFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_AddContactFragment"
+            app:destination="@id/AddContactFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_AboutFragment"
+            app:destination="@id/AboutFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_WebViewFragment"
+            app:destination="@id/WebViewFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/RequestsFragment"
+        android:name="com.limpe.tengerium.ui.RequestsFragment"
+        android:label="@string/contact_requests"
+        tools:layout="@layout/fragment_requests" />
+
+    <fragment
+        android:id="@+id/AddContactFragment"
+        android:name="com.limpe.tengerium.ui.AddContactFragment"
+        android:label="@string/add_friend"
+        tools:layout="@layout/fragment_add_contact" />
+
+    <fragment
+        android:id="@+id/ChatFragment"
+        android:name="com.limpe.tengerium.ui.ChatFragment"
+        android:label="@string/app_name"
+        tools:layout="@layout/fragment_chat">
+        <argument
+            android:name="account"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_ChatFragment_to_ProfileFragment"
+            app:destination="@id/ProfileFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_ChatFragment_to_InviteParticipantsFragment"
+            app:destination="@id/InviteParticipantsFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/InviteParticipantsFragment"
+        android:name="com.limpe.tengerium.ui.InviteParticipantsFragment"
+        android:label="@string/add_participant"
+        tools:layout="@layout/fragment_invite_participants">
+        <argument
+            android:name="account"
+            app:argType="string" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatSettingsFragment"
+        android:name="com.limpe.tengerium.ui.ChatSettingsFragment"
+        android:label="@string/app_settings"
+        tools:layout="@layout/fragment_chat_settings" />
+
+    <fragment
+        android:id="@+id/ContactsFragment"
+        android:name="com.limpe.tengerium.ui.ContactsFragment"
+        android:label="@string/tab_contacts"
+        tools:layout="@layout/fragment_contacts">
+         <action
+            android:id="@+id/action_ContactsFragment_to_ChatFragment"
+            app:destination="@id/ChatFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/ChatsFragment"
+        android:name="com.limpe.tengerium.ui.ChatsFragment"
+        android:label="@string/tab_chats"
+        tools:layout="@layout/fragment_chats" />
+
+    <fragment
+        android:id="@+id/ProfileFragment"
+        android:name="com.limpe.tengerium.ui.ProfileFragment"
+        android:label="@string/tab_profile"
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="account"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_ChatSettingsFragment"
+            app:destination="@id/ChatSettingsFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_AboutFragment"
+            app:destination="@id/AboutFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/AboutFragment"
+        android:name="com.limpe.tengerium.ui.AboutFragment"
+        android:label="@string/about_app"
+        tools:layout="@layout/fragment_about" />
+
+    <fragment
+        android:id="@+id/WebViewFragment"
+        android:name="com.limpe.tengerium.ui.WebViewFragment"
+        android:label="WebView"
+        tools:layout="@layout/fragment_web_view">
+        <argument
+            android:name="url"
+            app:argType="string" />
+        <argument
+            android:name="title"
+            app:argType="string" />
+    </fragment>
+
+</navigation>

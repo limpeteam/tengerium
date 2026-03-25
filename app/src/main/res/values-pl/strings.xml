@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tengerium</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="profile_title">Profil</string>
+    <string name="nickname_hint">Pseudonim</string>
+    <string name="update_nickname">Zaktualizuj pseudonim</string>
+    <string name="logout">Wyloguj</string>
+    <string name="status_settings">Ustawienia statusu</string>
+    <string name="app_settings">Ustawienia aplikacji</string>
+    <string name="online">Dostępny</string>
+    <string name="busy">Zajęty</string>
+    <string name="away">Zaraz wracam</string>
+    <string name="offline">Niedostępny</string>
+    <string name="brb">Zaraz wracam</string>
+    <string name="on_phone">Rozmawiam przez telefon</string>
+    <string name="out_to_lunch">Wyszedłem na lunch</string>
+    <string name="theme_settings">Motyw</string>
+    <string name="language_settings">Język</string>
+    <string name="notifications">Powiadomienia</string>
+    <string name="nickname_updated">Pseudonim zaktualizowany</string>
+    <string name="avatar_updated">Awatar zaktualizowany</string>
+
+    <string name="default_android_style">Standardowy styl Androida</string>
+    <string name="use_material_you">Użyj Material You (Android 12+)</string>
+    <string name="theme_presets">Predefiniowane motywy</string>
+    <string name="preview">Podgląd</string>
+    <string name="choose_background">Wybierz tło czatu</string>
+    <string name="enable_debug_popups">Włącz wyskakujące okienka debugowania</string>
+    <string name="language">Język</string>
+    <string name="current_language">Zmień język</string>
+    <string name="background_updated">Tło zaktualizowane</string>
+    <string name="background_removed">Tło usunięte</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">Klasyczny</string>
+    <string name="theme_emerald">Szmaragdowy</string>
+    <string name="theme_lavender">Lawendowy</string>
+    <string name="theme_dark">Ciemny</string>
+    <string name="preview_incoming">Bąbelek wiadomości przychodzącej</string>
+    <string name="preview_outgoing">Bąbelek wiadomości wychodzącej</string>
+    <string name="theme">Motyw</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Konto Hotmail</string>
+    <string name="password_hint">Hasło</string>
+    <string name="remember_me">Zapamiętaj mnie</string>
+    <string name="sign_in">Zaloguj się</string>
+    <string name="fill_all_fields">Proszę wypełnić wszystkie pola</string>
+    <string name="logged_in_as">Zalogowano jako %1$s</string>
+    <string name="login_error">Błąd: %1$s</string>
+    <string name="error_invalid_password">Nieprawidłowe hasło</string>
+    <string name="error_connection_failed">Nie udało się połączyć z usługą MSN</string>
+    <string name="session_expired_title">Sesja wygasła</string>
+    <string name="session_expired_message">Twoja sesja wygasła. Zaloguj się ponownie.</string>
+    <string name="connection_settings">Ustawienia połączenia</string>
+    <string name="settings_saved">Ustawienia zapisane</string>
+    <string name="connecting">Łączenie...</string>
+    <string name="connecting_to_msn">Łączenie z MSN...</string>
+    <string name="host_hint">Host (np. messenger.hotmail.com)</string>
+    <string name="nexus_hint">Domena Nexus (np. m1.escargot.chat)</string>
+
+    <!-- Chat -->
+    <string name="today">Dzisiaj</string>
+    <string name="yesterday">Wczoraj</string>
+    <string name="copy">Kopiuj</string>
+    <string name="copied">Skopiowano</string>
+    <string name="type_message">Wpisz wiadomość...</string>
+    <string name="empty_chats">Brak niedawnych rozmów</string>
+    <string name="empty_chats_title">Brak wiadomości</string>
+    <string name="empty_chats_message">Zacznij rozmowę z jednym ze swoich kontaktów!</string>
+    <string name="error_decrypting">Błąd deszyfrowania</string>
+    <string name="not_in_contacts">Tej osoby nie ma na Twojej liście kontaktów</string>
+    <string name="add_to_contacts">Dodaj do kontaktów</string>
+    <string name="block">Zablokuj</string>
+    <string name="contact_unavailable">Kontakt jest niedostępny</string>
+    <string name="is_typing">pisze...</string>
+    <string name="send_nudge">Wyślij szturchnięcie</string>
+    <string name="nudge_received">Otrzymano szturchnięcie!</string>
+    <string name="nudge_sent_sys">Wysłano szturchnięcie!</string>
+    <string name="nudge_received_sys">%1$s wysłał Ci szturchnięcie!</string>
+    <string name="add_participant">Dodaj uczestnika</string>
+    <string name="group_chat">Czat grupowy</string>
+    <string name="user_joined_chat">%1$s dołączył do czatu</string>
+    <string name="user_left_chat">%1$s opuścił czat</string>
+    <string name="no_available_contacts">Brak dostępnych kontaktów</string>
+    <string name="reply">Odpowiedz</string>
+    <string name="type_reply">Wpisz odpowiedź...</string>
+    <string name="send_by_enter">Wyślij klawiszem Enter</string>
+    <string name="link_preview">Podgląd linku</string>
+    <string name="open_chats_by_default">Otwieraj czaty domyślnie</string>
+    <string name="chat_header">Czat</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">Dodaj znajomego</string>
+    <string name="enter_msn_account">Wprowadź konto MSN:</string>
+    <string name="add">Dodaj</string>
+    <string name="contacts_settings">Ustawienia kontaktów</string>
+    <string name="show_online_first">Pokaż dostępnych najpierw</string>
+    <string name="empty_contacts_title">Jest tu cicho...</string>
+    <string name="empty_contacts_message">Brak kontaktów. Użyj przycisku „+”, aby dodać pierwszego znajomego!</string>
+    <string name="not_connected_message">Nie jesteś zalogowany.</string>
+    <string name="contact_requests">Zaproszenia</string>
+    <string name="accept">Akceptuj</string>
+    <string name="decline">Odrzuć</string>
+    <string name="new_contact_request">%1$s chce dodać Cię do swoich kontaktów</string>
+    <string name="delete">Usuń</string>
+    <string name="no_requests">Brak oczekujących zaproszeń</string>
+    <string name="search">Szukaj</string>
+    <string name="press_to_add">Znaleziono użytkownika, naciśnij aby dodać</string>
+    <string name="invalid_email">Nieprawidłowy adres e-mail</string>
+    <string name="other_contacts">Inne kontakty</string>
+    <string name="group_count_format">(%1$d/%2$d)</string>
+    <string name="create_group">Utwórz grupę</string>
+    <string name="delete_group">Usuń grupę</string>
+    <string name="delete_group_confirm">Czy na pewno chcesz usunąć tę grupę?</string>
+    <string name="no_groups_error">Brak dostępnych grup. Najpierw utwórz jedną.</string>
+    <string name="contact_guid_error">Błąd: Nie znaleziono GUID kontaktu. Spróbuj połączyć się ponownie.</string>
+    <string name="move_to_group_title">Przenieś %1$s do grupy</string>
+    <string name="user_is_now_online">%1$s jest teraz dostępny</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">Kontakty</string>
+    <string name="tab_chats">Czaty</string>
+    <string name="tab_services">Usługi</string>
+    <string name="tab_profile">Profil</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">Informacje o kontakcie</string>
+    <string name="email">E-mail</string>
+    <string name="privacy">Prywatność</string>
+    <string name="edit_profile">Edytuj profil</string>
+    <string name="personal_message_hint">Wiadomość osobista (status)</string>
+    <string name="save_error">Błąd zapisu: %1$s</string>
+    <string name="saved_to_downloads">Zapisano w folderze Pobrane</string>
+    <string name="download">Pobierz</string>
+    <string name="chat_settings">Ustawienia czatu</string>
+
+    <!-- About -->
+    <string name="about_app">O aplikacji</string>
+    <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
+    <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
+    <string name="about_description">Otwartoźródłowy klient dla serwera MSN Messenger, zaprojektowany do komunikacji na nowoczesnych urządzeniach.</string>
+    <string name="about_library_title">Użyte biblioteki:</string>
+    <string name="about_library_name">Biblioteka MSNP-11 autorstwa campos02</string>
+    <string name="about_testers_title">Aktywni testerzy:</string>
+    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_developed_by">Stworzone przez Vasek Lednikofff</string>
+    <string name="about_limpe_support">wspierane przez Limpe Team</string>
+
+    <!-- Storage -->
+    <string name="storage">Pamięć</string>
+    <string name="storage_usage">Użycie pamięci</string>
+    <string name="app_memory_percent">Aplikacja zajmuje %1$s%% pamięci urządzenia (%2$s)</string>
+    <string name="cache_label">Pamięć podręczna (awatary, podglądy): %1$s</string>
+    <string name="messages_label">Historia wiadomości: %1$s</string>
+    <string name="clear_cache">Wyczyść pamięć podręczną</string>
+    <string name="clear_history">Wyczyść historię wiadomości</string>
+    <string name="clear_history_title">Wyczyścić historię?</string>
+    <string name="clear_history_message">To trwale usunie wszystkie Twoje wiadomości ze wszystkich czatów.</string>
+    <string name="cache_cleared">Pamięć podręczna wyczyszczona</string>
+    <string name="history_cleared">Historia wyczyszczona</string>
+
+    <!-- Settings / Privacy / Notifications -->
+    <string name="dark_theme">Ciemny motyw</string>
+    <string name="system_theme">Motyw systemowy</string>
+    <string name="interface_header">Interfejs</string>
+    <string name="privacy_allow_only_contacts">Zezwalaj tylko na kontakty</string>
+    <string name="privacy_description">Jeśli włączone, tylko użytkownicy z Twojej listy kontaktów mogą Cię widzieć i wysyłać wiadomości.</string>
+    <string name="notify_messages">Wiadomości</string>
+    <string name="notify_login">Logowanie</string>
+    <string name="notify_nudge">Szturchnięcie</string>
+    <string name="notify_added_by">Dodany przez</string>
+    <string name="vibration_enabled">Wibracje w aplikacji</string>
+
+    <!-- OOBE -->
+    <string name="oobe_welcome_title">Zaczynamy!</string>
+    <string name="oobe_welcome_description">Darmowy i otwartoźródłowy klient dla MSN Messenger</string>
+    <string name="oobe_welcome_question">Czy chcesz zacząć używać go teraz?</string>
+    <string name="oobe_nickname_title">Jak mamy Cię nazywać?</string>
+    <string name="oobe_nickname_hint">Twoje imię</string>
+    <string name="oobe_nickname_description">Ta nazwa będzie widoczna dla Twoich kontaktów. Możesz ją zmienić później w ustawieniach.</string>
+    <string name="enter_name_error">Proszę wpisać imię</string>
+    <string name="oobe_notifications_title">Powiadomienia</string>
+    <string name="oobe_notifications_description">Zezwól na wysyłanie powiadomień, aby nie przegapić nowych wiadomości od znajomych.</string>
+    <string name="oobe_phone_title">Status połączenia</string>
+    <string name="oobe_phone_description">Zezwól na dostęp do stanu telefonu, aby aplikacja mogła automatycznie zmieniać Twój status na „Rozmawiam przez telefon” podczas połączeń.</string>
+    <string name="allow">Zezwól</string>
+    <string name="skip">Pomiń</string>
+    <string name="oobe_permissions_title">Uprawnienia</string>
+    <string name="oobe_permissions_description">Potrzebujemy pewnych uprawnień, aby zapewnić najlepsze doświadczenia.</string>
+
+    <!-- WebView / External Links -->
+    <string name="leaving_app_title">Opuszczasz @string/app_name</string>
+    <string name="leaving_app_message">Ten link przeniesie Cię do zewnętrznej witryny:\n%1$s\n\nCzy chcesz kontynuować?</string>
+    <string name="leave">Wyjdź</string>
+    <string name="stay">Zostań</string>
+
+    <!-- Crash Report -->
+    <string name="crash_title">Ojej! Wystąpił błąd</string>
+    <string name="crash_message">@string/app_name przestał działać. Zebraliśmy informacje techniczne, które pomogą nam naprawić problem.</string>
+    <string name="restart">Uruchom ponownie</string>
+    <string name="send_report">Wyślij raport</string>
+    <string name="crash_report_subject">Raport błędów @string/app_name</string>
+    <string name="send_report_via">Wyślij raport przez...</string>
+    <string name="no_trace_available">Brak dostępnych śladów</string>
+    <string name="crash_report_body_format">Urządzenie: %1$s\nAndroid: %2$s\n\n%3$s</string>
+
+    <!-- Service -->
+    <string name="status_trying_to_connect">Próba połączenia...</string>
+    <string name="status_offline">Niedostępny</string>
+    <string name="channel_connection_status">Status połączenia</string>
+    <string name="channel_messages">Wiadomości</string>
+    <string name="channel_contact_events">Zdarzenia kontaktów</string>
+    <string name="error_logged_in_another_device">Zalogowano na innym urządzeniu</string>
+    <string name="error_auth_failed">Błąd uwierzytelniania</string>
+
+    <!-- Services -->
+    <string name="services_title">Dostępne usługi</string>
+    <string name="services_not_found">Nie znaleziono usług</string>
+
+    <!-- Misc -->
+    <string name="system_default">Domyślny systemowy</string>
+    <string name="app_version_format">v%1$s</string>
+    <string name="session_failed">Sesja nie powiodła się</string>
+
+    <!-- Navigation -->
+    <string name="next">Dalej</string>
+    <string name="previous">Wstecz</string>
+    <string name="first_fragment_label">Pierwszy fragment</string>
+    <string name="second_fragment_label">Drugi fragment</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">Wymagana aktualizacja</string>
+    <string name="app_expired_message">Ta wersja aplikacji wygasła. Proszę zaktualizować do najnowszej wersji, aby kontynuować.</string>
+    <string name="update">Aktualizuj</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">Zbierz logi dla pomocy technicznej</string>
+    <string name="logs_report_title">Raport błędów @string/app_name</string>
+    <string name="no_logs_available">Brak dostępnych informacji z logów</string>
+    <string name="error_collecting_logs">Błąd podczas zbierania logów: %1$s</string>
+</resources>

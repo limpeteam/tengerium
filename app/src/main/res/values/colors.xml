@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Liquid Glass Palette -->
+    <color name="glass_primary">#AA6EC2EC</color> <!-- Translucent Light Blue -->
+    <color name="glass_surface">#80FFFFFF</color> <!-- 50% White -->
+    <color name="glass_surface_dark">#80191C1E</color> <!-- 50% Dark Surface -->
+    <color name="glass_outline">#4DFFFFFF</color> <!-- 30% White for border -->
+
+    <!-- HSL(200, 77%, 68%) palette -->
+    <color name="primary_hsl">#6EC2EC</color>
+    <color name="primary_hsl_dark">#1E9FD8</color>
+    <color name="primary_hsl_light">#A9DDF4</color>
+    <color name="primary_hsl_container">#C2E8FF</color>
+
+    <!-- Material 3 Palette based on HSL(200, 77%, 68%) -->
+    <color name="md_theme_light_primary">#006689</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#C2E8FF</color>
+    <color name="md_theme_light_onPrimaryContainer">#001E2C</color>
+    <color name="md_theme_light_secondary">#4E616C</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_secondaryContainer">#D1E5F3</color>
+    <color name="md_theme_light_onSecondaryContainer">#0A1E28</color>
+    <color name="md_theme_light_tertiary">#605A7D</color>
+    <color name="md_theme_light_onTertiary">#FFFFFF</color>
+    <color name="md_theme_light_tertiaryContainer">#E6DFFD</color>
+    <color name="md_theme_light_onTertiaryContainer">#1C1736</color>
+    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_errorContainer">#FFDAD6</color>
+    <color name="md_theme_light_onError">#FFFFFF</color>
+    <color name="md_theme_light_onErrorContainer">#410002</color>
+    <color name="md_theme_light_background">#FBFCFF</color>
+    <color name="md_theme_light_onBackground">#191C1E</color>
+    <color name="md_theme_light_surface">#FBFCFF</color>
+    <color name="md_theme_light_onSurface">#191C1E</color>
+    <color name="md_theme_light_surfaceVariant">#DCE4E9</color>
+    <color name="md_theme_light_onSurfaceVariant">#40484C</color>
+    <color name="md_theme_light_outline">#71787D</color>
+
+    <color name="md_theme_dark_primary">#77D1FF</color>
+    <color name="md_theme_dark_onPrimary">#003549</color>
+    <color name="md_theme_dark_primaryContainer">#004D68</color>
+    <color name="md_theme_dark_onPrimaryContainer">#C2E8FF</color>
+    <color name="md_theme_dark_secondary">#B5C9D7</color>
+    <color name="md_theme_dark_onSecondary">#20333D</color>
+    <color name="md_theme_dark_secondaryContainer">#374954</color>
+    <color name="md_theme_dark_onSecondaryContainer">#D1E5F3</color>
+    <color name="md_theme_dark_tertiary">#C9C1EA</color>
+    <color name="md_theme_dark_onTertiary">#312C4C</color>
+    <color name="md_theme_dark_tertiaryContainer">#484264</color>
+    <color name="md_theme_dark_onTertiaryContainer">#E6DFFD</color>
+    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_errorContainer">#93000A</color>
+    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
+    <color name="md_theme_dark_background">#191C1E</color>
+    <color name="md_theme_dark_onBackground">#E1E2E5</color>
+    <color name="md_theme_dark_surface">#191C1E</color>
+    <color name="md_theme_dark_onSurface">#E1E2E5</color>
+    <color name="md_theme_dark_surfaceVariant">#40484C</color>
+    <color name="md_theme_dark_onSurfaceVariant">#C0C8CD</color>
+    <color name="md_theme_dark_outline">#8A9297</color>
+
+    <!-- Modern Bubble Colors -->
+    <color name="incoming_bubble">#E9E9EB</color>
+    <color name="outgoing_bubble">#007AFF</color>
+    <color name="on_incoming_bubble">#2196F3</color>
+    <color name="on_outgoing_bubble">#FFFFFF</color>
+
+    <color name="status_online">#4CAF50</color>
+    <color name="status_busy">#F44336</color>
+    <color name="status_away">#FFC107</color>
+    <color name="status_offline">#9E9E9E</color>
+    <color name="error_bubble">#FFEBEE</color>
+
+    <!-- Glass Specific -->
+    <color name="glass_white_20">#33FFFFFF</color>
+    <color name="glass_white_40">#66FFFFFF</color>
+    <color name="glass_black_20">#33000000</color>
+    <color name="glass_black_40">#66000000</color>
+</resources>

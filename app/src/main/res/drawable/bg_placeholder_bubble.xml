@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Серый цвет (нейтральный), на котором хорошо читается белый текст -->
+    <solid android:color="#808080" />
+    <corners android:radius="20dp" />
+</shape>

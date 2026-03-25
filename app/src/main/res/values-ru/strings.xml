@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="action_settings">Настройки</string>
+    <string name="profile_title">Профиль</string>
+    <string name="nickname_hint">Никнейм</string>
+    <string name="update_nickname">Обновить никнейм</string>
+    <string name="logout">Выйти</string>
+    <string name="status_settings">Настройки статуса</string>
+    <string name="app_settings">Настройки приложения</string>
+    <string name="online">В сети</string>
+    <string name="busy">Занят</string>
+    <string name="away">Нет на месте</string>
+    <string name="offline">Не в сети</string>
+    <string name="brb">Скоро вернусь</string>
+    <string name="on_phone">Разговариваю по телефону</string>
+    <string name="out_to_lunch">Ушел на обед</string>
+    <string name="theme_settings">Тема</string>
+    <string name="language_settings">Язык</string>
+    <string name="notifications">Уведомления</string>
+    <string name="nickname_updated">Никнейм обновлен</string>
+    <string name="avatar_updated">Аватар обновлен</string>
+
+    <string name="default_android_style">Стандартный стиль Android</string>
+    <string name="use_material_you">Использовать Material You (Android 12+)</string>
+    <string name="theme_presets">Предустановки тем</string>
+    <string name="preview">Предпросмотр</string>
+    <string name="choose_background">Выбрать фон чата</string>
+    <string name="enable_debug_popups">Включить отладочные всплывающие окна</string>
+    <string name="language">Язык</string>
+    <string name="current_language">Изменить язык</string>
+    <string name="background_updated">Фон обновлен</string>
+    <string name="background_removed">Фон удален</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">Классическая</string>
+    <string name="theme_emerald">Изумрудная</string>
+    <string name="theme_lavender">Лавандовая</string>
+    <string name="theme_dark">Темная</string>
+    <string name="preview_incoming">Пузырек входящего сообщения</string>
+    <string name="preview_outgoing">Пузырек исходящего сообщения</string>
+    <string name="theme">Тема</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Аккаунт Hotmail</string>
+    <string name="password_hint">Пароль</string>
+    <string name="remember_me">Запомнить меня</string>
+    <string name="sign_in">Войти</string>
+    <string name="fill_all_fields">Пожалуйста, заполните все поля</string>
+    <string name="logged_in_as">Вы вошли как %1$s</string>
+    <string name="login_error">Ошибка: %1$s</string>
+    <string name="error_invalid_password">Неверный пароль</string>
+    <string name="error_connection_failed">Не удалось подключиться к MSN</string>
+    <string name="session_expired_title">Сессия истекла</string>
+    <string name="session_expired_message">Ваша сессия истекла. Пожалуйста, войдите снова.</string>
+    <string name="connection_settings">Настройки подключения</string>
+    <string name="settings_saved">Настройки сохранены</string>
+    <string name="connecting">Подключение...</string>
+    <string name="connecting_to_msn">Подключение к MSN...</string>
+    <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
+    <string name="nexus_hint">Домен Nexus (напр. m1.escargot.chat)</string>
+
+    <!-- Chat -->
+    <string name="today">Сегодня</string>
+    <string name="yesterday">Вчера</string>
+    <string name="copy">Копировать</string>
+    <string name="copied">Скопировано</string>
+    <string name="type_message">Введите сообщение...</string>
+    <string name="empty_chats">Нет недавних чатов</string>
+    <string name="empty_chats_title">Сообщений пока нет</string>
+    <string name="empty_chats_message">Начните разговор с кем-нибудь из ваших контактов!</string>
+    <string name="error_decrypting">Ошибка расшифровки</string>
+    <string name="not_in_contacts">Этого человека нет в списке ваших контактов</string>
+    <string name="add_to_contacts">Добавить в контакты</string>
+    <string name="block">Заблокировать</string>
+    <string name="contact_unavailable">Собеседник недоступен</string>
+    <string name="is_typing">печатает...</string>
+    <string name="send_nudge">Отправить будильник</string>
+    <string name="nudge_received">Получен будильник!</string>
+    <string name="nudge_sent_sys">Вы отправили будильник!</string>
+    <string name="nudge_received_sys">%1$s прислал(а) вам будильник!</string>
+    <string name="add_participant">Добавить участника</string>
+    <string name="group_chat">Групповой чат</string>
+    <string name="user_joined_chat">%1$s присоединился к чату</string>
+    <string name="user_left_chat">%1$s покинул чат</string>
+    <string name="no_available_contacts">Нет доступных контактов</string>
+    <string name="reply">Ответить</string>
+    <string name="type_reply">Ответить...</string>
+    <string name="send_by_enter">Отправка по Enter</string>
+    <string name="link_preview">Предпросмотр ссылок</string>
+    <string name="open_chats_by_default">Сначала открывать чаты</string>
+    <string name="chat_header">Чат</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">Добавить друга</string>
+    <string name="enter_msn_account">Введите аккаунт MSN:</string>
+    <string name="add">Добавить</string>
+    <string name="contacts_settings">Настройки контактов</string>
+    <string name="show_online_first">Сначала те, кто в сети</string>
+    <string name="empty_contacts_title">Здесь пока тихо...</string>
+    <string name="empty_contacts_message">Контактов пока нет. Нажмите кнопку «+», чтобы добавить первого друга!</string>
+    <string name="not_connected_message">Вы не вошли в сеть.</string>
+    <string name="contact_requests">Запросы контактов</string>
+    <string name="accept">Принять</string>
+    <string name="decline">Отклонить</string>
+    <string name="new_contact_request">%1$s хочет добавить вас в контакты</string>
+    <string name="delete">Удалить</string>
+    <string name="no_requests">Нет ожидающих запросов</string>
+    <string name="search">Поиск</string>
+    <string name="press_to_add">Пользователь найден, нажмите для добавления</string>
+    <string name="invalid_email">Неверный адрес email</string>
+    <string name="other_contacts">Другие контакты</string>
+    <string name="group_count_format">(%1$d/%2$d)</string>
+    <string name="create_group">Создать группу</string>
+    <string name="delete_group">Удалить группу</string>
+    <string name="delete_group_confirm">Вы уверены, что хотите удалить эту группу?</string>
+    <string name="no_groups_error">Нет доступных групп. Сначала создайте одну.</string>
+    <string name="contact_guid_error">Ошибка: GUID контакта не найден. Попробуйте переподключиться.</string>
+    <string name="move_to_group_title">Переместить %1$s в группу</string>
+    <string name="user_is_now_online">%1$s теперь в сети</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">Контакты</string>
+    <string name="tab_chats">Чаты</string>
+    <string name="tab_services">Сервисы</string>
+    <string name="tab_profile">Профиль</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">Информация о контакте</string>
+    <string name="email">Email</string>
+    <string name="privacy">Конфиденциальность</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="personal_message_hint">Личное сообщение (статус)</string>
+    <string name="save_error">Ошибка сохранения: %1$s</string>
+    <string name="saved_to_downloads">Сохранено в загрузки</string>
+    <string name="download">Скачать</string>
+    <string name="chat_settings">Настройка чатов</string>
+
+    <!-- About -->
+    <string name="about_app">О приложении</string>
+    <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
+    <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
+    <string name="about_description">Открытый клиент для сервера MSN Messenger, разработан для коммуникации на современных устройствах.</string>
+    <string name="about_library_title">В разработке использована:</string>
+    <string name="about_library_name">Библиотека MSNP-11 от campos02</string>
+    <string name="about_testers_title">Активные тестировщики:</string>
+    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_developed_by">Разработано Vasek Lednikofff</string>
+    <string name="about_limpe_support">при поддержке Limpe Team</string>
+
+    <!-- Storage -->
+    <string name="storage">Память</string>
+    <string name="storage_usage">Использование памяти</string>
+    <string name="app_memory_percent">Приложение занимает %1$s%% памяти устройства (%2$s)</string>
+    <string name="cache_label">Кэш (аватарки, превью): %1$s</string>
+    <string name="messages_label">История сообщений: %1$s</string>
+    <string name="clear_cache">Очистить кэш</string>
+    <string name="clear_history">Очистить журналы сообщений</string>
+    <string name="clear_history_title">Очистить историю?</string>
+    <string name="clear_history_message">Это безвозвратно удалит все ваши сообщения из всех чатов.</string>
+    <string name="cache_cleared">Кэш очищен</string>
+    <string name="history_cleared">История очищена</string>
+
+    <!-- Settings / Privacy / Notifications -->
+    <string name="dark_theme">Темная тема</string>
+    <string name="system_theme">Системная тема</string>
+    <string name="interface_header">Интерфейс</string>
+    <string name="privacy_allow_only_contacts">Разрешить только от контактов</string>
+    <string name="privacy_description">Если включено, только пользователи из вашего списка контактов могут видеть вас и отправлять сообщения.</string>
+    <string name="notify_messages">Сообщения</string>
+    <string name="notify_login">Вход в сеть</string>
+    <string name="notify_nudge">Будильник (Nudge)</string>
+    <string name="notify_added_by">Вас добавили</string>
+    <string name="vibration_enabled">Вибрация в приложении</string>
+
+    <!-- OOBE -->
+    <string name="oobe_welcome_title">Начнем!</string>
+    <string name="oobe_welcome_description">Бесплатный и открытый клиент для MSN Messenger</string>
+    <string name="oobe_welcome_question">Начнёте его использование прямо сейчас?</string>
+    <string name="oobe_nickname_title">Как вас называть?</string>
+    <string name="oobe_nickname_hint">Ваше имя</string>
+    <string name="oobe_nickname_description">Это имя будут видеть ваши контакты. Вы сможете изменить его позже в настройках.</string>
+    <string name="enter_name_error">Введите имя</string>
+    <string name="oobe_notifications_title">Уведомления</string>
+    <string name="oobe_notifications_description">Разрешите отправку уведомлений, чтобы не пропустить новые сообщения от друзей.</string>
+    <string name="oobe_phone_title">Статус звонка</string>
+    <string name="oobe_phone_description">Разрешите доступ к состоянию телефона, чтобы приложение могло автоматически менять ваш статус на «Разговариваю по телефону» во время вызовов.</string>
+    <string name="allow">Разрешить</string>
+    <string name="skip">Пропустить</string>
+    <string name="oobe_permissions_title">Разрешения</string>
+    <string name="oobe_permissions_description">Нам нужны некоторые разрешения, чтобы обеспечить наилучший опыт.</string>
+
+    <!-- WebView / External Links -->
+    <string name="leaving_app_title">Вы покидаете @string/app_name</string>
+    <string name="leaving_app_message">Эта ссылка приведет вас на внешний сайт:\n%1$s\n\nВы хотите продолжить?</string>
+    <string name="leave">Покинуть</string>
+    <string name="stay">Остаться</string>
+
+    <!-- Crash Report -->
+    <string name="crash_title">Ой! Произошла ошибка</string>
+    <string name="crash_message">@string/app_name аварийно завершило работу. Мы собрали техническую информацию, которая поможет нам исправить проблему.</string>
+    <string name="restart">Перезапустить</string>
+    <string name="send_report">Отправить отчет</string>
+    <string name="crash_report_subject">Отчет об ошибке @string/app_name</string>
+    <string name="send_report_via">Отправить отчет через...</string>
+    <string name="no_trace_available">Трассировка недоступна</string>
+    <string name="crash_report_body_format">Устройство: %1$s\nAndroid: %2$s\n\n%3$s</string>
+
+    <!-- Service -->
+    <string name="status_trying_to_connect">Попытка подключения...</string>
+    <string name="status_offline">Не в сети</string>
+    <string name="channel_connection_status">Статус подключения</string>
+    <string name="channel_messages">Сообщения</string>
+    <string name="channel_contact_events">События контактов</string>
+    <string name="error_logged_in_another_device">Вы вошли в систему на другом устройстве</string>
+    <string name="error_auth_failed">Ошибка авторизации</string>
+
+    <!-- Services -->
+    <string name="services_title">Доступные сервисы</string>
+    <string name="services_not_found">Сервисы не найдены</string>
+
+    <!-- Misc -->
+    <string name="system_default">Системная тема</string>
+    <string name="app_version_format">v%1$s</string>
+    <string name="session_failed">Сессия не удалась</string>
+
+    <!-- Navigation -->
+    <string name="next">Далее</string>
+    <string name="previous">Назад</string>
+    <string name="first_fragment_label">Первый фрагмент</string>
+    <string name="second_fragment_label">Второй фрагмент</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">Требуется обновление</string>
+    <string name="app_expired_message">Срок действия этой версии приложения истек. Пожалуйста, обновитесь до последней версии.</string>
+    <string name="update">Обновить</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">Собрать логи для поддержки</string>
+    <string name="logs_report_title">Отчет об ошибке @string/app_name</string>
+    <string name="no_logs_available">Информация о логах недоступная</string>
+    <string name="error_collecting_logs">Ошибка сбора логов: %1$s</string>
+</resources>

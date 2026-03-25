@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tengerium</string>
+    <string name="action_settings">Налады</string>
+    <string name="profile_title">Профіль</string>
+    <string name="nickname_hint">Нікнейм</string>
+    <string name="update_nickname">Абнавіць нікнейм</string>
+    <string name="logout">Выйсці</string>
+    <string name="status_settings">Налады статусу</string>
+    <string name="app_settings">Налады праграмы</string>
+    <string name="online">У сеціве</string>
+    <string name="busy">Заняты</string>
+    <string name="away">Няма на месцы</string>
+    <string name="offline">Па-за сецівам</string>
+    <string name="brb">Хутка вярнуся</string>
+    <string name="on_phone">Размаўляю па тэлефоне</string>
+    <string name="out_to_lunch">Сышоў на абед</string>
+    <string name="theme_settings">Тэма</string>
+    <string name="language_settings">Мова</string>
+    <string name="notifications">Апавяшчэнні</string>
+    <string name="nickname_updated">Нікнейм абноўлены</string>
+    <string name="avatar_updated">Аватар абноўлены</string>
+
+    <string name="default_android_style">Стандартны стыль Android</string>
+    <string name="use_material_you">Выкарыстоўваць Material You (Android 12+)</string>
+    <string name="theme_presets">Прэсеты тэм</string>
+    <string name="preview">Перадпрагляд</string>
+    <string name="choose_background">Выбраць фон чата</string>
+    <string name="enable_debug_popups">Уключыць адладкавыя ўсплывальныя вокны</string>
+    <string name="language">Мова</string>
+    <string name="current_language">Змяніць мову</string>
+    <string name="background_updated">Фон абноўлены</string>
+    <string name="background_removed">Фон выдалены</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">Класічная</string>
+    <string name="theme_emerald">Ізумрудная</string>
+    <string name="theme_lavender">Лавандавая</string>
+    <string name="theme_dark">Цёмная</string>
+    <string name="preview_incoming">Пузырок уваходнага паведамлення</string>
+    <string name="preview_outgoing">Пузырок выходнага паведамлення</string>
+    <string name="theme">Тэма</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Акаўнт Hotmail</string>
+    <string name="password_hint">Пароль</string>
+    <string name="remember_me">Запомніць мяне</string>
+    <string name="sign_in">Увайсці</string>
+    <string name="fill_all_fields">Калі ласка, запоўніце ўсе палі</string>
+    <string name="logged_in_as">Вы ўвайшлі як %1$s</string>
+    <string name="login_error">Памылка: %1$s</string>
+    <string name="error_invalid_password">Няправільны пароль</string>
+    <string name="error_connection_failed">Не ўдалося падключыцца да службы MSN</string>
+    <string name="session_expired_title">Сесія скончылася</string>
+    <string name="session_expired_message">Ваша сесія скончылася. Калі ласка, увайдзіце зноў.</string>
+    <string name="connection_settings">Налады падключэння</string>
+    <string name="settings_saved">Налады захаваны</string>
+    <string name="connecting">Падключэнне...</string>
+    <string name="connecting_to_msn">Падключэнне да MSN...</string>
+    <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
+    <string name="nexus_hint">Дамен Nexus (напр. m1.escargot.chat)</string>
+
+    <!-- Chat -->
+    <string name="today">Сёння</string>
+    <string name="yesterday">Учора</string>
+    <string name="copy">Скапіяваць</string>
+    <string name="copied">Скапіявана</string>
+    <string name="type_message">Увядзіце паведамленне...</string>
+    <string name="empty_chats">Няма нядаўніх чатаў</string>
+    <string name="empty_chats_title">Паведамленняў пакуль няма</string>
+    <string name="empty_chats_message">Пачніце размову з кім-небудзь з вашых кантактаў!</string>
+    <string name="error_decrypting">Памылка расшыфроўкі</string>
+    <string name="not_in_contacts">Гэтага чалавека няма ў вашым спісе кантактаў</string>
+    <string name="add_to_contacts">Дадаць у кантакты</string>
+    <string name="block">Заблакіраваць</string>
+    <string name="contact_unavailable">Суразмоўца недаступны</string>
+    <string name="is_typing">піша...</string>
+    <string name="send_nudge">Адправіць будзільнік</string>
+    <string name="nudge_received">Атрыманы будзільнік!</string>
+    <string name="nudge_sent_sys">Вы адправілі будзільнік!</string>
+    <string name="nudge_received_sys">%1$s адправіў вам будзільнік!</string>
+    <string name="add_participant">Дадаць удзельніка</string>
+    <string name="group_chat">Групавы чат</string>
+    <string name="user_joined_chat">%1$s далучыўся да чата</string>
+    <string name="user_left_chat">%1$s пакінуў чат</string>
+    <string name="no_available_contacts">Няма даступных кантактаў</string>
+    <string name="reply">Адказаць</string>
+    <string name="type_reply">Увядзіце адказ...</string>
+    <string name="send_by_enter">Адпраўка праз Enter</string>
+    <string name="link_preview">Перадпрагляд спасылак</string>
+    <string name="open_chats_by_default">Адкрываць чаты па змаўчанні</string>
+    <string name="chat_header">Чат</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">Дадаць сябра</string>
+    <string name="enter_msn_account">Увядзіце акаўнт MSN:</string>
+    <string name="add">Дадаць</string>
+    <string name="contacts_settings">Налады кантактаў</string>
+    <string name="show_online_first">Спачатку тыя, хто ў сеціве</string>
+    <string name="empty_contacts_title">Тут пакуль ціха...</string>
+    <string name="empty_contacts_message">Кантактаў пакуль няма. Націсніце кнопку «+», каб дадаць першага сябра!</string>
+    <string name="not_connected_message">Вы не ўвайшлі ў сеціва.</string>
+    <string name="contact_requests">Запыты кантактаў</string>
+    <string name="accept">Прыняць</string>
+    <string name="decline">Адхіліць</string>
+    <string name="new_contact_request">%1$s хоча дадаць вас у кантакты</string>
+    <string name="delete">Выдаліць</string>
+    <string name="no_requests">Няма чакаючых запытаў</string>
+    <string name="search">Пошук</string>
+    <string name="press_to_add">Карыстальнік знойдзены, націсніце для дадання</string>
+    <string name="invalid_email">Няправільны адрас электроннай пошты</string>
+    <string name="other_contacts">Іншыя кантакты</string>
+    <string name="group_count_format">(%1$d/%2$d)</string>
+    <string name="create_group">Стварыць групу</string>
+    <string name="delete_group">Выдаліць групу</string>
+    <string name="delete_group_confirm">Вы ўпэўнены, што хочаце выдаліць гэту групу?</string>
+    <string name="no_groups_error">Няма даступных груп. Спачатку стварыце адну.</string>
+    <string name="contact_guid_error">Памылка: GUID кантакту не знойдзены. Паспрабуйце перападключыцца.</string>
+    <string name="move_to_group_title">Перамясціць %1$s у групу</string>
+    <string name="user_is_now_online">%1$s цяпер у сеціве</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">Кантакты</string>
+    <string name="tab_chats">Чаты</string>
+    <string name="tab_services">Сервісы</string>
+    <string name="tab_profile">Профіль</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">Інфармацыя аб кантакце</string>
+    <string name="email">Email</string>
+    <string name="privacy">Канфідэнцыяльнасць</string>
+    <string name="edit_profile">Рэдагаваць профіль</string>
+    <string name="personal_message_hint">Асабістае паведамленне (статус)</string>
+    <string name="save_error">Памылка захавання: %1$s</string>
+    <string name="saved_to_downloads">Захавана ў загрузкі</string>
+    <string name="download">Спампаваць</string>
+    <string name="chat_settings">Налады чата</string>
+
+    <!-- About -->
+    <string name="about_app">Аб праграме</string>
+    <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
+    <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
+    <string name="about_description">Адкрыты кліент для сервера MSN Messenger, распрацаваны для камунікацыі на сучасных прыладах.</string>
+    <string name="about_library_title">Выкарыстаныя бібліятэкі:</string>
+    <string name="about_library_name">Бібліятэка MSNP-11 ад campos02</string>
+    <string name="about_testers_title">Актыўныя тэсціроўшчыкі:</string>
+    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_developed_by">Распрацавана Vasek Lednikofff</string>
+    <string name="about_limpe_support">пры падтрымцы Limpe Team</string>
+
+    <!-- Storage -->
+    <string name="storage">Сховішча</string>
+    <string name="storage_usage">Выкарыстанне сховішча</string>
+    <string name="app_memory_percent">Праграма займае %1$s%% памяці прылады (%2$s)</string>
+    <string name="cache_label">Кэш (аватаркі, перадпрагляды): %1$s</string>
+    <string name="messages_label">Гісторыя паведамленняў: %1$s</string>
+    <string name="clear_cache">Ачысціць кэш</string>
+    <string name="clear_history">Ачысціць журналы паведамленняў</string>
+    <string name="clear_history_title">Ачысціць гісторыю?</string>
+    <string name="clear_history_message">Гэта беззваротна выдаліць усе вашы паведамленні з усіх чатаў.</string>
+    <string name="cache_cleared">Кэш ачышчаны</string>
+    <string name="history_cleared">Гісторыя ачышчана</string>
+
+    <!-- Settings / Privacy / Notifications -->
+    <string name="dark_theme">Цёмная тэма</string>
+    <string name="system_theme">Сістэмная тэма</string>
+    <string name="interface_header">Інтэрфейс</string>
+    <string name="privacy_allow_only_contacts">Дазваляць толькі ад кантактаў</string>
+    <string name="privacy_description">Калі ўключана, толькі карыстальнікі з вашага спісу кантактаў могуць бачыць вас і адпраўляць паведамленні.</string>
+    <string name="notify_messages">Паведамленні</string>
+    <string name="notify_login">Уваход у сеціва</string>
+    <string name="notify_nudge">Будзільнік (Nudge)</string>
+    <string name="notify_added_by">Вас дадалі</string>
+    <string name="vibration_enabled">Вібрацыя ў праграме</string>
+
+    <!-- OOBE -->
+    <string name="oobe_welcome_title">Пачнем!</string>
+    <string name="oobe_welcome_description">Бясплатны і адкрыты кліент для MSN Messenger</string>
+    <string name="oobe_welcome_question">Пачняце выкарыстанне прама зараз?</string>
+    <string name="oobe_nickname_title">Як вас называць?</string>
+    <string name="oobe_nickname_hint">Ваша імя</string>
+    <string name="oobe_nickname_description">Гэта імя будуць бачыць вашы кантакты. Вы зможаце змяніць яго пазней у наладзе.</string>
+    <string name="enter_name_error">Калі ласка, увядзіце імя</string>
+    <string name="oobe_notifications_title">Апавяшчэнні</string>
+    <string name="oobe_notifications_description">Дазвольце адпраўку апавяшчэнняў, каб не прапусціць новыя паведамленні ад сяброў.</string>
+    <string name="oobe_phone_title">Статус званка</string>
+    <string name="oobe_phone_description">Дазвольце доступ да стану тэлефона, каб праграма магла аўтаматычна змяняць ваш статус на «Размаўляю па тэлефоне» падчас выклікаў.</string>
+    <string name="allow">Дазволіць</string>
+    <string name="skip">Прапусціць</string>
+    <string name="oobe_permissions_title">Дазволы</string>
+    <string name="oobe_permissions_description">Нам патрэбны некаторыя дазволы, каб забяспечыць найлепшы вопыт.</string>
+
+    <!-- WebView / External Links -->
+    <string name="leaving_app_title">Вы пакідаеце @string/app_name</string>
+    <string name="leaving_app_message">Гэта спасылка прывядзе вас на знешні сайт:\n%1$s\n\nВы хочаце працягнуць?</string>
+    <string name="leave">Пакінуць</string>
+    <string name="stay">Застацца</string>
+
+    <!-- Crash Report -->
+    <string name="crash_title">Ой! Проізашла памылка</string>
+    <string name="crash_message">@string/app_name аварыйна завяршыла працу. Мы сабралі тэхнічную інфармацыю, якая дапаможа нам выправіць праблему.</string>
+    <string name="restart">Перазапусціць</string>
+    <string name="send_report">Адправіць справаздачу</string>
+    <string name="crash_report_subject">Справаздача аб памылцы @string/app_name</string>
+    <string name="send_report_via">Адправіць справаздачу праз...</string>
+    <string name="no_trace_available">Інфармацыя адсутнічае</string>
+    <string name="crash_report_body_format">Прылада: %1$s\nAndroid: %2$s\n\n%3$s</string>
+
+    <!-- Service -->
+    <string name="status_trying_to_connect">Спроба падключэння...</string>
+    <string name="status_offline">Па-за сецівам</string>
+    <string name="channel_connection_status">Статус падключэння</string>
+    <string name="channel_messages">Паведамленні</string>
+    <string name="channel_contact_events">Падзеі кантактаў</string>
+    <string name="error_logged_in_another_device">Вы ўвайшлі ў сістэму на іншай прыладзе</string>
+    <string name="error_auth_failed">Памылка аўтарызацыі</string>
+
+    <!-- Services -->
+    <string name="services_title">Даступныя сервісы</string>
+    <string name="services_not_found">Сервісы не знойдзены</string>
+
+    <!-- Misc -->
+    <string name="system_default">Сістэмная тэма</string>
+    <string name="app_version_format">v%1$s</string>
+    <string name="session_failed">Сесія не ўдалася</string>
+
+    <!-- Navigation -->
+    <string name="next">Далей</string>
+    <string name="previous">Назад</string>
+    <string name="first_fragment_label">Першы фрагмент</string>
+    <string name="second_fragment_label">Другі фрагмент</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">Патрабуецца абнаўленне</string>
+    <string name="app_expired_message">Тэрмін дзеяння гэтай версіі праграмы скончыўся. Калі ласка, абнавіцеся да апошняй версіі.</string>
+    <string name="update">Абнавіць</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">Сабраць логі для падтрымкі</string>
+    <string name="logs_report_title">Справаздача аб памылцы @string/app_name</string>
+    <string name="no_logs_available">Інфармацыя аб логах недаступная</string>
+    <string name="error_collecting_logs">Памылка збору логаў: %1$s</string>
+</resources>

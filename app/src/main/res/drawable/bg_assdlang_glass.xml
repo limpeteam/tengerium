@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow for depth -->
+    <item>
+        <shape>
+            <padding android:left="1dp" android:top="1dp" android:right="1dp" android:bottom="2dp" />
+            <solid android:color="#1A000000" />
+            <corners android:radius="22dp" />
+        </shape>
+    </item>
+
+    <!-- Main glass body (semi-transparent) -->
+    <item>
+        <shape>
+            <solid android:color="#33FFFFFF" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+
+    <!-- Refraction border (top-left light) -->
+    <item>
+        <shape>
+            <gradient
+                android:angle="135"
+                android:endColor="#00FFFFFF"
+                android:startColor="#66FFFFFF"
+                android:type="linear" />
+            <stroke
+                android:width="1.2dp"
+                android:color="#4DFFFFFF" />
+            <corners android:radius="20dp" />
+        </shape>
+    </item>
+
+    <!-- Inner soft glow -->
+    <item android:left="2dp" android:top="2dp" android:right="2dp" android:bottom="2dp">
+        <shape>
+            <stroke android:width="0.5dp" android:color="#1AFFFFFF" />
+            <corners android:radius="18dp" />
+        </shape>
+    </item>
+</layer-list>

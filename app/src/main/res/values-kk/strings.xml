@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Tengerium</string>
+    <string name="action_settings">Баптаулар</string>
+    <string name="profile_title">Профиль</string>
+    <string name="nickname_hint">Никнейм</string>
+    <string name="update_nickname">Никнеймді жаңарту</string>
+    <string name="logout">Шығу</string>
+    <string name="status_settings">Күй баптаулары</string>
+    <string name="app_settings">Қолданба баптаулары</string>
+    <string name="online">Желіде</string>
+    <string name="busy">Бос емес</string>
+    <string name="away">Кетіп қалды</string>
+    <string name="offline">Желіде емес</string>
+    <string name="brb">Жақында келемін</string>
+    <string name="on_phone">Телефонмен сөйлесуде</string>
+    <string name="out_to_lunch">Түскі асқа кетті</string>
+    <string name="theme_settings">Тақырып</string>
+    <string name="language_settings">Тіл</string>
+    <string name="notifications">Хабарландырулар</string>
+    <string name="nickname_updated">Никнейм жаңартылды</string>
+    <string name="avatar_updated">Аватар жаңартылды</string>
+
+    <string name="default_android_style">Android стандартты стилі</string>
+    <string name="use_material_you">Material You пайдалану (Android 12+)</string>
+    <string name="theme_presets">Тақырыптар жиынтығы</string>
+    <string name="preview">Алдын ала қарау</string>
+    <string name="choose_background">Чат фонын таңдау</string>
+    <string name="enable_debug_popups">Жөндеу терезелерін қосу</string>
+    <string name="language">Тіл</string>
+    <string name="current_language">Тілді өзгерту</string>
+    <string name="background_updated">Фон жаңартылды</string>
+    <string name="background_removed">Фон жойылды</string>
+
+    <!-- Themes -->
+    <string name="theme_classic">Классикалық</string>
+    <string name="theme_emerald">Зүбәржат</string>
+    <string name="theme_lavender">Лаванда</string>
+    <string name="theme_dark">Қараңғы</string>
+    <string name="preview_incoming">Кіріс хабарлама көпіршігі</string>
+    <string name="preview_outgoing">Шығыс хабарлама көпіршігі</string>
+    <string name="theme">Тақырып</string>
+
+    <!-- Auth -->
+    <string name="hotmail_account_hint">Hotmail аккаунты</string>
+    <string name="password_hint">Құпия сөз</string>
+    <string name="remember_me">Мені есте сақта</string>
+    <string name="sign_in">Кіру</string>
+    <string name="fill_all_fields">Барлық өрістерді толтырыңыз</string>
+    <string name="logged_in_as">%1$s ретінде кірдіңіз</string>
+    <string name="login_error">Қате: %1$s</string>
+    <string name="error_invalid_password">Құпия сөз қате</string>
+    <string name="error_connection_failed">MSN қызметіне қосылу сәтсіз аяқталды</string>
+    <string name="session_expired_title">Сессия аяқталды</string>
+    <string name="session_expired_message">Сессияңыз аяқталды. Қайта кіріңіз.</string>
+    <string name="connection_settings">Қосылым баптаулары</string>
+    <string name="settings_saved">Баптаулар сақталды</string>
+    <string name="connecting">Қосылуда...</string>
+    <string name="connecting_to_msn">MSN-ге қосылуда...</string>
+    <string name="host_hint">Хост (мысалы, messenger.hotmail.com)</string>
+    <string name="nexus_hint">Nexus домені (мысалы, m1.escargot.chat)</string>
+
+    <!-- Chat -->
+    <string name="today">Бүгін</string>
+    <string name="yesterday">Кеше</string>
+    <string name="copy">Көшіру</string>
+    <string name="copied">Көшірілді</string>
+    <string name="type_message">Хабарлама енгізіңіз...</string>
+    <string name="empty_chats">Соңғы чаттар жоқ</string>
+    <string name="empty_chats_title">Әзірге хабарламалар жоқ</string>
+    <string name="empty_chats_message">Контактілеріңіздің бірімен сөйлесуді бастаңыз!</string>
+    <string name="error_decrypting">Шифрды шешу қатесі</string>
+    <string name="not_in_contacts">Бұл адам сіздің контактілеріңізде жоқ</string>
+    <string name="add_to_contacts">Контактілерге қосу</string>
+    <string name="block">Блоктау</string>
+    <string name="contact_unavailable">Контакт қолжетімсіз</string>
+    <string name="is_typing">жазып жатыр...</string>
+    <string name="send_nudge">Будильник жіберу</string>
+    <string name="nudge_received">Будильник алынды!</string>
+    <string name="nudge_sent_sys">Сіз будильник жібердіңіз!</string>
+    <string name="nudge_received_sys">%1$s сізге будильник жіберді!</string>
+    <string name="add_participant">Қатысушы қосу</string>
+    <string name="group_chat">Топтық чат</string>
+    <string name="user_joined_chat">%1$s чатқа қосылды</string>
+    <string name="user_left_chat">%1$s чаттан шықты</string>
+    <string name="no_available_contacts">Қолжетімді контактілер жоқ</string>
+    <string name="reply">Жауап беру</string>
+    <string name="type_reply">Жауап енгізіңіз...</string>
+    <string name="send_by_enter">Enter арқылы жіберу</string>
+    <string name="link_preview">Сілтемелерді алдын ала қарау</string>
+    <string name="open_chats_by_default">Чаттарды әдепкі бойынша ашу</string>
+    <string name="chat_header">Чат</string>
+
+    <!-- Contacts -->
+    <string name="add_friend">Дос қосу</string>
+    <string name="enter_msn_account">MSN аккаунтын енгізіңіз:</string>
+    <string name="add">Қосу</string>
+    <string name="contacts_settings">Контакт баптаулары</string>
+    <string name="show_online_first">Алдымен желідегілерді көрсету</string>
+    <string name="empty_contacts_title">Мұнда әзірге тыныш...</string>
+    <string name="empty_contacts_message">Әзірге контактілер жоқ. Бірінші досыңызды қосу үшін «+» түймесін басыңыз!</string>
+    <string name="not_connected_message">Сіз желіге кірген жоқсыз.</string>
+    <string name="contact_requests">Контакт сұраулары</string>
+    <string name="accept">Қабылдау</string>
+    <string name="decline">Бас тарту</string>
+    <string name="new_contact_request">%1$s сізді контактілеріне қосқысы келеді</string>
+    <string name="delete">Жою</string>
+    <string name="no_requests">Күтудегі сұраулар жоқ</string>
+    <string name="search">Іздеу</string>
+    <string name="press_to_add">Пайдаланушы табылды, қосу үшін басыңыз</string>
+    <string name="invalid_email">Электрондық пошта мекенжайы қате</string>
+    <string name="other_contacts">Басқа контактілер</string>
+    <string name="group_count_format">(%1$d/%2$d)</string>
+    <string name="create_group">Топ құру</string>
+    <string name="delete_group">Топты жою</string>
+    <string name="delete_group_confirm">Бұл топты жойғыңыз келетініне сенімдісіз бе?</string>
+    <string name="no_groups_error">Қолжетімді топтар жоқ. Алдымен біреуін құрыңыз.</string>
+    <string name="contact_guid_error">Қате: Контакт GUID табылмады. Қайта қосылып көріңіз.</string>
+    <string name="move_to_group_title">%1$s-ді топқа жылжыту</string>
+    <string name="user_is_now_online">%1$s қазір желіде</string>
+
+    <!-- Main Tabs -->
+    <string name="tab_contacts">Контактілер</string>
+    <string name="tab_chats">Чаттар</string>
+    <string name="tab_services">Сервистер</string>
+    <string name="tab_profile">Профиль</string>
+
+    <!-- Profile Detail -->
+    <string name="contact_info">Контакт ақпараты</string>
+    <string name="email">Электрондық пошта</string>
+    <string name="privacy">Құпиялылық</string>
+    <string name="edit_profile">Профильді өңдеу</string>
+    <string name="personal_message_hint">Жеке хабарлама (күй)</string>
+    <string name="save_error">Сақтау қатесі: %1$s</string>
+    <string name="saved_to_downloads">Жүктеулерге сақталды</string>
+    <string name="download">Жүктеу</string>
+    <string name="chat_settings">Чат баптаулары</string>
+
+    <!-- About -->
+    <string name="about_app">Қолданба туралы</string>
+    <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
+    <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
+    <string name="about_description">MSN Messenger серверіне арналған ашық бастапқы клиент, заманауи құрылғыларда байланыс орнатуға арналған.</string>
+    <string name="about_library_title">Пайдаланылған кітапханалар:</string>
+    <string name="about_library_name">campos02 ұсынған MSNP-11 кітапханасы</string>
+    <string name="about_testers_title">Белсенді тестілеушілер:</string>
+    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_developed_by">Vasek Lednikofff әзірлеген</string>
+    <string name="about_limpe_support">Limpe Team қолдауымен</string>
+
+    <!-- Storage -->
+    <string name="storage">Жад</string>
+    <string name="storage_usage">Жадты пайдалану</string>
+    <string name="app_memory_percent">Қолданба құрылғы жадының %1$s%%-ін алады (%2$s)</string>
+    <string name="cache_label">Кэш (аватарлар, алдын ала қарау): %1$s</string>
+    <string name="messages_label">Хабарламалар тарихы: %1$s</string>
+    <string name="clear_cache">Кэшті тазалау</string>
+    <string name="clear_history">Хабарламалар журналдарын тазалау</string>
+    <string name="clear_history_title">Тарихты тазалау керек пе?</string>
+    <string name="clear_history_message">Бұл барлық чаттардағы барлық хабарламаларыңызды біржола жояды.</string>
+    <string name="cache_cleared">Кэш тазартылды</string>
+    <string name="history_cleared">Тарих тазартылды</string>
+
+    <!-- Settings / Privacy / Notifications -->
+    <string name="dark_theme">Қараңғы тақырып</string>
+    <string name="system_theme">Жүйелік тақырып</string>
+    <string name="interface_header">Интерфейс</string>
+    <string name="privacy_allow_only_contacts">Тек контактілерден рұқсат ету</string>
+    <string name="privacy_description">Егер қосулы болса, тек контактілер тізіміндегі пайдаланушылар сізді көре алады және хабарлама жібере алады.</string>
+    <string name="notify_messages">Хабарламалар</string>
+    <string name="notify_login">Желіге кіру</string>
+    <string name="notify_nudge">Будильник (Nudge)</string>
+    <string name="notify_added_by">Сізді қосты</string>
+    <string name="vibration_enabled">Қолданбадағы діріл</string>
+
+    <!-- OOBE -->
+    <string name="oobe_welcome_title">Бастайық!</string>
+    <string name="oobe_welcome_description">MSN Messenger үшін тегін және ашық бастапқы клиент</string>
+    <string name="oobe_welcome_question">Оны дәл қазір пайдалануды бастайсыз ба?</string>
+    <string name="oobe_nickname_title">Сізді қалай атайық?</string>
+    <string name="oobe_nickname_hint">Сіздің есіміңіз</string>
+    <string name="oobe_nickname_description">Бұл есімді контактілеріңіз көреді. Оны кейінірек баптаулардан өзгертуге болады.</string>
+    <string name="enter_name_error">Есімді енгізіңіз</string>
+    <string name="oobe_notifications_title">Хабарландырулар</string>
+    <string name="oobe_notifications_description">Достарыңыздан жаңа хабарламаларды өткізіп алмау үшін хабарландырулар жіберуге рұқсат етіңіз.</string>
+    <string name="oobe_phone_title">Қоңырау күйі</string>
+    <string name="oobe_phone_description">Қолданба қоңыраулар кезінде күйіңізді автоматты түрде «Телефонмен сөйлесуде» күйіне өзгертуі үшін телефон күйіне рұқсат беріңіз.</string>
+    <string name="allow">Рұқсат ету</string>
+    <string name="skip">Өткізіп жіберу</string>
+    <string name="oobe_permissions_title">Рұқсаттар</string>
+    <string name="oobe_permissions_description">Ең жақсы тәжірибені қамтамасыз ету үшін бізге кейбір рұқсаттар қажет.</string>
+
+    <!-- WebView / External Links -->
+    <string name="leaving_app_title">Сіз @string/app_name қолданбасынан шығып жатырсыз</string>
+    <string name="leaving_app_message">Бұл сілтеме сізді сыртқы сайтқа апарады:\n%1$s\n\nЖалғастырғыңыз келе ме?</string>
+    <string name="leave">Шығу</string>
+    <string name="stay">Қалу</string>
+
+    <!-- Crash Report -->
+    <string name="crash_title">Әттең! Қате орын алды</string>
+    <string name="crash_message">@string/app_name жұмысын тоқтатты. Біз мәселені шешуге көмектесетін техникалық ақпаратты жинадық.</string>
+    <string name="restart">Қайта іске қосу</string>
+    <string name="send_report">Есеп жіберу</string>
+    <string name="crash_report_subject">@string/app_name қате туралы есебі</string>
+    <string name="send_report_via">Есепті келесі арқылы жіберу...</string>
+    <string name="no_trace_available">Ақпарат қолжетімсіз</string>
+    <string name="crash_report_body_format">Құрылғы: %1$s\nAndroid: %2$s\n\n%3$s</string>
+
+    <!-- Service -->
+    <string name="status_trying_to_connect">Қосылуға әрекет жасалуда...</string>
+    <string name="status_offline">Желіде емес</string>
+    <string name="channel_connection_status">Қосылым күйі</string>
+    <string name="channel_messages">Хабарламалар</string>
+    <string name="channel_contact_events">Контакт оқиғалары</string>
+    <string name="error_logged_in_another_device">Басқа құрылғыда кірдіңіз</string>
+    <string name="error_auth_failed">Авторизация қатесі</string>
+
+    <!-- Services -->
+    <string name="services_title">Қолжетімді сервистер</string>
+    <string name="services_not_found">Сервистер табылмады</string>
+
+    <!-- Misc -->
+    <string name="system_default">Жүйелік тақырып</string>
+    <string name="app_version_format">v%1$s</string>
+    <string name="session_failed">Сессия сәтсіз аяқталды</string>
+
+    <!-- Navigation -->
+    <string name="next">Келесі</string>
+    <string name="previous">Артқа</string>
+    <string name="first_fragment_label">Бірінші фрагмент</string>
+    <string name="second_fragment_label">Екінші фрагмент</string>
+
+    <!-- Timebomb -->
+    <string name="app_expired_title">Жаңарту қажет</string>
+    <string name="app_expired_message">Қолданбаның бұл нұсқасының мерзімі өтті. Жалғастыру үшін соңғы нұсқасына жаңартыңыз.</string>
+    <string name="update">Жаңарту</string>
+
+    <!-- Logs -->
+    <string name="collect_logs">Қолдау қызметі үшін журналдарды жинау</string>
+    <string name="logs_report_title">@string/app_name қате туралы есебі</string>
+    <string name="no_logs_available">Журнал ақпараты қолжетімсіз</string>
+    <string name="error_collecting_logs">Журналдарды жинау қатесі: %1$s</string>
+</resources>
