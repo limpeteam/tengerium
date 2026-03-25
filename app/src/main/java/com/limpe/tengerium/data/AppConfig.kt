@@ -18,6 +18,13 @@ object AppConfig {
     // Специальный режим LIMPE_EXP
     const val LIMPE_EXP = false
 
+    // --- OOBE Configuration ---
+    // Включение/выключение этапов первоначальной настройки
+    var oobeWelcomeEnabled: Boolean = true
+    var oobeNicknameEnabled: Boolean = false
+    var oobeNotificationsEnabled: Boolean = true
+    var oobePhoneStatusEnabled: Boolean = true
+
     /**
      * Возвращает кодовое имя клиента из метаданных манифеста.
      */

@@ -25,3 +25,5 @@ temp/MSNPSoapManager.kt.old
 temp/MSNPSwitchboardSession.kt.old
 temp/switchboard/MSNPSwitchboardMessageParser.kt.old
 *.keystore
+app/release/output-metadata.json
+/app/release

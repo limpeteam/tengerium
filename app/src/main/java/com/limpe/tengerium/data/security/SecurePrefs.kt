@@ -75,6 +75,12 @@ class SecurePrefs(private val context: Context) {
         plainPrefs.edit().putString("msn_object_$account", msnObject).apply()
     }
 
+    fun getAvatarPath(account: String): String? = plainPrefs.getString("avatar_path_$account", null)
+
+    fun setAvatarPath(account: String, path: String?) {
+        plainPrefs.edit().putString("avatar_path_$account", path).apply()
+    }
+
     // --- Collapsed Groups ---
 
     fun getCollapsedGroups(): Set<String> = plainPrefs.getStringSet("collapsed_groups", emptySet()) ?: emptySet()
@@ -158,6 +164,10 @@ class SecurePrefs(private val context: Context) {
     var phoneStatusEnabled: Boolean
         get() = plainPrefs.getBoolean("phone_status_enabled", false)
         set(value) = plainPrefs.edit().putBoolean("phone_status_enabled", value).apply()
+
+    var rememberMe: Boolean
+        get() = plainPrefs.getBoolean("remember_me", false)
+        set(value) = plainPrefs.edit().putBoolean("remember_me", value).apply()
 
     // --- Уведомления ---
 

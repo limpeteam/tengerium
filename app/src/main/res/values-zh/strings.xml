@@ -191,17 +191,17 @@
     <string name="oobe_permissions_description">我们需要一些权限来提供最佳体验。</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">您正在离开 @string/app_name</string>
+    <string name="leaving_app_title">您正在离开 Tengerium</string>
     <string name="leaving_app_message">此链接将带您访问外部网站：\n%1$s\n\n是否继续？</string>
     <string name="leave">离开</string>
     <string name="stay">留在这里</string>
 
     <!-- Crash Report -->
     <string name="crash_title">糟糕！发生了一个错误</string>
-    <string name="crash_message">@string/app_name 已崩溃。我们收集了技术信息，这将帮助我们修复问题。</string>
+    <string name="crash_message">Tengerium 已崩溃。我们收集了技术信息，这将帮助我们修复问题。</string>
     <string name="restart">重新启动</string>
     <string name="send_report">发送报告</string>
-    <string name="crash_report_subject">@string/app_name 错误报告</string>
+    <string name="crash_report_subject">Tengerium 错误报告</string>
     <string name="send_report_via">通过以下方式发送报告...</string>
     <string name="no_trace_available">无可用追踪信息</string>
     <string name="crash_report_body_format">设备：%1$s\nAndroid：%2$s\n\n%3$s</string>
@@ -237,7 +237,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">收集日志以进行支持</string>
-    <string name="logs_report_title">@string/app_name 错误报告</string>
+    <string name="logs_report_title">Tengerium 错误报告</string>
     <string name="no_logs_available">无可用日志信息</string>
     <string name="error_collecting_logs">收集日志时出错：%1$s</string>
 </resources>

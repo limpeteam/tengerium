@@ -64,6 +64,20 @@ class OobeFragment : Fragment() {
         navigateToNextStep()
     }
 
+    private enum class OobeStep {
+        WELCOME, AUTH, NICKNAME, NOTIFICATIONS, PHONE
+    }
+
+    private val enabledSteps: List<OobeStep> by lazy {
+        mutableListOf<OobeStep>().apply {
+            if (AppConfig.oobeWelcomeEnabled) add(OobeStep.WELCOME)
+            add(OobeStep.AUTH) // Окно логина обязательно
+            if (AppConfig.oobeNicknameEnabled) add(OobeStep.NICKNAME)
+            if (AppConfig.oobeNotificationsEnabled) add(OobeStep.NOTIFICATIONS)
+            if (AppConfig.oobePhoneStatusEnabled) add(OobeStep.PHONE)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentOobeBinding.inflate(inflater, container, false)
         return binding.root
@@ -90,30 +104,27 @@ class OobeFragment : Fragment() {
     }
 
     private fun navigateToNextStep() {
-        val current = binding.oobeViewPager.currentItem
-        when (current) {
-            2 -> { // С экрана Никнейма
-                if (needsNotificationPermission()) {
-                    binding.oobeViewPager.currentItem = 3
-                } else if (needsPhonePermission()) {
-                    binding.oobeViewPager.currentItem = 4
-                } else {
-                    completeOobe()
-                }
+        val currentPos = binding.oobeViewPager.currentItem
+        val nextPos = currentPos + 1
+        
+        if (nextPos < enabledSteps.size) {
+            val nextStep = enabledSteps[nextPos]
+            
+            // Проверка необходимости разрешений
+            if (nextStep == OobeStep.NOTIFICATIONS && !needsNotificationPermission()) {
+                binding.oobeViewPager.currentItem = nextPos
+                navigateToNextStep()
+                return
             }
-            3 -> { // С экрана Уведомлений
-                if (needsPhonePermission()) {
-                    binding.oobeViewPager.currentItem = 4
-                } else {
-                    completeOobe()
-                }
+            if (nextStep == OobeStep.PHONE && !needsPhonePermission()) {
+                binding.oobeViewPager.currentItem = nextPos
+                navigateToNextStep()
+                return
             }
-            4 -> { // С экрана Телефона
-                completeOobe()
-            }
-            else -> {
-                binding.oobeViewPager.currentItem = current + 1
-            }
+            
+            binding.oobeViewPager.currentItem = nextPos
+        } else {
+            completeOobe()
         }
     }
 
@@ -162,7 +173,10 @@ class OobeFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginState.collectLatest { state ->
                     val recyclerView = binding.oobeViewPager.getChildAt(0) as? RecyclerView
-                    val authHolder = recyclerView?.findViewHolderForAdapterPosition(1) as? AuthViewHolder
+                    val authIndex = enabledSteps.indexOf(OobeStep.AUTH)
+                    val authHolder = if (authIndex != -1) {
+                        recyclerView?.findViewHolderForAdapterPosition(authIndex) as? AuthViewHolder
+                    } else null
 
                     when (state) {
                         is MSNPLoginState.Loading, is MSNPLoginState.Reconnecting -> {
@@ -175,18 +189,18 @@ class OobeFragment : Fragment() {
                             if (securePrefs.isOobeDone(account)) {
                                  safeNavigate(R.id.action_OobeFragment_to_MainFragment)
                             } else {
-                                 binding.oobeViewPager.currentItem = 2 
+                                 navigateToNextStep()
                             }
                         }
                         is MSNPLoginState.Error -> {
                             authHolder?.setLoading(false)
                             
-                            val displayMessage = if (state.message == "ERROR_CONNECTION_FAILED") {
-                                getString(R.string.error_connection_failed)
-                            } else if (state.message == "ERROR_INVALID_PASSWORD") {
-                                getString(R.string.error_invalid_password)
-                            } else {
-                                state.message
+                            val displayMessage = when {
+                                state.message == "ERROR_CONNECTION_FAILED" || state.message == "CONNECTION_FAILED" -> 
+                                    getString(R.string.error_connection_failed)
+                                state.message == "ERROR_INVALID_PASSWORD" || state.message == "AUTH_INVALID_PASSWORD" -> 
+                                    getString(R.string.error_invalid_password)
+                                else -> state.message
                             }
                             
                             authHolder?.authBinding?.tvError?.text = displayMessage
@@ -267,20 +281,19 @@ class OobeFragment : Fragment() {
             .show()
     }
 
-    inner class OobeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun getItemCount(): Int = 5 
+    private inner class OobeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        override fun getItemCount(): Int = enabledSteps.size
 
-        override fun getItemViewType(position: Int): Int = position
+        override fun getItemViewType(position: Int): Int = enabledSteps[position].ordinal
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            return when (viewType) {
-                0 -> WelcomeViewHolder(FragmentOobeWelcomeBinding.inflate(inflater, parent, false))
-                1 -> AuthViewHolder(FragmentAuthBinding.inflate(inflater, parent, false))
-                2 -> NicknameViewHolder(FragmentOobeNicknameBinding.inflate(inflater, parent, false))
-                3 -> PermissionViewHolder(FragmentOobePermissionsBinding.inflate(inflater, parent, false), 3)
-                4 -> PermissionViewHolder(FragmentOobePermissionsBinding.inflate(inflater, parent, false), 4)
-                else -> throw IllegalArgumentException()
+            return when (OobeStep.values()[viewType]) {
+                OobeStep.WELCOME -> WelcomeViewHolder(FragmentOobeWelcomeBinding.inflate(inflater, parent, false))
+                OobeStep.AUTH -> AuthViewHolder(FragmentAuthBinding.inflate(inflater, parent, false))
+                OobeStep.NICKNAME -> NicknameViewHolder(FragmentOobeNicknameBinding.inflate(inflater, parent, false))
+                OobeStep.NOTIFICATIONS -> PermissionViewHolder(FragmentOobePermissionsBinding.inflate(inflater, parent, false), OobeStep.NOTIFICATIONS.ordinal)
+                OobeStep.PHONE -> PermissionViewHolder(FragmentOobePermissionsBinding.inflate(inflater, parent, false), OobeStep.PHONE.ordinal)
             }
         }
 
@@ -288,12 +301,12 @@ class OobeFragment : Fragment() {
             when (holder) {
                 is WelcomeViewHolder -> holder.bind()
                 is AuthViewHolder -> holder.bind()
-                is PermissionViewHolder -> holder.bind(position)
+                is PermissionViewHolder -> holder.bind(enabledSteps[position])
             }
         }
     }
 
-    inner class WelcomeViewHolder(val binding: FragmentOobeWelcomeBinding) : RecyclerView.ViewHolder(binding.root) {
+    private inner class WelcomeViewHolder(val binding: FragmentOobeWelcomeBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind() {
             binding.ivLogo.setImageResource(AvatarUtils.getAppLogoResId(binding.root.context))
             binding.btnStart.setOnClickListener {
@@ -303,7 +316,7 @@ class OobeFragment : Fragment() {
         }
     }
 
-    inner class AuthViewHolder(val authBinding: FragmentAuthBinding) : RecyclerView.ViewHolder(authBinding.root) {
+    private inner class AuthViewHolder(val authBinding: FragmentAuthBinding) : RecyclerView.ViewHolder(authBinding.root) {
         fun bind() {
             authBinding.ivLogo?.setImageResource(AvatarUtils.getAppLogoResId(authBinding.root.context))
             val savedAccount = viewModel.getSavedAccount()
@@ -311,7 +324,7 @@ class OobeFragment : Fragment() {
             if (savedAccount != null && savedPass != null) {
                 authBinding.etAccount.setText(savedAccount)
                 authBinding.etPassword.setText(savedPass)
-                authBinding.cbRememberMe.isChecked = true
+                authBinding.cbRememberMe.isChecked = securePrefs.rememberMe
             }
 
             if (AppConfig.LIMPE_EXP) {
@@ -359,7 +372,7 @@ class OobeFragment : Fragment() {
         }
     }
 
-    inner class NicknameViewHolder(val binding: FragmentOobeNicknameBinding) : RecyclerView.ViewHolder(binding.root) {
+    private inner class NicknameViewHolder(val binding: FragmentOobeNicknameBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             binding.btnNext.setOnClickListener {
                 val nick = binding.etNickname.text.toString().trim()
@@ -377,9 +390,12 @@ class OobeFragment : Fragment() {
         }
     }
 
-    inner class PermissionViewHolder(val binding: FragmentOobePermissionsBinding, val type: Int) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int) {
-            if (position == 3) {
+    private inner class PermissionViewHolder(val binding: FragmentOobePermissionsBinding, private val step: OobeStep? = null) : RecyclerView.ViewHolder(binding.root) {
+        // Конструктор с type оставлен для совместимости если нужно, но лучше использовать step
+        constructor(binding: FragmentOobePermissionsBinding, type: Int) : this(binding, OobeStep.values()[type])
+
+        fun bind(currentStep: OobeStep) {
+            if (currentStep == OobeStep.NOTIFICATIONS) {
                 binding.ivIcon.setImageResource(R.drawable.notifications_24)
                 binding.tvTitle.text = getString(R.string.oobe_notifications_title)
                 binding.tvDescription.text = getString(R.string.oobe_notifications_description)
@@ -395,7 +411,7 @@ class OobeFragment : Fragment() {
                 binding.btnSkip.setOnClickListener {
                     navigateToNextStep()
                 }
-            } else {
+            } else if (currentStep == OobeStep.PHONE) {
                 binding.ivIcon.setImageResource(R.drawable.ic_call_status)
                 binding.tvTitle.text = getString(R.string.oobe_phone_title)
                 binding.tvDescription.text = getString(R.string.oobe_phone_description)

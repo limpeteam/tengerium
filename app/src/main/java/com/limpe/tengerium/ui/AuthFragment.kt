@@ -83,12 +83,12 @@ class AuthFragment : Fragment() {
                             binding.loadingLayout.visibility = View.GONE
                             binding.btnLogin.visibility = View.VISIBLE
                             
-                            val displayMessage = if (state.message == "ERROR_CONNECTION_FAILED") {
-                                getString(R.string.error_connection_failed)
-                            } else if (state.message == "ERROR_INVALID_PASSWORD") {
-                                getString(R.string.error_invalid_password)
-                            } else {
-                                state.message
+                            val displayMessage = when {
+                                state.message == "ERROR_CONNECTION_FAILED" || state.message == "CONNECTION_FAILED" -> 
+                                    getString(R.string.error_connection_failed)
+                                state.message == "ERROR_INVALID_PASSWORD" || state.message == "AUTH_INVALID_PASSWORD" -> 
+                                    getString(R.string.error_invalid_password)
+                                else -> state.message
                             }
                             
                             binding.tvError.text = displayMessage
@@ -109,12 +109,15 @@ class AuthFragment : Fragment() {
             }
         }
 
-        val savedAcc = viewModel.getSavedAccount()
-        val savedPass = viewModel.getSavedPassword()
-        if (savedAcc != null && savedPass != null) {
-            binding.etAccount.setText(savedAcc)
-            binding.etPassword.setText(savedPass)
-            binding.cbRememberMe.isChecked = true
+        // Заполняем данные только если включен Remember Me
+        binding.cbRememberMe.isChecked = securePrefs.rememberMe
+        if (securePrefs.rememberMe) {
+            val savedAcc = viewModel.getSavedAccount()
+            val savedPass = viewModel.getSavedPassword()
+            if (savedAcc != null && savedPass != null) {
+                binding.etAccount.setText(savedAcc)
+                binding.etPassword.setText(savedPass)
+            }
         }
     }
 

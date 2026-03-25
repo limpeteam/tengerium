@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.os.LocaleListCompat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.limpe.tengerium.data.AppConfig
@@ -49,7 +50,12 @@ class TengeriumApp : Application() {
         AppConfig.showDebugToasts = securePrefs.debugEnabled
 
         MSNPService.start(this)
-        repository.autoLogin()
+        
+        // Автоматический вход только если OOBE завершен для текущего аккаунта
+        val savedAcc = securePrefs.getSavedAccount()
+        if (savedAcc != null && securePrefs.isOobeDone(savedAcc)) {
+            repository.autoLogin()
+        }
     }
 
     private fun applyAppTheme(prefs: SecurePrefs) {
@@ -99,27 +105,45 @@ class TengeriumApp : Application() {
     }
 
     override fun attachBaseContext(base: Context) {
-        val securePrefs = SecurePrefs(base)
-        val lang = securePrefs.language
-        if (lang != "system") {
-            val locale = Locale(lang)
-            Locale.setDefault(locale)
-            val config = Configuration(base.resources.configuration)
-            config.setLocale(locale)
-            super.attachBaseContext(base.createConfigurationContext(config))
-        } else {
-            super.attachBaseContext(base)
-        }
+        super.attachBaseContext(wrapContext(base))
     }
 
     companion object {
-        fun applyLanguage(context: Context, lang: String) {
-            if (lang == "system") return
+        /**
+         * Обертка контекста для применения языка. 
+         * Используется в attachBaseContext приложения и всех Activity.
+         */
+        fun wrapContext(base: Context): Context {
+            val securePrefs = SecurePrefs(base)
+            val lang = securePrefs.language
+            if (lang == "system") return base
+            
             val locale = Locale(lang)
             Locale.setDefault(locale)
-            val config = Configuration(context.resources.configuration)
+            
+            val config = Configuration(base.resources.configuration)
             config.setLocale(locale)
-            context.resources.updateConfiguration(config, context.resources.displayMetrics)
+            config.setLayoutDirection(locale)
+            
+            return base.createConfigurationContext(config)
+        }
+
+        fun applyLanguage(context: Context, lang: String) {
+            // Установка через AppCompatDelegate для системной поддержки
+            val appLocale: LocaleListCompat = if (lang == "system") {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(lang)
+            }
+            AppCompatDelegate.setApplicationLocales(appLocale)
+            if (lang != "system") {
+                val locale = Locale(lang)
+                Locale.setDefault(locale)
+                val config = Configuration(context.resources.configuration)
+                config.setLocale(locale)
+                config.setLayoutDirection(locale)
+                context.resources.updateConfiguration(config, context.resources.displayMetrics)
+            }
         }
     }
 }

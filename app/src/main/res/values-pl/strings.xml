@@ -191,17 +191,17 @@
     <string name="oobe_permissions_description">Potrzebujemy pewnych uprawnień, aby zapewnić najlepsze doświadczenia.</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">Opuszczasz @string/app_name</string>
+    <string name="leaving_app_title">Opuszczasz Tengerium</string>
     <string name="leaving_app_message">Ten link przeniesie Cię do zewnętrznej witryny:\n%1$s\n\nCzy chcesz kontynuować?</string>
     <string name="leave">Wyjdź</string>
     <string name="stay">Zostań</string>
 
     <!-- Crash Report -->
     <string name="crash_title">Ojej! Wystąpił błąd</string>
-    <string name="crash_message">@string/app_name przestał działać. Zebraliśmy informacje techniczne, które pomogą nam naprawić problem.</string>
+    <string name="crash_message">Tengerium przestał działać. Zebraliśmy informacje techniczne, które pomogą nam naprawić problem.</string>
     <string name="restart">Uruchom ponownie</string>
     <string name="send_report">Wyślij raport</string>
-    <string name="crash_report_subject">Raport błędów @string/app_name</string>
+    <string name="crash_report_subject">Raport błędów Tengerium</string>
     <string name="send_report_via">Wyślij raport przez...</string>
     <string name="no_trace_available">Brak dostępnych śladów</string>
     <string name="crash_report_body_format">Urządzenie: %1$s\nAndroid: %2$s\n\n%3$s</string>
@@ -237,7 +237,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">Zbierz logi dla pomocy technicznej</string>
-    <string name="logs_report_title">Raport błędów @string/app_name</string>
+    <string name="logs_report_title">Raport błędów Tengerium</string>
     <string name="no_logs_available">Brak dostępnych informacji z logów</string>
     <string name="error_collecting_logs">Błąd podczas zbierania logów: %1$s</string>
 </resources>

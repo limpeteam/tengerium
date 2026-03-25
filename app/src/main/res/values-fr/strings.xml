@@ -191,17 +191,17 @@
     <string name="oobe_permissions_description">Nous avons besoin de certaines autorisations pour offrir la meilleure expérience.</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">Vous quittez @string/app_name</string>
+    <string name="leaving_app_title">Vous quittez Tengerium</string>
     <string name="leaving_app_message">Ce lien vous mènera vers un site externe :\n%1$s\n\nVoulez-vous continuer ?</string>
     <string name="leave">Quitter</string>
     <string name="stay">Rester</string>
 
     <!-- Crash Report -->
     <string name="crash_title">Oups ! Une erreur est survenue</string>
-    <string name="crash_message">@string/app_name s\'est arrêtée. Nous avons collecté des informations techniques qui nous aideront à résoudre le problème.</string>
+    <string name="crash_message">Tengerium s\'est arrêtée. Nous avons collecté des informations techniques qui nous aideront à résoudre le problème.</string>
     <string name="restart">Redémarrer</string>
     <string name="send_report">Envoyer le rapport</string>
-    <string name="crash_report_subject">Rapport de bug @string/app_name</string>
+    <string name="crash_report_subject">Rapport de bug Tengerium</string>
     <string name="send_report_via">Envoyer le rapport via...</string>
     <string name="no_trace_available">Aucune trace disponible</string>
     <string name="crash_report_body_format">Appareil : %1$s\nAndroid : %2$s\n\n%3$s</string>
@@ -237,7 +237,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">Collecter les journaux pour le support</string>
-    <string name="logs_report_title">Rapport de bug @string/app_name</string>
+    <string name="logs_report_title">Rapport de bug Tengerium</string>
     <string name="no_logs_available">Aucune information de journal disponible</string>
     <string name="error_collecting_logs">Erreur lors de la collecte des journaux : %1$s</string>
 </resources>

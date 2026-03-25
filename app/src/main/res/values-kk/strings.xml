@@ -191,17 +191,17 @@
     <string name="oobe_permissions_description">Ең жақсы тәжірибені қамтамасыз ету үшін бізге кейбір рұқсаттар қажет.</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">Сіз @string/app_name қолданбасынан шығып жатырсыз</string>
+    <string name="leaving_app_title">Сіз Tengerium қолданбасынан шығып жатырсыз</string>
     <string name="leaving_app_message">Бұл сілтеме сізді сыртқы сайтқа апарады:\n%1$s\n\nЖалғастырғыңыз келе ме?</string>
     <string name="leave">Шығу</string>
     <string name="stay">Қалу</string>
 
     <!-- Crash Report -->
     <string name="crash_title">Әттең! Қате орын алды</string>
-    <string name="crash_message">@string/app_name жұмысын тоқтатты. Біз мәселені шешуге көмектесетін техникалық ақпаратты жинадық.</string>
+    <string name="crash_message">Tengerium жұмысын тоқтатты. Біз мәселені шешуге көмектесетін техникалық ақпаратты жинадық.</string>
     <string name="restart">Қайта іске қосу</string>
     <string name="send_report">Есеп жіберу</string>
-    <string name="crash_report_subject">@string/app_name қате туралы есебі</string>
+    <string name="crash_report_subject">Tengerium қате туралы есебі</string>
     <string name="send_report_via">Есепті келесі арқылы жіберу...</string>
     <string name="no_trace_available">Ақпарат қолжетімсіз</string>
     <string name="crash_report_body_format">Құрылғы: %1$s\nAndroid: %2$s\n\n%3$s</string>
@@ -237,7 +237,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">Қолдау қызметі үшін журналдарды жинау</string>
-    <string name="logs_report_title">@string/app_name қате туралы есебі</string>
+    <string name="logs_report_title">Tengerium қате туралы есебі</string>
     <string name="no_logs_available">Журнал ақпараты қолжетімсіз</string>
     <string name="error_collecting_logs">Журналдарды жинау қатесі: %1$s</string>
 </resources>

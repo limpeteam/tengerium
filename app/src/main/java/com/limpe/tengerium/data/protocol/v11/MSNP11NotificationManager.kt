@@ -43,10 +43,11 @@ class MSNP11NotificationManager(
         connectJob?.cancel()
         connectJob = scope.safeLaunch(TAG) {
             try {
-                Log.d(TAG, "Connecting to $host:$port as $account")
+                val cleanHost = host.trim()
+                Log.d(TAG, "Connecting to $cleanHost:$port as $account")
                 rustClient?.destroySafe()
                 
-                val client = Client(host, port.toUShort())
+                val client = Client(cleanHost, port.toUShort())
                 rustClient = client
                 
                 client.addEventHandler(object : EventHandler {
@@ -58,8 +59,10 @@ class MSNP11NotificationManager(
                 val loginEvent = client.login(account, password, currentNexusUrl, "Tengerium", "0.0.4")
                 handleEvent(loginEvent)
             } catch (e: Exception) {
-                Log.e(TAG, "Connection failed: ${e.message}")
-                listener.onError("CONNECTION_FAILED")
+                if (e is CancellationException) throw e
+                val errorMsg = if (e.message.isNullOrBlank() || e.message == ".") e.javaClass.simpleName else e.message
+                Log.e(TAG, "Connection failed: $errorMsg", e)
+                listener.onError(errorMsg ?: "CONNECTION_FAILED")
             }
         }
     }
@@ -81,6 +84,7 @@ class MSNP11NotificationManager(
                 }
                 
                 is Event.RedirectedTo -> {
+                    Log.d(TAG, "Redirecting to ${event.server}:${event.port}")
                     connect(event.server, event.port.toInt(), currentAccount, currentPassword, currentNexusUrl, currentMsnObject)
                 }
 
@@ -250,8 +254,12 @@ class MSNP11NotificationManager(
                 if (!newMsnObject.isNullOrEmpty()) {
                     Log.d(TAG, "Avatar updated, new msnObject: $newMsnObject")
                     currentMsnObject = newMsnObject
+                    // Сразу уведомляем репозиторий о новом MSNObject для сохранения
+                    listener.onContactStatusChanged(currentAccount, currentStatus, "", false, newMsnObject)
+                } else {
+                    // Если вернулась пустая строка (например, аватар удален), тоже уведомляем
+                    listener.onContactStatusChanged(currentAccount, currentStatus, "", false, null)
                 }
-                changeStatus(currentStatus, currentMsnObject)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to update avatar: ${e.message}", e)
             }

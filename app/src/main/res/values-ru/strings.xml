@@ -190,17 +190,17 @@
     <string name="oobe_permissions_description">Нам нужны некоторые разрешения, чтобы обеспечить наилучший опыт.</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">Вы покидаете @string/app_name</string>
+    <string name="leaving_app_title">Вы покидаете Tengerium</string>
     <string name="leaving_app_message">Эта ссылка приведет вас на внешний сайт:\n%1$s\n\nВы хотите продолжить?</string>
     <string name="leave">Покинуть</string>
     <string name="stay">Остаться</string>
 
     <!-- Crash Report -->
     <string name="crash_title">Ой! Произошла ошибка</string>
-    <string name="crash_message">@string/app_name аварийно завершило работу. Мы собрали техническую информацию, которая поможет нам исправить проблему.</string>
+    <string name="crash_message">Tengerium аварийно завершило работу. Мы собрали техническую информацию, которая поможет нам исправить проблему.</string>
     <string name="restart">Перезапустить</string>
     <string name="send_report">Отправить отчет</string>
-    <string name="crash_report_subject">Отчет об ошибке @string/app_name</string>
+    <string name="crash_report_subject">Отчет об ошибке Tengerium</string>
     <string name="send_report_via">Отправить отчет через...</string>
     <string name="no_trace_available">Трассировка недоступна</string>
     <string name="crash_report_body_format">Устройство: %1$s\nAndroid: %2$s\n\n%3$s</string>
@@ -236,7 +236,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">Собрать логи для поддержки</string>
-    <string name="logs_report_title">Отчет об ошибке @string/app_name</string>
+    <string name="logs_report_title">Отчет об ошибке Tengerium</string>
     <string name="no_logs_available">Информация о логах недоступная</string>
     <string name="error_collecting_logs">Ошибка сбора логов: %1$s</string>
 </resources>

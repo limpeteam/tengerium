@@ -191,17 +191,17 @@
     <string name="oobe_permissions_description">Нам патрэбны некаторыя дазволы, каб забяспечыць найлепшы вопыт.</string>
 
     <!-- WebView / External Links -->
-    <string name="leaving_app_title">Вы пакідаеце @string/app_name</string>
+    <string name="leaving_app_title">Вы пакідаеце Tengerium</string>
     <string name="leaving_app_message">Гэта спасылка прывядзе вас на знешні сайт:\n%1$s\n\nВы хочаце працягнуць?</string>
     <string name="leave">Пакінуць</string>
     <string name="stay">Застацца</string>
 
     <!-- Crash Report -->
     <string name="crash_title">Ой! Проізашла памылка</string>
-    <string name="crash_message">@string/app_name аварыйна завяршыла працу. Мы сабралі тэхнічную інфармацыю, якая дапаможа нам выправіць праблему.</string>
+    <string name="crash_message">Tengerium аварыйна завяршыла працу. Мы сабралі тэхнічную інфармацыю, якая дапаможа нам выправіць праблему.</string>
     <string name="restart">Перазапусціць</string>
     <string name="send_report">Адправіць справаздачу</string>
-    <string name="crash_report_subject">Справаздача аб памылцы @string/app_name</string>
+    <string name="crash_report_subject">Справаздача аб памылцы Tengerium</string>
     <string name="send_report_via">Адправіць справаздачу праз...</string>
     <string name="no_trace_available">Інфармацыя адсутнічае</string>
     <string name="crash_report_body_format">Прылада: %1$s\nAndroid: %2$s\n\n%3$s</string>
@@ -237,7 +237,7 @@
 
     <!-- Logs -->
     <string name="collect_logs">Сабраць логі для падтрымкі</string>
-    <string name="logs_report_title">Справаздача аб памылцы @string/app_name</string>
+    <string name="logs_report_title">Справаздача аб памылцы Tengerium</string>
     <string name="no_logs_available">Інфармацыя аб логах недаступная</string>
     <string name="error_collecting_logs">Памылка збору логаў: %1$s</string>
 </resources>

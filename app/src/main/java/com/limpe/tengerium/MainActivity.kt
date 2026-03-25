@@ -1,6 +1,7 @@
 package com.limpe.tengerium
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -35,6 +36,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var notificationJob: Job? = null
+
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(TengeriumApp.wrapContext(newBase))
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

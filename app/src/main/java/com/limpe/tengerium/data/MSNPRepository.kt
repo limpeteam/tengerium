@@ -2,6 +2,7 @@ package com.limpe.tengerium.data
 
 import android.content.Context
 import android.util.Log
+import androidx.core.net.toUri
 import com.limpe.tengerium.data.db.AppDatabase
 import com.limpe.tengerium.data.db.MessageEntity
 import com.limpe.tengerium.data.protocol.IMSNPNotificationManager
@@ -14,6 +15,7 @@ import com.limpe.tengerium.data.security.SecurePrefs
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import uniffi.msnp11_sdk.Config
+import java.io.File
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -22,6 +24,11 @@ import java.util.concurrent.atomic.AtomicBoolean
 class MSNPRepository(
     val context: Context
 ) : MSNPProtocolListener {
+
+    companion object {
+        private const val TAG = "MSNP-Repo"
+        private const val MAX_AVATAR_SIZE = 2 * 1024 * 1024 // 2MB
+    }
 
     private val securePrefs = SecurePrefs(context)
     val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -44,6 +51,7 @@ class MSNPRepository(
     private var userInitiatedLogout = false
     private var reconnectJob: Job? = null
     private var currentAccount: String? = null
+    private var isCurrentSessionRemembered = false
     
     private val lastTypingSent = ConcurrentHashMap<String, Long>()
     private val typingTimers = ConcurrentHashMap<String, Job>()
@@ -91,7 +99,7 @@ class MSNPRepository(
         unsent.groupBy { it.receiverAccount.lowercase(Locale.ROOT).trim() }
             .forEach { (target, messages) ->
                 if (onlineAccounts.contains(target)) {
-                    Log.d("MSNP-Repo", "Found ${messages.size} pending messages for $target who is now online")
+                    Log.d(TAG, "Found ${messages.size} pending messages for $target who is now online")
                     messages.forEach { msg ->
                         val text = SafeStorage.decryptText(msg.encryptedText)
                         performSendMessageInternal(msg.id, target, text)
@@ -105,16 +113,38 @@ class MSNPRepository(
         val normalized = account.lowercase(Locale.ROOT).trim()
         currentAccount = normalized
         userInitiatedLogout = false
-        if (rememberMe) securePrefs.saveCredentials(normalized, pass)
-        else securePrefs.clearCredentials()
+        isCurrentSessionRemembered = rememberMe
+        
+        // Сохраняем "Remember Me" флаг только если пользователь явно его нажал
+        if (rememberMe) {
+            securePrefs.rememberMe = true
+            securePrefs.saveCredentials(normalized, pass)
+        } else {
+            // Если мы входим под тем же аккаунтом, но выключили галку - отключаем автологин для него
+            if (normalized == securePrefs.getSavedAccount()) {
+                securePrefs.rememberMe = false
+            }
+        }
+        
         contactManager.clear()
         _config.value = null
         isReconnecting.set(false)
         reconnectJob?.cancel()
+
+        // Валидация настроек перед входом
+        val server = securePrefs.serverAddress.trim()
+        val nexus = securePrefs.nexusDomain.trim()
+        
+        if (server.isEmpty() || nexus.isEmpty()) {
+            _loginState.value = MSNPLoginState.Error("ERROR_MISSING_SERVER_SETTINGS")
+            return
+        }
+
         performLoginDude(normalized, pass)
     }
 
     fun autoLogin() {
+        if (!securePrefs.rememberMe) return
         val acc = securePrefs.getSavedAccount()
         val pwd = securePrefs.getSavedPassword()
         if (acc != null && pwd != null) login(acc, pwd, true)
@@ -165,7 +195,7 @@ class MSNPRepository(
                 // Проверяем статус контакта перед попыткой. Если оффлайн - даже не дергаем сессию.
                 val contact = contacts.value.find { it.account.lowercase(Locale.ROOT).trim() == normalizedTarget }
                 if (contact == null || contact.status == MSNPProto.Status.OFFLINE) {
-                    Log.d("MSNP-Repo", "Target $target is offline, message $id stays pending")
+                    Log.d(TAG, "Target $target is offline, message $id stays pending")
                     return@launch
                 }
 
@@ -173,12 +203,12 @@ class MSNPRepository(
                 if (session != null) {
                     session.sendMessage(text, id)
                 } else {
-                    Log.d("MSNP-Repo", "Session for $target is not ready yet, message $id stays pending")
+                    Log.d(TAG, "Session for $target is not ready yet, message $id stays pending")
                 }
             } catch (e: Exception) {
                 // В случае критической ошибки (не таймаут открытия сессии) - можно пометить ошибкой.
                 // Но для "pending" лучше просто оставить как есть.
-                Log.e("MSNP-Repo", "Error sending message $id: ${e.message}")
+                Log.e(TAG, "Error sending message $id: ${e.message}")
             }
         }
     }
@@ -188,7 +218,7 @@ class MSNPRepository(
         scope.launch {
             val unsent = database.messageDao().getUnsentMessages(account)
             if (unsent.isNotEmpty()) {
-                Log.d("MSNP-Repo", "Syncing ${unsent.size} unsent messages")
+                Log.d(TAG, "Syncing ${unsent.size} unsent messages")
                 unsent.forEach { msg ->
                     val target = msg.receiverAccount
                     val text = SafeStorage.decryptText(msg.encryptedText)
@@ -267,7 +297,9 @@ class MSNPRepository(
         nsManager.updateNickname(newName)
         val acc = getCurrentAccount() ?: return
         val normalized = acc.lowercase(Locale.ROOT).trim()
-        securePrefs.setNickname(normalized, newName)
+        if (isCurrentSessionRemembered) {
+            securePrefs.setNickname(normalized, newName)
+        }
         _loginState.update { state ->
             if (state is MSNPLoginState.Success && state.account.lowercase(Locale.ROOT).trim() == normalized) {
                 state.copy(nickname = newName)
@@ -298,6 +330,12 @@ class MSNPRepository(
     fun getSavedPassword(): String? = securePrefs.getSavedPassword()
     fun getCurrentAccount(): String? = currentAccount ?: getSavedAccount()
     
+    fun setOobeDone(account: String, done: Boolean) {
+        if (isCurrentSessionRemembered) {
+            securePrefs.setOobeDone(account.lowercase(Locale.ROOT).trim(), done)
+        }
+    }
+
     fun inviteContactToChat(chatAccount: String, inviteAccount: String) {
         sessionManager.inviteToChat(chatAccount, inviteAccount)
     }
@@ -305,25 +343,36 @@ class MSNPRepository(
     fun updateAvatar(filePath: String) {
         scope.launch {
             try {
-                val uri = android.net.Uri.parse(filePath)
-                val inputStream = context.contentResolver.openInputStream(uri)
-                val bytes = inputStream?.readBytes()
-                if (bytes != null) {
+                val uri = filePath.toUri()
+                context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                    // Проверка размера файла перед чтением, чтобы избежать OOM
+                    val size = context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
+                    if (size > MAX_AVATAR_SIZE) {
+                        Log.e(TAG, "Avatar file is too large: ${size / 1024} KB")
+                        return@launch
+                    }
+
+                    val bytes = inputStream.readBytes()
                     nsManager.updateAvatar(bytes)
                     val path = avatarManager.saveOwnAvatar(bytes)
-                    val sha1 = avatarManager.calculateSha1(bytes)
-                    val msnObj = "MSNObject SHA1D='$sha1'" // Упрощенно для обновления UI
+                    
+                    // Сохраняем путь к аватару для этого аккаунта
+                    val acc = getCurrentAccount()
+                    if (acc != null) {
+                        securePrefs.setAvatarPath(acc.lowercase(Locale.ROOT).trim(), path)
+                    }
+
                     _loginState.update { state ->
                         if (state is MSNPLoginState.Success) state.copy(avatarUrl = path) else state
                     }
                 }
             } catch (e: Exception) {
-                Log.e("MSNP-Repo", "Failed to update avatar: ${e.message}")
+                Log.e(TAG, "Failed to update avatar: ${e.message}")
             }
         }
     }
 
-    override fun onConnected() { Log.d("MSNP-Repo", "Connected to notification server") }
+    override fun onConnected() { Log.d(TAG, "Connected to notification server") }
 
     override fun onAuthSuccess(account: String, nickname: String) {
         val normalized = account.lowercase(Locale.ROOT).trim()
@@ -335,7 +384,45 @@ class MSNPRepository(
             nickname
         }
         
-        _loginState.value = MSNPLoginState.Success(account, bestNickname)
+        // Сначала берем путь к аватару из настроек (наш установленный)
+        val savedAvatarPath = securePrefs.getAvatarPath(normalized)
+        val initialAvatarPath = if (!savedAvatarPath.isNullOrEmpty()) {
+            val file = File(savedAvatarPath)
+            if (file.exists() && file.length() > 0) savedAvatarPath else null
+        } else {
+            // Если пути нет, пробуем через msnObject (совместимость)
+            val savedMsnObj = securePrefs.getMsnObject(normalized)
+            if (!savedMsnObj.isNullOrEmpty()) {
+                avatarManager.getAvatarFile(savedMsnObj)?.takeIf { it.exists() }?.absolutePath
+            } else null
+        }
+
+        _loginState.value = MSNPLoginState.Success(account, bestNickname, avatarUrl = initialAvatarPath)
+        
+        // Восстанавливаем аватар в SDK и уведомляем сервер (и других пользователей) о нем
+        scope.launch {
+            if (!initialAvatarPath.isNullOrEmpty()) {
+                try {
+                    val file = File(initialAvatarPath)
+                    if (file.exists()) {
+                        Log.d(TAG, "Restoring avatar from cache: $initialAvatarPath")
+                        val bytes = file.readBytes()
+                        nsManager.updateAvatar(bytes)
+                    } else {
+                        val savedMsnObj = securePrefs.getMsnObject(normalized)
+                        nsManager.changeStatus(MSNPProto.Status.ONLINE, savedMsnObj)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to restore avatar from cache: ${e.message}")
+                    val savedMsnObj = securePrefs.getMsnObject(normalized)
+                    nsManager.changeStatus(MSNPProto.Status.ONLINE, savedMsnObj)
+                }
+            } else {
+                val savedMsnObj = securePrefs.getMsnObject(normalized)
+                nsManager.changeStatus(MSNPProto.Status.ONLINE, savedMsnObj)
+            }
+        }
+
         contactManager.updateMyStatus(MSNPProto.Status.ONLINE)
         isReconnecting.set(false)
 
@@ -352,20 +439,26 @@ class MSNPRepository(
 
         if (normalized == myAcc) {
             contactManager.updateMyStatus(status)
+            
+            // Сохраняем MSNObject для себя только для совместимости при входе, 
+            // но основным источником теперь является avatarPath в SecurePrefs.
+            if (!msnObject.isNullOrEmpty()) {
+                securePrefs.setMsnObject(normalized, msnObject)
+            }
+
             if (nickname.isNotEmpty() && nickname != account) {
-                securePrefs.setNickname(normalized, nickname)
-                _loginState.update { state ->
-                    if (state is MSNPLoginState.Success && state.account.lowercase(Locale.ROOT).trim() == normalized) {
-                        state.copy(nickname = nickname, avatarUrl = cachedAvatarPath ?: state.avatarUrl)
-                    } else state
+                if (isCurrentSessionRemembered) {
+                    securePrefs.setNickname(normalized, nickname)
                 }
-            } else if (cachedAvatarPath != null) {
                 _loginState.update { state ->
                     if (state is MSNPLoginState.Success && state.account.lowercase(Locale.ROOT).trim() == normalized) {
-                        state.copy(avatarUrl = cachedAvatarPath)
+                        state.copy(nickname = nickname)
                     } else state
                 }
             }
+            // Для своего аккаунта не обновляем avatarUrl из msnObject в этом методе, 
+            // так как сервер может его не присылать или присылать не вовремя.
+            // Наш аватар уже установлен в onAuthSuccess или updateAvatar.
             return
         }
 
@@ -388,7 +481,7 @@ class MSNPRepository(
                 it.receiverAccount.lowercase(Locale.ROOT).trim() == contact 
             }
             if (unsent.isNotEmpty()) {
-                Log.d("MSNP-Repo", "Syncing ${unsent.size} messages for $contact")
+                Log.d(TAG, "Syncing ${unsent.size} messages for $contact")
                 unsent.forEach { msg ->
                     val text = SafeStorage.decryptText(msg.encryptedText)
                     performSendMessageInternal(msg.id, contact, text)
@@ -423,11 +516,26 @@ class MSNPRepository(
     override fun onSwitchboardDisconnected(account: String) = sessionManager.removeSession(account)
 
     override fun onError(message: String) {
+        Log.e(TAG, "Error received: $message")
         if (message == "ERROR_LOGGED_IN_ANOTHER_DEVICE") {
             handleLoggedInElsewhereDude()
             return
         }
-        if (message.contains("TIMEOUT") || message.contains("broken pipe")) handleConnectionErrorDude()
+
+        // Если мы в процессе входа, любая ошибка должна переводить состояние в Error, чтобы UI не "висел"
+        if (_loginState.value is MSNPLoginState.Loading || _loginState.value is MSNPLoginState.Reconnecting) {
+            val errorState = if (message.contains("80048821") || message.contains("INVALID_PASSWORD")) {
+                MSNPLoginState.Error("AUTH_INVALID_PASSWORD")
+            } else {
+                MSNPLoginState.Error(message)
+            }
+            _loginState.value = errorState
+        }
+
+        if (message.contains("TIMEOUT") || message.contains("broken pipe")) {
+            handleConnectionErrorDude()
+        }
+
         scope.launch { _eventFlow.emit("Error: $message") }
     }
 
@@ -443,7 +551,16 @@ class MSNPRepository(
                 delay(5000)
                 val acc = securePrefs.getSavedAccount()
                 val pwd = securePrefs.getSavedPassword()
-                if (acc != null && pwd != null && !userInitiatedLogout) performLoginDude(acc, pwd)
+                
+                // Реконнект только если сохраненный аккаунт совпадает с тем, под которым мы вошли сейчас
+                if (acc != null && pwd != null && !userInitiatedLogout && acc == currentAccount) {
+                    performLoginDude(acc, pwd)
+                } else {
+                    isReconnecting.set(false)
+                    if (!userInitiatedLogout) {
+                        _loginState.value = MSNPLoginState.Error("CONNECTION_LOST")
+                    }
+                }
             }
         }
     }
@@ -461,7 +578,9 @@ class MSNPRepository(
         val normalized = account.lowercase(Locale.ROOT).trim()
         val myAcc = getCurrentAccount()?.lowercase(Locale.ROOT)?.trim()
         if (normalized == myAcc && nickname.isNotEmpty() && nickname != account) {
-            securePrefs.setNickname(normalized, nickname)
+            if (isCurrentSessionRemembered) {
+                securePrefs.setNickname(normalized, nickname)
+            }
             _loginState.update { state ->
                 if (state is MSNPLoginState.Success && state.account.lowercase(Locale.ROOT).trim() == normalized) {
                     state.copy(nickname = nickname)
@@ -477,7 +596,9 @@ class MSNPRepository(
         val normalized = account.lowercase(Locale.ROOT).trim()
         val myAcc = getCurrentAccount()?.lowercase(Locale.ROOT)?.trim()
         if (normalized == myAcc && nickname.isNotEmpty() && nickname != account) {
-            securePrefs.setNickname(normalized, nickname)
+            if (isCurrentSessionRemembered) {
+                securePrefs.setNickname(normalized, nickname)
+            }
             _loginState.update { state ->
                 if (state is MSNPLoginState.Success && state.account.lowercase(Locale.ROOT).trim() == normalized) {
                     state.copy(nickname = nickname)
@@ -493,7 +614,7 @@ class MSNPRepository(
         val normalized = account.lowercase(Locale.ROOT).trim()
         val myAcc = getCurrentAccount()?.lowercase(Locale.ROOT)?.trim()
         if (normalized == myAcc) {
-            if (newNickname.isNotEmpty() && newNickname != account) {
+            if (newNickname.isNotEmpty() && newNickname != account && isCurrentSessionRemembered) {
                 securePrefs.setNickname(normalized, newNickname)
             }
             _loginState.update { state ->
@@ -547,7 +668,7 @@ class MSNPRepository(
                     }
 
                     contactManager.updateContactStatus(account, "", "", avatarUrl = path)
-                } catch (e: Exception) { Log.e("MSNP-Repo", "Failed to process avatar", e) }
+                } catch (e: Exception) { Log.e(TAG, "Failed to process avatar", e) }
             }
         }
     }
