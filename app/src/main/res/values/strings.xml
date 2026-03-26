@@ -59,6 +59,7 @@
     <string name="connecting_to_msn">Connecting to MSN...</string>
     <string name="host_hint">Host (e.g. messenger.hotmail.com)</string>
     <string name="nexus_hint">Nexus Domain (e.g. m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Please fill in server settings first</string>
 
     <!-- Chat -->
     <string name="today">Today</string>
@@ -90,6 +91,9 @@
     <string name="link_preview">Link Preview</string>
     <string name="open_chats_by_default">Open chats by default</string>
     <string name="chat_header">Chat</string>
+    <string name="export_chat_history">Export Chat History</string>
+    <string name="export_success">Chat history exported successfully</string>
+    <string name="export_error">Failed to export chat history</string>
 
     <!-- Contacts -->
     <string name="add_friend">Add Friend</string>

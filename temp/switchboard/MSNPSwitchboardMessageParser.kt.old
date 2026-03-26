@@ -1,0 +1,31 @@
+package com.limpe.tengerium.data.protocol.switchboard
+
+import com.limpe.tengerium.data.protocol.MSNPProto
+
+/**
+ * Парсим MIME и прочую дичь. Чтобы основной класс не пух xD
+ */
+object MSNPSwitchboardMessageParser {
+
+    fun parseMimeBody(body: String): String {
+        val separators = listOf("\r\n\r\n", "\n\n")
+        for (sep in separators) {
+            val index = body.indexOf(sep)
+            if (index != -1) return body.substring(index + sep.length)
+        }
+        return body
+    }
+
+    fun isTyping(body: String): Boolean {
+        return body.contains(MSNPProto.SB.Mime.CONTROL) && body.contains("TypingUser: ")
+    }
+
+    fun isNudge(body: String): Boolean {
+        return body.contains(MSNPProto.SB.Mime.DATACAST) && body.contains("ID: 1")
+    }
+
+    fun getContentType(body: String): String? {
+        val pattern = "Content-Type: ([^;\\r\\n]+)".toRegex(RegexOption.IGNORE_CASE)
+        return pattern.find(body)?.groupValues?.get(1)?.trim()
+    }
+}

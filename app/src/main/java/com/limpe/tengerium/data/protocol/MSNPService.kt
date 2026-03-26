@@ -27,6 +27,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -105,45 +107,55 @@ class MSNPService : Service() {
     private fun observeRepository() {
         val repository = (application as TengeriumApp).repository
         serviceScope.launch {
-            repository.loginState.collectLatest { state ->
-                when (state) {
-                    is MSNPLoginState.Success -> {
-                        updateForegroundNotification(state.nickname)
-                    }
-                    is MSNPLoginState.Loading, is MSNPLoginState.Reconnecting -> {
-                        updateForegroundNotification(getString(R.string.status_trying_to_connect))
-                    }
-                    else -> {
-                        updateForegroundNotification(null)
+            repository.loginState
+                .map { state ->
+                    when (state) {
+                        is MSNPLoginState.Success -> state.nickname
+                        is MSNPLoginState.Loading, is MSNPLoginState.Reconnecting -> getString(R.string.status_trying_to_connect)
+                        else -> null
                     }
                 }
-            }
+                .distinctUntilChanged()
+                .collectLatest { statusText ->
+                    updateForegroundNotification(statusText)
+                }
         }
         
         serviceScope.launch {
-            repository.contacts.collectLatest { list ->
-                if (!securePrefs.notifyLogin) {
-                    list.forEach { contactStatuses[it.account.lowercase(Locale.ROOT)] = it.status }
-                    return@collectLatest
+            repository.contacts
+                .map { list -> 
+                    // Преобразуем список в мапу account -> status для эффективного сравнения
+                    list.associate { it.account.lowercase(Locale.ROOT) to it.status }
                 }
-                
-                list.forEach { contact ->
-                    val account = contact.account.lowercase(Locale.ROOT)
-                    val oldStatus = contactStatuses[account]
-                    val newStatus = contact.status
-                    
-                    if (oldStatus != null && oldStatus == MSNPProto.Status.OFFLINE && newStatus != MSNPProto.Status.OFFLINE) {
-                        val nickname = contact.nickname.ifEmpty { contact.account }
-                        showEventNotification(
-                            this@MSNPService,
-                            getString(R.string.app_name),
-                            getString(R.string.user_is_now_online, nickname),
-                            "LOGIN_$account"
-                        )
+                .distinctUntilChanged()
+                .collectLatest { currentMap ->
+                    if (!securePrefs.notifyLogin) {
+                        contactStatuses.clear()
+                        contactStatuses.putAll(currentMap)
+                        return@collectLatest
                     }
-                    contactStatuses[account] = newStatus
+                    
+                    currentMap.forEach { (account, newStatus) ->
+                        val oldStatus = contactStatuses[account]
+                        
+                        // Если старый статус был оффлайн, а новый — любой онлайн
+                        val wasOffline = oldStatus == null || oldStatus == MSNPProto.Status.OFFLINE || oldStatus == "FLN"
+                        val isOnline = newStatus != MSNPProto.Status.OFFLINE && newStatus != "FLN"
+                        
+                        if (wasOffline && isOnline && oldStatus != null) {
+                            val contact = repository.contacts.value.find { it.account.lowercase(Locale.ROOT) == account }
+                            val nickname = contact?.nickname?.ifEmpty { account } ?: account
+                            showEventNotification(
+                                this@MSNPService,
+                                getString(R.string.app_name),
+                                getString(R.string.user_is_now_online, nickname),
+                                "LOGIN_$account"
+                            )
+                        }
+                    }
+                    contactStatuses.clear()
+                    contactStatuses.putAll(currentMap)
                 }
-            }
         }
     }
 
@@ -326,7 +338,7 @@ class MSNPService : Service() {
 
         fun showEventNotification(context: Context, title: String, message: String, tag: String) {
             val prefs = SecurePrefs(context)
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
             
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

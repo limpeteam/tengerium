@@ -1,0 +1,12 @@
+package com.limpe.tengerium.data.protocol
+
+object MSNPPayload {
+    /**
+     * MSNP9 doesn't use the same ADL/RML XML format as MSNP13.
+     * These methods are kept for compatibility but are not used in the MSNP9 flow.
+     */
+
+    fun buildUux(psm: String = "", media: String = "", machineGuid: String = ""): String {
+        return "<Data><PSM>$psm</PSM><CurrentMedia>$media</CurrentMedia><MachineGuid>$machineGuid</MachineGuid></Data>"
+    }
+}

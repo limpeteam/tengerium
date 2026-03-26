@@ -2,6 +2,8 @@ package com.limpe.tengerium.ui
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
@@ -10,6 +12,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -24,14 +28,17 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
+import com.limpe.tengerium.data.MSNPLoginState
 import com.limpe.tengerium.data.MSNPRepository
 import com.limpe.tengerium.data.protocol.MSNPProto
 import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentChatBinding
 import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.ChatHistoryExporter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.*
@@ -50,6 +57,13 @@ class ChatFragment : Fragment() {
     
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModel.Factory((requireActivity().application as TengeriumApp).repository)
+    }
+
+    private val exportLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data ?: return@registerForActivityResult
+            performExport(uri)
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -86,6 +100,10 @@ class ChatFragment : Fragment() {
             when (menuItem.itemId) {
                 R.id.action_send_nudge -> {
                     sendNudge()
+                    true
+                }
+                R.id.action_export_chat -> {
+                    startExport()
                     true
                 }
                 else -> false
@@ -143,6 +161,44 @@ class ChatFragment : Fragment() {
 
         binding.btnScrollToBottom.setOnClickListener {
             binding.rvMessages.smoothScrollToPosition(adapter.itemCount - 1)
+        }
+    }
+
+    private fun startExport() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/json"
+            putExtra(Intent.EXTRA_TITLE, "chat_history_${contactAccount?.replace("@", "_")}.json")
+        }
+        exportLauncher.launch(intent)
+    }
+
+    private fun performExport(uri: Uri) {
+        val account = contactAccount ?: return
+        viewLifecycleOwner.lifecycleScope.launch {
+            val messages = repository.getMessages(account).first()
+            val contacts = repository.contacts.value
+            val contact = contacts.find { it.account.equals(account, ignoreCase = true) }
+            
+            val loginState = repository.loginState.value as? MSNPLoginState.Success
+            val myNickname = loginState?.nickname
+            val myEmail = repository.getCurrentAccount() ?: ""
+
+            val success = ChatHistoryExporter.exportChat(
+                requireContext(),
+                uri,
+                contact?.nickname,
+                account,
+                myNickname,
+                myEmail,
+                messages
+            )
+            
+            if (success) {
+                Toast.makeText(requireContext(), R.string.export_success, Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), R.string.export_error, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

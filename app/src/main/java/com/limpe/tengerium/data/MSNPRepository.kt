@@ -20,6 +20,7 @@ import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.atomic.AtomicInteger
 
 class MSNPRepository(
     val context: Context
@@ -28,6 +29,8 @@ class MSNPRepository(
     companion object {
         private const val TAG = "MSNP-Repo"
         private const val MAX_AVATAR_SIZE = 2 * 1024 * 1024 // 2MB
+        private const val BASE_RECONNECT_DELAY = 5000L
+        private const val MAX_RECONNECT_DELAY = 60000L
     }
 
     private val securePrefs = SecurePrefs(context)
@@ -48,6 +51,7 @@ class MSNPRepository(
     private val avatarManager = AvatarManager(context, scope, sessionManager)
 
     private val isReconnecting = AtomicBoolean(false)
+    private val reconnectAttempt = AtomicInteger(0)
     private var userInitiatedLogout = false
     private var reconnectJob: Job? = null
     private var currentAccount: String? = null
@@ -80,15 +84,20 @@ class MSNPRepository(
 
     init {
         // Наблюдатель за контактами для автоматической досылки сообщений
+        // Оптимизировано: реагируем только на изменение списка онлайн-пользователей
         scope.launch {
-            contacts.collectLatest { list ->
-                val onlineAccounts = list.filter { it.status != MSNPProto.Status.OFFLINE }
-                    .map { it.account.lowercase(Locale.ROOT).trim() }
-                
-                if (onlineAccounts.isNotEmpty()) {
-                    syncPendingMessagesForOnlineUsers(onlineAccounts)
+            contacts
+                .map { list -> 
+                    list.filter { it.status != MSNPProto.Status.OFFLINE && it.status != "FLN" }
+                        .map { it.account.lowercase(Locale.ROOT).trim() }
+                        .sorted()
                 }
-            }
+                .distinctUntilChanged()
+                .collectLatest { onlineAccounts ->
+                    if (onlineAccounts.isNotEmpty()) {
+                        syncPendingMessagesForOnlineUsers(onlineAccounts)
+                    }
+                }
         }
     }
 
@@ -129,6 +138,7 @@ class MSNPRepository(
         contactManager.clear()
         _config.value = null
         isReconnecting.set(false)
+        reconnectAttempt.set(0)
         reconnectJob?.cancel()
 
         // Валидация настроек перед входом
@@ -164,6 +174,7 @@ class MSNPRepository(
     fun logout() {
         userInitiatedLogout = true
         isReconnecting.set(false)
+        reconnectAttempt.set(0)
         reconnectJob?.cancel()
         nsManager.disconnect()
         sessionManager.disconnectAll()
@@ -194,7 +205,7 @@ class MSNPRepository(
                 
                 // Проверяем статус контакта перед попыткой. Если оффлайн - даже не дергаем сессию.
                 val contact = contacts.value.find { it.account.lowercase(Locale.ROOT).trim() == normalizedTarget }
-                if (contact == null || contact.status == MSNPProto.Status.OFFLINE) {
+                if (contact == null || contact.status == MSNPProto.Status.OFFLINE || contact.status == "FLN") {
                     Log.d(TAG, "Target $target is offline, message $id stays pending")
                     return@launch
                 }
@@ -372,11 +383,15 @@ class MSNPRepository(
         }
     }
 
-    override fun onConnected() { Log.d(TAG, "Connected to notification server") }
+    override fun onConnected() { 
+        Log.d(TAG, "Connected to notification server")
+        reconnectAttempt.set(0)
+    }
 
     override fun onAuthSuccess(account: String, nickname: String) {
         val normalized = account.lowercase(Locale.ROOT).trim()
         currentAccount = normalized
+        reconnectAttempt.set(0)
         
         val bestNickname = if (nickname == account || nickname.isEmpty()) {
             securePrefs.getNickname(normalized) ?: account
@@ -464,12 +479,12 @@ class MSNPRepository(
 
         contactManager.updateContactStatus(account, status, nickname, cachedAvatarPath)
         
-        if (msnObject != null && cachedAvatarPath == null && status != MSNPProto.Status.OFFLINE) {
+        if (msnObject != null && cachedAvatarPath == null && status != MSNPProto.Status.OFFLINE && status != "FLN") {
             avatarManager.requestAvatar(account, msnObject)
         }
 
         // Если контакт зашел в онлайн — пробуем отправить ему накопившиеся сообщения
-        if (status != MSNPProto.Status.OFFLINE && !isInitial) {
+        if (status != MSNPProto.Status.OFFLINE && status != "FLN" && !isInitial) {
             syncUnsentMessagesForContact(normalized)
         }
     }
@@ -532,7 +547,7 @@ class MSNPRepository(
             _loginState.value = errorState
         }
 
-        if (message.contains("TIMEOUT") || message.contains("broken pipe")) {
+        if (message.contains("TIMEOUT") || message.contains("broken pipe") || message.contains("CONNECTION_FAILED")) {
             handleConnectionErrorDude()
         }
 
@@ -548,7 +563,12 @@ class MSNPRepository(
         if (isReconnecting.compareAndSet(false, true)) {
             _loginState.value = MSNPLoginState.Reconnecting
             reconnectJob = scope.launch {
-                delay(5000)
+                val attempt = reconnectAttempt.getAndIncrement()
+                val delayMs = (BASE_RECONNECT_DELAY * (1 shl (attempt.coerceAtMost(5)))).coerceAtMost(MAX_RECONNECT_DELAY)
+                
+                Log.d(TAG, "Reconnecting in ${delayMs/1000}s (attempt $attempt)")
+                delay(delayMs)
+                
                 val acc = securePrefs.getSavedAccount()
                 val pwd = securePrefs.getSavedPassword()
                 
@@ -567,6 +587,7 @@ class MSNPRepository(
 
     private fun handleLoggedInElsewhereDude() {
         isReconnecting.set(false)
+        reconnectAttempt.set(0)
         reconnectJob?.cancel()
         nsManager.disconnect()
         sessionManager.disconnectAll()

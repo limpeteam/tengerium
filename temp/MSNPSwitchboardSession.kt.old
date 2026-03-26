@@ -1,0 +1,350 @@
+package com.limpe.tengerium.data.protocol
+
+import android.util.Log
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import java.nio.charset.StandardCharsets
+import java.util.Collections
+import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicInteger
+
+/**
+ * MSNP9 Switchboard Session.
+ * Updated to prevent command queue blocking, fix nudge delivery, and implement inactivity timeout.
+ */
+class MSNPSwitchboardSession(
+    private val listener: MSNPProtocolListener,
+    var initialTarget: String? = null
+) {
+    private var client: MSNPClient? = null
+    private val transactionId = AtomicInteger(1)
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        Log.e("MSNP_SB", "Uncaught exception in SB scope: ${throwable.message}", throwable)
+    }
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
+    private var state = State.IDLE
+    private var myAccount: String = ""
+    private var isIncoming: Boolean = false
+    private val createdAt = System.currentTimeMillis()
+    private var lastActivityTime = System.currentTimeMillis()
+    private var inactivityJob: Job? = null
+
+    private val participants = Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
+
+    private val pendingMessages = mutableListOf<Pair<Long, String>>()
+    private val sentMessages = ConcurrentHashMap<Int, Long>()
+
+    private val commandQueue = Channel<MSNPCommand>(Channel.UNLIMITED)
+    private val responseSignals = mutableMapOf<Int, CompletableDeferred<MSNPCommand>>()
+    private val MIN_COMMAND_INTERVAL = 100L
+
+    private val inkBuffers = ConcurrentHashMap<String, Pair<String, StringBuilder>>()
+    private val inkFlushJobs = ConcurrentHashMap<String, Job>()
+    private val inkFragmentCounts = ConcurrentHashMap<String, Int>()
+    private val lastWasInk = ConcurrentHashMap<String, Boolean>()
+
+    enum class State { IDLE, CONNECTING, AUTHENTICATING, JOINED, CLOSED }
+
+    init {
+        startCommandProcessor()
+        startInactivityTimer()
+    }
+
+    private fun startCommandProcessor() {
+        scope.launch {
+            for (cmd in commandQueue) {
+                val tid = cmd.transactionId
+
+                try {
+                    client?.sendCommand(cmd)
+                    updateActivity()
+                } catch (e: Exception) {
+                    Log.e("MSNP_SB", "Failed to send command ${cmd.command}: ${e.message}")
+                    if (tid != null) {
+                        synchronized(responseSignals) { responseSignals.remove(tid) }
+                    }
+                    continue
+                }
+
+                // Handling response in a separate coroutine to avoid blocking the queue
+                if (tid != null) {
+                    scope.launch {
+                        val deferred = CompletableDeferred<MSNPCommand>().also {
+                            synchronized(responseSignals) {
+                                responseSignals[tid] = it
+                            }
+                        }
+                        try {
+                            withTimeout(15000) {
+                                deferred.await()
+                            }
+                        } catch (e: Exception) {
+                            Log.w("MSNP_SB", "Timeout waiting for response to ${cmd.command} ($tid)")
+                        } finally {
+                            synchronized(responseSignals) {
+                                responseSignals.remove(tid)
+                            }
+                        }
+                    }
+                }
+
+                delay(MIN_COMMAND_INTERVAL)
+            }
+        }
+    }
+
+    private fun startInactivityTimer() {
+        inactivityJob?.cancel()
+        inactivityJob = scope.launch {
+            while (isActive) {
+                delay(1000)
+                if (state == State.JOINED && System.currentTimeMillis() - lastActivityTime > 7000) {
+                    Log.i("MSNP_SB", "Closing session due to inactivity (7s)")
+                    disconnect()
+                    break
+                }
+            }
+        }
+    }
+
+    private fun updateActivity() {
+        lastActivityTime = System.currentTimeMillis()
+    }
+
+    fun isClosed() = state == State.CLOSED
+    fun isJoined() = state == State.JOINED
+    fun isConnecting() = state == State.IDLE || state == State.CONNECTING || state == State.AUTHENTICATING
+
+    fun connect(host: String, port: Int, account: String, key: String, isIncoming: Boolean, sessionId: String? = null, target: String? = null) {
+        if (state != State.IDLE && state != State.CLOSED) return
+
+        this.myAccount = account.lowercase(Locale.ROOT)
+        this.isIncoming = isIncoming
+        if (target != null) {
+            val normalizedTarget = target.lowercase(Locale.ROOT)
+            this.initialTarget = normalizedTarget
+            participants.add(normalizedTarget)
+        }
+        this.state = State.CONNECTING
+        updateActivity()
+
+        Log.i("MSNP_SB", "Connecting SB to $host:$port. Incoming=$isIncoming, Key=$key, SessionId=$sessionId")
+
+        client = MSNPClient(object : MSNPProtocolListener by listener {
+            override fun onConnected() {
+                if (isIncoming) {
+                    send(MSNPProto.SB.ANS, listOf(myAccount, key, sessionId ?: ""))
+                } else {
+                    send(MSNPProto.SB.USR, listOf(myAccount, key))
+                }
+            }
+
+            override fun onCommandReceived(cmd: MSNPCommand) {
+                updateActivity()
+                cmd.transactionId?.let { tid ->
+                    synchronized(responseSignals) {
+                        responseSignals[tid]?.complete(cmd)
+                    }
+                }
+                handleCommand(cmd)
+            }
+
+            override fun onDisconnected() {
+                state = State.CLOSED
+                listener.onDisconnected()
+            }
+        })
+
+        scope.launch { client?.connect(host, port) }
+    }
+
+    private fun handleCommand(cmd: MSNPCommand) {
+        when (cmd.command) {
+            MSNPProto.SB.USR, MSNPProto.SB.ANS -> {
+                if (cmd.params.contains("OK")) {
+                    state = if (isIncoming) State.JOINED else State.AUTHENTICATING
+                    if (!isIncoming) {
+                        initialTarget?.let { invite(it) }
+                    }
+                    checkAndSendPending()
+                }
+            }
+            MSNPProto.SB.IRO -> {
+                if (cmd.params.size >= 4) {
+                    val account = cmd.params[3].lowercase(Locale.ROOT)
+                    if (account != myAccount) {
+                        participants.add(account)
+                        state = State.JOINED
+                        checkAndSendPending()
+                    }
+                }
+            }
+            MSNPProto.SB.JOI -> {
+                val account = cmd.params[0].lowercase(Locale.ROOT)
+                participants.add(account)
+                state = State.JOINED
+                checkAndSendPending()
+                listener.onContactStatusChanged(account, "JOI", "")
+            }
+            MSNPProto.SB.MSG -> {
+                val sender = cmd.params[0]
+                val nick = cmd.params[1]
+                val body = cmd.payload?.toString(StandardCharsets.UTF_8) ?: return
+                val lowerBody = body.lowercase(Locale.ROOT)
+
+                if (lowerBody.contains("content-type: text/x-msmsgscontrol")) {
+                    if (lowerBody.contains("typinguser: ")) listener.onTypingReceived(sender)
+                } else if (lowerBody.contains("content-type: text/x-msnmsgr-datacast")) {
+                    if (lowerBody.contains("id: 1")) listener.onMessageReceived(sender, nick, "[NUDGE]")
+                } else {
+                    val hasMime = lowerBody.contains("mime-version:") || lowerBody.contains("content-type:")
+                    val content = if (hasMime) parseMimeBody(body) else body
+                    val trimmedContent = content.trim()
+
+                    val isInkMime = lowerBody.contains("application/x-msnk-isf") || lowerBody.contains("image/")
+                    val startsWithInk = trimmedContent.startsWith("R0lG") || trimmedContent.startsWith("wZk") || trimmedContent.startsWith("iVBO")
+                    val isInk = isInkMime || startsWithInk || (lastWasInk[sender] == true && !lowerBody.contains("text/plain") && content.length > 20)
+
+                    if (isInk) {
+                        lastWasInk[sender] = true
+                        bufferInkFragment(sender, nick, content)
+                    } else {
+                        lastWasInk[sender] = false
+                        flushInkBuffer(sender)
+                        listener.onMessageReceived(sender, nick, trimmedContent)
+                    }
+                }
+            }
+            MSNPProto.SB.ACK -> {
+                cmd.transactionId?.let { tid ->
+                    sentMessages.remove(tid)?.let { listener.onMessageSent(it) }
+                }
+            }
+            MSNPProto.SB.NAK -> {
+                cmd.transactionId?.let { tid ->
+                    sentMessages.remove(tid)?.let { listener.onMessageFailed(it, "NAK") }
+                }
+            }
+            MSNPProto.SB.BYE -> {
+                val account = cmd.params.getOrNull(0)?.lowercase(Locale.ROOT)
+                Log.i("MSNP_SB", "Participant left: $account")
+                if (account != null) {
+                    participants.remove(account)
+                }
+                // If the only other participant left, we must leave too
+                if (participants.isEmpty()) {
+                    Log.i("MSNP_SB", "No more participants, disconnecting session.")
+                    disconnect()
+                }
+            }
+        }
+    }
+
+    private fun bufferInkFragment(sender: String, nick: String, fragment: String) {
+        val entry = inkBuffers.getOrPut(sender) { nick to StringBuilder() }
+        entry.second.append(fragment)
+        inkFragmentCounts[sender] = (inkFragmentCounts[sender] ?: 0) + 1
+        inkFlushJobs[sender]?.cancel()
+        inkFlushJobs[sender] = scope.launch {
+            delay(1500)
+            flushInkBuffer(sender)
+        }
+    }
+
+    private fun flushInkBuffer(sender: String) {
+        val entry = inkBuffers.remove(sender) ?: return
+        inkFragmentCounts.remove(sender)
+        inkFlushJobs.remove(sender)?.cancel()
+        listener.onMessageReceived(sender, entry.first, "[INK_BASE64]${entry.second.toString().replace("\\s".toRegex(), "")}")
+    }
+
+    fun invite(account: String) {
+        updateActivity()
+        send(MSNPProto.SB.CAL, listOf(account))
+    }
+
+    fun sendTyping() {
+        if (state != State.JOINED) return
+        updateActivity()
+        val body = "MIME-Version: 1.0\r\nContent-Type: text/x-msmsgscontrol\r\nTypingUser: $myAccount\r\n\r\n"
+        val tid = transactionId.getAndIncrement()
+        scope.launch { commandQueue.send(MSNPCommand(MSNPProto.SB.MSG, tid, listOf("U"), body.toByteArray(StandardCharsets.UTF_8))) }
+    }
+
+    fun sendMessage(text: String, messageId: Long = -1L) {
+        updateActivity()
+        if (state != State.JOINED) {
+            synchronized(pendingMessages) { pendingMessages.add(messageId to text) }
+            return
+        }
+        val body = "MIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n$text"
+        val tid = transactionId.getAndIncrement()
+        if (messageId != -1L) sentMessages[tid] = messageId
+        scope.launch { commandQueue.send(MSNPCommand(MSNPProto.SB.MSG, tid, listOf("A"), body.toByteArray(StandardCharsets.UTF_8))) }
+    }
+
+    fun sendNudge(messageId: Long = -1L) {
+        updateActivity()
+        if (state != State.JOINED) {
+            synchronized(pendingMessages) { pendingMessages.add(messageId to "[NUDGE]") }
+            return
+        }
+        // Added CRLF to nudge body
+        val body = "MIME-Version: 1.0\r\nContent-Type: text/x-msnmsgr-datacast\r\n\r\nID: 1\r\n"
+        val tid = transactionId.getAndIncrement()
+        if (messageId != -1L) sentMessages[tid] = messageId
+        scope.launch { commandQueue.send(MSNPCommand(MSNPProto.SB.MSG, tid, listOf("D"), body.toByteArray(StandardCharsets.UTF_8))) }
+    }
+
+    fun sendInk(base64Data: String, messageId: Long = -1L) {
+        updateActivity()
+        if (state != State.JOINED) return
+        val body = "MIME-Version: 1.0\r\nContent-Type: application/x-msnk-isf\r\n\r\n$base64Data"
+        val tid = transactionId.getAndIncrement()
+        if (messageId != -1L) sentMessages[tid] = messageId
+        scope.launch { commandQueue.send(MSNPCommand(MSNPProto.SB.MSG, tid, listOf("D"), body.toByteArray(StandardCharsets.UTF_8))) }
+    }
+
+    private fun checkAndSendPending() {
+        val messages = synchronized(pendingMessages) {
+            if (state == State.JOINED && pendingMessages.isNotEmpty()) {
+                val list = ArrayList(pendingMessages)
+                pendingMessages.clear()
+                list
+            } else null
+        }
+        messages?.forEach { (id, text) -> if (text == "[NUDGE]") sendNudge(id) else sendMessage(text, id) }
+    }
+
+    private fun parseMimeBody(body: String): String {
+        val separators = listOf("\r\n\r\n", "\n\n")
+        for (sep in separators) {
+            val index = body.indexOf(sep)
+            if (index != -1) return body.substring(index + sep.length)
+        }
+        return body
+    }
+
+    private fun send(cmd: String, params: List<String>) {
+        val tid = transactionId.getAndIncrement()
+        scope.launch { commandQueue.send(MSNPCommand(cmd, tid, params)) }
+    }
+
+    fun disconnect() {
+        if (state == State.CLOSED) return
+        state = State.CLOSED
+        inactivityJob?.cancel()
+
+        // Graceful exit for Switchboard
+        scope.launch {
+            try {
+                client?.sendCommand(MSNPCommand(MSNPProto.NS.OUT, null, emptyList()))
+                delay(100)
+            } catch (ignored: Exception) {}
+            client?.disconnect()
+        }
+    }
+}
