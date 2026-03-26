@@ -13,17 +13,3 @@
 .externalNativeBuild
 .cxx
 local.properties
-app/src/main/jnilibs/arm64-v8a/libmsnp11_sdk.so
-app/src/main/jnilibs/armeabi-v7a/libmsnp11_sdk.so
-app/src/main/jnilibs/x86/libmsnp11_sdk.so
-app/src/main/jnilibs/x86_64/libmsnp11_sdk.so
-temp/MSNPChallenge.kt.old
-temp/MSNPNSManager.kt.old
-temp/MSNPPayload.kt.old
-temp/MSNPSessionManager.kt.old
-temp/MSNPSoapManager.kt.old
-temp/MSNPSwitchboardSession.kt.old
-temp/switchboard/MSNPSwitchboardMessageParser.kt.old
-*.keystore
-app/release/output-metadata.json
-/app/release

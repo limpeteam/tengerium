@@ -1,0 +1,113 @@
+package com.limpe.tengerium.data.protocol
+
+import android.util.Log
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.regex.Pattern
+
+/**
+ * Handles SOAP requests for MSNP (Address Book and Contact Sharing Services).
+ * Updated for MSNP9/MSNP13 compatibility with Escargot.
+ */
+class MSNPSoapManager {
+
+    /**
+     * Authenticates with Passport RST service to get a token.
+     * Escargot supports Passport SSI 1.4 for MSNP9.
+     */
+    suspend fun authenticate(account: String, password: String, challenge: String): String? = withContext(Dispatchers.IO) {
+        val body = """
+            <?xml version="1.0" encoding="utf-8"?>
+            <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+                           xmlns:wsse="http://schemas.xmlsoap.org/ws/2003/06/secext"
+                           xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy"
+                           xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd"
+                           xmlns:wsa="http://schemas.xmlsoap.org/ws/2004/03/addressing"
+                           xmlns:wst="http://schemas.xmlsoap.org/ws/2004/04/trust"
+                           xmlns:ps="http://schemas.microsoft.com/Passport/SoapServices/PPCRL">
+                <soap:Header>
+                    <ps:AuthInfo Id="PPAuthInfo">
+                        <ps:HostingApp>{7108E71A-9926-4FCB-BCC9-9A9D3F32E423}</ps:HostingApp>
+                        <ps:BinaryVersion>4</ps:BinaryVersion>
+                        <ps:UIVersion>1</ps:UIVersion>
+                        <ps:Cookies></ps:Cookies>
+                        <ps:RequestParams>AQAAAAIAAABsYwQAAAAyMDU3</ps:RequestParams>
+                    </ps:AuthInfo>
+                    <wsse:Security>
+                        <wsse:UsernameToken Id="user">
+                            <wsse:Username>$account</wsse:Username>
+                            <wsse:Password>$password</wsse:Password>
+                        </wsse:UsernameToken>
+                    </wsse:Security>
+                </soap:Header>
+                <soap:Body>
+                    <ps:RequestMultipleSecurityTokens Id="RSTS">
+                        <wst:RequestSecurityToken Id="RST0">
+                            <wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>
+                            <wsp:AppliesTo>
+                                <wsa:EndpointReference>
+                                    <wsa:Address>http://Passport.NET/tb</wsa:Address>
+                                </wsa:EndpointReference>
+                            </wsp:AppliesTo>
+                        </wst:RequestSecurityToken>
+                        <wst:RequestSecurityToken Id="RST1">
+                            <wst:RequestType>http://schemas.xmlsoap.org/ws/2004/04/security/trust/Issue</wst:RequestType>
+                            <wsp:AppliesTo>
+                                <wsa:EndpointReference>
+                                    <wsa:Address>messenger.msn.com</wsa:Address>
+                                </wsa:EndpointReference>
+                            </wsp:AppliesTo>
+                            <wsse:PolicyReference URI="?$challenge" />
+                        </wst:RequestSecurityToken>
+                    </ps:RequestMultipleSecurityTokens>
+                </soap:Body>
+            </soap:Envelope>
+        """.trimIndent()
+
+        val response = performSoapRequest(MSNPProto.RST_URL, "", body) ?: return@withContext null
+
+        val pattern = Pattern.compile("<wsse:BinarySecurityToken[^>]*>(.*?)</wsse:BinarySecurityToken>")
+        val matcher = pattern.matcher(response)
+
+        var messengerToken: String? = null
+        while (matcher.find()) {
+            val t = matcher.group(1) ?: continue
+            if (t.contains("t=") && t.contains("p=")) {
+                messengerToken = t
+                break
+            }
+        }
+
+        return@withContext messengerToken?.replace("&amp;", "&")
+    }
+
+    private fun performSoapRequest(urlStr: String, soapAction: String, body: String): String? {
+        try {
+            val url = URL(urlStr)
+            val conn = url.openConnection() as HttpURLConnection
+            conn.requestMethod = "POST"
+            conn.doOutput = true
+            conn.setRequestProperty("Content-Type", "text/xml; charset=utf-8")
+            if (soapAction.isNotEmpty()) {
+                conn.setRequestProperty("SOAPAction", soapAction)
+            }
+
+            val os = conn.outputStream
+            os.write(body.toByteArray(Charsets.UTF_8))
+            os.flush()
+            os.close()
+
+            if (conn.responseCode == 200) {
+                return conn.inputStream.bufferedReader().use { it.readText() }
+            } else {
+                Log.e("MSNP-SOAP", "Error response: ${conn.responseCode} ${conn.responseMessage} at $urlStr")
+            }
+        } catch (e: Exception) {
+            Log.e("MSNP-SOAP", "SOAP Request failed at $urlStr", e)
+        }
+        return null
+    }
+}

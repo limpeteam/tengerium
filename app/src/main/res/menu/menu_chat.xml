@@ -4,4 +4,8 @@
         android:id="@+id/action_send_nudge"
         android:title="@string/send_nudge"
         app:showAsAction="never" />
+    <item
+        android:id="@+id/action_export_chat"
+        android:title="@string/export_chat_history"
+        app:showAsAction="never" />
 </menu>

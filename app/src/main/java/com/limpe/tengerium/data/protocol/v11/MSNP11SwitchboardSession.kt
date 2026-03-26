@@ -21,7 +21,7 @@ class MSNP11SwitchboardSession(
     
     companion object {
         private const val TAG = "MSNP11-SB"
-        private const val INACTIVITY_TIMEOUT = 60000L
+        private const val INACTIVITY_TIMEOUT = 10000L // Сокращено до 10 секунд для экономии батареи
     }
 
     private var rustWrapper: SwitchboardWrapper? = null
@@ -137,6 +137,12 @@ class MSNP11SwitchboardSession(
                             scope.safeLaunch(TAG) {
                                 val encoded = Base64.encodeToString(data, Base64.NO_WRAP)
                                 listener.onUrlReceived("AVATAR_BYTES", "$email|$encoded")
+                                
+                                // Если это была сессия только для аватара (не группа), закрываем её быстрее
+                                if (!isGroup && participants.size <= 2) {
+                                    Log.d(TAG, "Closing session after avatar received for $email")
+                                    handleClose()
+                                }
                             }
                         }
                         is Event.ParticipantInSwitchboard -> {

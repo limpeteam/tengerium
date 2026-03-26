@@ -42,8 +42,8 @@ object LinkPreviewHelper {
             
             val html = connection.inputStream?.bufferedReader()?.use { it.readText() } ?: return@withContext null
             
-            val title = getMetaTag(html, "og:title") ?: getTagContent(html, "title")
-            val description = getMetaTag(html, "og:description") ?: getMetaTag(html, "description")
+            val title = (getMetaTag(html, "og:title") ?: getTagContent(html, "title"))?.unescapeHtml()
+            val description = (getMetaTag(html, "og:description") ?: getMetaTag(html, "description"))?.unescapeHtml()
             val image = getMetaTag(html, "og:image")
             val domain = try { URL(finalUrl).host } catch (e: Exception) { null }
 
@@ -72,5 +72,14 @@ object LinkPreviewHelper {
         val matcher = pattern.matcher(html)
         if (matcher.find()) return matcher.group(1)?.trim()
         return null
+    }
+
+    private fun String.unescapeHtml(): String {
+        return this.replace("&quot;", "\"")
+            .replace("&amp;", "&")
+            .replace("&lt;", "<")
+            .replace("&gt;", ">")
+            .replace("&apos;", "'")
+            .replace("&#39;", "'")
     }
 }
