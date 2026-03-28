@@ -59,6 +59,11 @@
     <string name="connecting_to_msn">Łączenie z MSN...</string>
     <string name="host_hint">Host (np. messenger.hotmail.com)</string>
     <string name="nexus_hint">Domena Nexus (np. m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Proszę najpierw wypełnić ustawienia serwera</string>
+    <string name="reconnect">Połącz ponownie</string>
+    <string name="connection_lost">Połączenie przerwane</string>
+    <string name="reconnecting_in">Ponowne łączenie za %1$d s...</string>
+    <string name="no_internet">Brak połączenia z Internetem</string>
 
     <!-- Chat -->
     <string name="today">Dzisiaj</string>
@@ -76,6 +81,7 @@
     <string name="contact_unavailable">Kontakt jest niedostępny</string>
     <string name="is_typing">pisze...</string>
     <string name="send_nudge">Wyślij szturchnięcie</string>
+    <string name="send_nudge_cooldown">Szturchnięcie (%1$ds)</string>
     <string name="nudge_received">Otrzymano szturchnięcie!</string>
     <string name="nudge_sent_sys">Wysłano szturchnięcie!</string>
     <string name="nudge_received_sys">%1$s wysłał Ci szturchnięcie!</string>
@@ -90,6 +96,15 @@
     <string name="link_preview">Podgląd linku</string>
     <string name="open_chats_by_default">Otwieraj czaty domyślnie</string>
     <string name="chat_header">Czat</string>
+    <string name="export_chat_history">Eksportuj historię czatu</string>
+    <string name="export_success">Historia czatu została pomyślnie wyeksportowana</string>
+    <string name="export_error">Nie udało się wyeksportować historii czatu</string>
+    <string name="disable_message_queue">Wyłącz kolejkę oczekujących wiadomości</string>
+    <string name="disable_message_queue_desc">Jeśli włączone, możesz wysyłać wiadomości tylko do użytkowników online. Wiadomości nie zostaną wysłane, jeśli połączenie nie będzie gotowe.</string>
+    <string name="messaging_unavailable">Przesyłanie wiadomości niedostępne!</string>
+    <string name="resend">Wyślij ponownie</string>
+    <string name="chat_me_prefix">Ja: %1$s</string>
+    <string name="group_participants_updated">Lista uczestników została zaktualizowana</string>
 
     <!-- Contacts -->
     <string name="add_friend">Dodaj znajomego</string>
@@ -135,6 +150,7 @@
     <string name="saved_to_downloads">Zapisano w folderze Pobrane</string>
     <string name="download">Pobierz</string>
     <string name="chat_settings">Ustawienia czatu</string>
+    <string name="avatar_library">Biblioteka awatarów</string>
 
     <!-- About -->
     <string name="about_app">O aplikacji</string>
@@ -172,6 +188,7 @@
     <string name="notify_nudge">Szturchnięcie</string>
     <string name="notify_added_by">Dodany przez</string>
     <string name="vibration_enabled">Wibracje w aplikacji</string>
+    <string name="chat_sounds">Dźwięki czatu</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">Zaczynamy!</string>

@@ -69,8 +69,15 @@ class AuthFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.loginState.collectLatest { state ->
                     when (state) {
-                        is MSNPLoginState.Loading, is MSNPLoginState.Reconnecting -> {
+                        is MSNPLoginState.Loading -> {
                             binding.loadingLayout.visibility = View.VISIBLE
+                            binding.tvLoadingStatus.text = getString(R.string.connecting_to_msn)
+                            binding.btnLogin.visibility = View.GONE
+                            binding.tvError.visibility = View.GONE
+                        }
+                        is MSNPLoginState.Reconnecting -> {
+                            binding.loadingLayout.visibility = View.VISIBLE
+                            binding.tvLoadingStatus.text = getString(R.string.reconnecting_in, state.secondsRemaining)
                             binding.btnLogin.visibility = View.GONE
                             binding.tvError.visibility = View.GONE
                         }
@@ -98,6 +105,12 @@ class AuthFragment : Fragment() {
                             binding.loadingLayout.visibility = View.GONE
                             binding.btnLogin.visibility = View.VISIBLE
                             binding.tvError.text = getString(R.string.error_logged_in_another_device)
+                            binding.tvError.visibility = View.VISIBLE
+                        }
+                        is MSNPLoginState.NoInternet -> {
+                            binding.loadingLayout.visibility = View.GONE
+                            binding.btnLogin.visibility = View.VISIBLE
+                            binding.tvError.text = getString(R.string.no_internet)
                             binding.tvError.visibility = View.VISIBLE
                         }
                         is MSNPLoginState.Idle -> {

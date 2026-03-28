@@ -211,6 +211,11 @@ class OobeFragment : Fragment() {
                             authHolder?.authBinding?.tvError?.text = getString(R.string.error_logged_in_another_device)
                             authHolder?.authBinding?.tvError?.visibility = View.VISIBLE
                         }
+                        is MSNPLoginState.NoInternet -> {
+                            authHolder?.setLoading(false)
+                            // Не показываем ошибку в OOBE на экране входа, так как она обрабатывается отдельно в MainActivity
+                            authHolder?.authBinding?.tvError?.visibility = View.GONE
+                        }
                         is MSNPLoginState.Idle -> {
                             authHolder?.setLoading(false)
                         }

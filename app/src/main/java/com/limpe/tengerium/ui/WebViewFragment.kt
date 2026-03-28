@@ -52,7 +52,7 @@ class WebViewFragment : Fragment() {
 
         Glide.with(this)
             .asGif()
-            .load(R.drawable.butterfly)
+            .load(R.drawable.butterfly123)
             .into(binding.ivLoading)
 
         setupWebView()

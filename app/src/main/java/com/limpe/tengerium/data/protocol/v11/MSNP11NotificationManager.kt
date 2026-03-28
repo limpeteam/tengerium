@@ -73,12 +73,7 @@ class MSNP11NotificationManager(
                 is Event.Authenticated -> {
                     scope.safeLaunch(TAG) {
                         listener.onConnected()
-                        rustClient?.setPresence(MSNP11Mapper.mapToMsnpStatus(currentStatus))
-                        
-                        // Запрашиваем конфиг автоматически при логине
                         requestConfig()
-                        
-                        // Уведомляем об успешном входе, чтобы репозиторий переключился в Success
                         listener.onAuthSuccess(currentAccount, "")
                     }
                 }
@@ -234,12 +229,15 @@ class MSNP11NotificationManager(
 
     override fun changeStatus(status: String, msnObject: String?) {
         currentStatus = status
-        msnObject?.let { currentMsnObject = it }
+        if (!msnObject.isNullOrEmpty()) {
+            currentMsnObject = msnObject
+        }
         
         scope.safeLaunch(TAG) {
             try {
-                rustClient?.setPresence(MSNP11Mapper.mapToMsnpStatus(status))
-                Log.d(TAG, "Status changed to $status")
+                val rustStatus = MSNP11Mapper.mapToMsnpStatus(status)
+                rustClient?.setPresence(rustStatus)
+                Log.d(TAG, "Status changed to $status. Current MSNObject in manager: $currentMsnObject")
             } catch (e: Exception) {
                 Log.w(TAG, "Failed to change status: ${e.message}")
             }
@@ -249,19 +247,26 @@ class MSNP11NotificationManager(
     override fun updateAvatar(bytes: ByteArray) {
         scope.safeLaunch(TAG) {
             try {
-                Log.d(TAG, "Updating avatar with ${bytes.size} bytes")
+                Log.d(TAG, "Updating avatar in SDK with ${bytes.size} bytes")
+                // 1. Устанавливаем картинку в SDK
                 val newMsnObject = rustClient?.setDisplayPicture(bytes)
+                
                 if (!newMsnObject.isNullOrEmpty()) {
-                    Log.d(TAG, "Avatar updated, new msnObject: $newMsnObject")
+                    Log.d(TAG, "Avatar updated in SDK, new msnObject: $newMsnObject")
                     currentMsnObject = newMsnObject
-                    // Сразу уведомляем репозиторий о новом MSNObject для сохранения
+                    
+                    // 2. ВАЖНО: Принудительно вызываем setPresence, чтобы отправить CHG с новым MsnObject
+                    // Без этого собеседники не узнают о смене картинки до следующей смены статуса.
+                    val rustStatus = MSNP11Mapper.mapToMsnpStatus(currentStatus)
+                    rustClient?.setPresence(rustStatus)
+                    
                     listener.onContactStatusChanged(currentAccount, currentStatus, "", false, newMsnObject)
                 } else {
-                    // Если вернулась пустая строка (например, аватар удален), тоже уведомляем
+                    Log.w(TAG, "SDK returned empty MSNObject after setDisplayPicture")
                     listener.onContactStatusChanged(currentAccount, currentStatus, "", false, null)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to update avatar: ${e.message}", e)
+                Log.e(TAG, "Failed to update avatar in SDK: ${e.message}", e)
             }
         }
     }
@@ -353,7 +358,6 @@ class MSNP11NotificationManager(
             return
         }
 
-        // Если введен только домен (не начинается с http), формируем полный URL
         val finalUrl = if (!urlInput.startsWith("http")) {
             "http://$urlInput/Config/MsgrConfig.asmx?op=GetClientConfig&Country=00&CLCID=0419&PLCID=0419&GeoID=203&ver=14.0.8117.416"
         } else {

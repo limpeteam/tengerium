@@ -15,6 +15,7 @@ object UiConstants {
     // Тайминги
     const val TYPING_NOTIFICATION_INTERVAL = 3000L
     const val NOTIFICATION_DISPLAY_DELAY = 2500L
+    const val NUDGE_THROTTLE_TIMEOUT = 16000L
     
     // Цвета статусов (Hex)
     const val COLOR_STATUS_ONLINE = "#4CAF50"

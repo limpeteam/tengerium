@@ -13,10 +13,12 @@ import android.os.IBinder
 import android.os.Vibrator
 import android.os.VibrationEffect
 import android.telephony.PhoneStateListener
+import android.telephony.TelephonyCallback
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
+import androidx.core.content.ContextCompat
 import com.limpe.tengerium.MainActivity
 import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
@@ -40,6 +42,7 @@ class MSNPService : Service() {
     
     private var telephonyManager: TelephonyManager? = null
     private var phoneStateListener: PhoneStateListener? = null
+    private var telephonyCallback: Any? = null
     private var lastStatusBeforeCall: String = "NLN"
     
     private lateinit var securePrefs: SecurePrefs
@@ -65,42 +68,65 @@ class MSNPService : Service() {
         return START_STICKY
     }
 
+    private fun handleCallState(state: Int) {
+        if (!securePrefs.phoneStatusEnabled) return
+
+        val repository = (application as TengeriumApp).repository
+        when (state) {
+            TelephonyManager.CALL_STATE_OFFHOOK, TelephonyManager.CALL_STATE_RINGING -> {
+                val currentStatus = repository.currentStatus
+                if (currentStatus != "PHN") {
+                    lastStatusBeforeCall = currentStatus
+                    Log.d("MSNPService", "Call started. Changing status to PHN. Previous: $lastStatusBeforeCall")
+                    repository.changeStatus("PHN")
+                }
+            }
+            TelephonyManager.CALL_STATE_IDLE -> {
+                if (repository.currentStatus == "PHN") {
+                    Log.d("MSNPService", "Call ended. Restoring status to $lastStatusBeforeCall")
+                    repository.changeStatus(lastStatusBeforeCall)
+                }
+            }
+        }
+    }
+
     private fun setupPhoneStateListener() {
-        val tm = getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+        val tm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getSystemService(TelephonyManager::class.java)
+        } else {
+            getSystemService(Context.TELEPHONY_SERVICE) as? TelephonyManager
+        }
         if (tm == null) return
         
         telephonyManager = tm
         try {
-            phoneStateListener = object : PhoneStateListener() {
-                override fun onCallStateChanged(state: Int, phoneNumber: String?) {
-                    if (!securePrefs.phoneStatusEnabled) return
-
-                    val repository = (application as TengeriumApp).repository
-                    when (state) {
-                        TelephonyManager.CALL_STATE_OFFHOOK, TelephonyManager.CALL_STATE_RINGING -> {
-                            val currentStatus = repository.currentStatus
-                            if (currentStatus != "PHN") {
-                                lastStatusBeforeCall = currentStatus
-                                Log.d("MSNPService", "Call started. Changing status to PHN. Previous: $lastStatusBeforeCall")
-                                repository.changeStatus("PHN")
-                            }
-                        }
-                        TelephonyManager.CALL_STATE_IDLE -> {
-                            if (repository.currentStatus == "PHN") {
-                                Log.d("MSNPService", "Call ended. Restoring status to $lastStatusBeforeCall")
-                                repository.changeStatus(lastStatusBeforeCall)
-                            }
-                        }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val callback = object : TelephonyCallback(), TelephonyCallback.CallStateListener {
+                    override fun onCallStateChanged(state: Int) {
+                        handleCallState(state)
                     }
                 }
+                tm.registerTelephonyCallback(ContextCompat.getMainExecutor(this), callback)
+                telephonyCallback = callback
+            } else {
+                @Suppress("DEPRECATION")
+                val listener = object : PhoneStateListener() {
+                    override fun onCallStateChanged(state: Int, phoneNumber: String?) {
+                        handleCallState(state)
+                    }
+                }
+                phoneStateListener = listener
+                @Suppress("DEPRECATION")
+                tm.listen(listener, PhoneStateListener.LISTEN_CALL_STATE)
             }
-            tm.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE)
-        } catch (e: SecurityException) {
+        } catch (_: SecurityException) {
             Log.w("MSNPService", "READ_PHONE_STATE permission not granted. Call state listener disabled.")
             phoneStateListener = null
+            telephonyCallback = null
         } catch (e: Exception) {
             Log.e("MSNPService", "Failed to setup PhoneStateListener: ${e.message}")
             phoneStateListener = null
+            telephonyCallback = null
         }
     }
 
@@ -135,22 +161,30 @@ class MSNPService : Service() {
                         return@collectLatest
                     }
                     
+                    // проверяем только изменения, а не перебираем всё каждый раз
+                    if (contactStatuses.isEmpty()) {
+                        contactStatuses.putAll(currentMap)
+                        return@collectLatest
+                    }
+
                     currentMap.forEach { (account, newStatus) ->
                         val oldStatus = contactStatuses[account]
                         
-                        // Если старый статус был оффлайн, а новый — любой онлайн
-                        val wasOffline = oldStatus == null || oldStatus == MSNPProto.Status.OFFLINE || oldStatus == "FLN"
-                        val isOnline = newStatus != MSNPProto.Status.OFFLINE && newStatus != "FLN"
-                        
-                        if (wasOffline && isOnline && oldStatus != null) {
-                            val contact = repository.contacts.value.find { it.account.lowercase(Locale.ROOT) == account }
-                            val nickname = contact?.nickname?.ifEmpty { account } ?: account
-                            showEventNotification(
-                                this@MSNPService,
-                                getString(R.string.app_name),
-                                getString(R.string.user_is_now_online, nickname),
-                                "LOGIN_$account"
-                            )
+                        if (oldStatus != newStatus) {
+                            // Если старый статус был оффлайн, а новый — любой онлайн
+                            val wasOffline = oldStatus == null || oldStatus == MSNPProto.Status.OFFLINE
+                            val isOnline = newStatus != MSNPProto.Status.OFFLINE
+                            
+                            if (wasOffline && isOnline) {
+                                val contact = repository.contacts.value.find { it.account.lowercase(Locale.ROOT) == account }
+                                val nickname = contact?.nickname?.ifEmpty { account } ?: account
+                                showEventNotification(
+                                    this@MSNPService,
+                                    getString(R.string.app_name),
+                                    getString(R.string.user_is_now_online, nickname),
+                                    "LOGIN_$account"
+                                )
+                            }
                         }
                     }
                     contactStatuses.clear()
@@ -198,7 +232,8 @@ class MSNPService : Service() {
 
     private fun createNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val manager = getSystemService(NotificationManager::class.java)
+            if (manager == null) return
             
             val fgChannel = NotificationChannel(
                 CHANNEL_ID_FOREGROUND,
@@ -233,8 +268,15 @@ class MSNPService : Service() {
 
     override fun onDestroy() {
         try {
-            telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
-        } catch (e: Exception) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                (telephonyCallback as? TelephonyCallback)?.let {
+                    telephonyManager?.unregisterTelephonyCallback(it)
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                telephonyManager?.listen(phoneStateListener, PhoneStateListener.LISTEN_NONE)
+            }
+        } catch (_: Exception) {
             // Ignore
         }
         super.onDestroy()
@@ -269,7 +311,11 @@ class MSNPService : Service() {
             val prefs = SecurePrefs(context)
             if (!prefs.notifyMessages) return
 
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.getSystemService(NotificationManager::class.java)
+            } else {
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            } ?: return
             
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -292,7 +338,7 @@ class MSNPService : Service() {
 
             val replyPendingIntent = PendingIntent.getBroadcast(
                 context, sender.hashCode(), replyIntent,
-                PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
             )
 
             val replyAction = NotificationCompat.Action.Builder(
@@ -327,18 +373,29 @@ class MSNPService : Service() {
             notificationManager.notify(sender.hashCode(), builder.build())
 
             if (message == "[NUDGE]" && prefs.notifyNudge && prefs.vibrationEnabled) {
-                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 200, 100, 200, 100, 200), -1))
+                val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    context.getSystemService(Vibrator::class.java)
                 } else {
-                    vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
+                    context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                }
+                if (vibrator != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 200, 100, 200, 100, 200), -1))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
+                    }
                 }
             }
         }
 
         fun showEventNotification(context: Context, title: String, message: String, tag: String) {
             val prefs = SecurePrefs(context)
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager ?: return
+            val notificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.getSystemService(NotificationManager::class.java)
+            } else {
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            } ?: return
             
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -366,11 +423,18 @@ class MSNPService : Service() {
             notificationManager.notify(tag, NOTIFICATION_ID_EVENT, builder.build())
             
             if (tag.startsWith("NUDGE") && prefs.notifyNudge && prefs.vibrationEnabled) {
-                val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 200, 100, 200, 100, 200), -1))
+                val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    context.getSystemService(Vibrator::class.java)
                 } else {
-                    vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
+                    context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+                }
+                if (vibrator != null) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        vibrator.vibrate(VibrationEffect.createWaveform(longArrayOf(0, 200, 100, 200, 100, 200), -1))
+                    } else {
+                        @Suppress("DEPRECATION")
+                        vibrator.vibrate(longArrayOf(0, 200, 100, 200, 100, 200), -1)
+                    }
                 }
             }
         }

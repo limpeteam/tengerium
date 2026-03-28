@@ -59,6 +59,11 @@
     <string name="connecting_to_msn">MSN-ге қосылуда...</string>
     <string name="host_hint">Хост (мысалы, messenger.hotmail.com)</string>
     <string name="nexus_hint">Nexus домені (мысалы, m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Алдымен сервер баптауларын толтырыңыз</string>
+    <string name="reconnect">Қайта қосылу</string>
+    <string name="connection_lost">Қосылым үзілді</string>
+    <string name="reconnecting_in">Қайта қосылу %1$d секундтан кейін...</string>
+    <string name="no_internet">Интернет байланысы жоқ</string>
 
     <!-- Chat -->
     <string name="today">Бүгін</string>
@@ -76,6 +81,7 @@
     <string name="contact_unavailable">Контакт қолжетімсіз</string>
     <string name="is_typing">жазып жатыр...</string>
     <string name="send_nudge">Будильник жіберу</string>
+    <string name="send_nudge_cooldown">Будильник (%1$ds)</string>
     <string name="nudge_received">Будильник алынды!</string>
     <string name="nudge_sent_sys">Сіз будильник жібердіңіз!</string>
     <string name="nudge_received_sys">%1$s сізге будильник жіберді!</string>
@@ -90,6 +96,15 @@
     <string name="link_preview">Сілтемелерді алдын ала қарау</string>
     <string name="open_chats_by_default">Чаттарды әдепкі бойынша ашу</string>
     <string name="chat_header">Чат</string>
+    <string name="export_chat_history">Чат тарихын экспорттау</string>
+    <string name="export_success">Чат тарихы сәтті экспортталды</string>
+    <string name="export_error">Чат тарихын экспорттау сәтсіз аяқталды</string>
+    <string name="disable_message_queue">Хабарламалар кезегін өшіру</string>
+    <string name="disable_message_queue_desc">Егер қосулы болса, сіз хабарламаларды тек желідегі пайдаланушыларға жібере аласыз. Қосылым дайын болмаса, хабарламалар жіберілмейді.</string>
+    <string name="messaging_unavailable">Хабарлама жіберу қолжетімсіз!</string>
+    <string name="resend">Қайта жіберу</string>
+    <string name="chat_me_prefix">Мен: %1$s</string>
+    <string name="group_participants_updated">Қатысушылар тізімі жаңартылды</string>
 
     <!-- Contacts -->
     <string name="add_friend">Дос қосу</string>
@@ -135,6 +150,7 @@
     <string name="saved_to_downloads">Жүктеулерге сақталды</string>
     <string name="download">Жүктеу</string>
     <string name="chat_settings">Чат баптаулары</string>
+    <string name="avatar_library">Аватарлар кітапханасы</string>
 
     <!-- About -->
     <string name="about_app">Қолданба туралы</string>
@@ -172,6 +188,7 @@
     <string name="notify_nudge">Будильник (Nudge)</string>
     <string name="notify_added_by">Сізді қосты</string>
     <string name="vibration_enabled">Қолданбадағы діріл</string>
+    <string name="chat_sounds">Чат дыбыстары</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">Бастайық!</string>

@@ -15,6 +15,9 @@ object AppConfig {
     // Включить отображение аватарок (отключите, если есть проблемы с отображением или производительностью)
     var enableAvatars: Boolean = true
 
+    // Включить библиотеку аватаров
+    var enableAvatarLibrary: Boolean = true
+
     // Специальный режим LIMPE_EXP
     const val LIMPE_EXP = false
 

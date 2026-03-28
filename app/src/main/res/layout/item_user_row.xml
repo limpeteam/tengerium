@@ -6,37 +6,16 @@
     android:layout_height="wrap_content"
     android:background="?attr/selectableItemBackground">
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/ivAvatar"
+    <com.limpe.tengerium.ui.AvatarStatusView
+        android:id="@+id/avatarStatusView"
         android:layout_width="52dp"
         android:layout_height="52dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="12dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_default_avatar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
-
-    <View
-        android:id="@+id/viewStatusBorder"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
-        android:background="@drawable/bg_status_border"
-        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
-        app:layout_constraintEnd_toEndOf="@id/ivAvatar" />
-
-    <View
-        android:id="@+id/viewStatus"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
-        android:background="@drawable/status_dot"
-        app:layout_constraintBottom_toBottomOf="@id/viewStatusBorder"
-        app:layout_constraintEnd_toEndOf="@id/viewStatusBorder"
-        app:layout_constraintStart_toStartOf="@id/viewStatusBorder"
-        app:layout_constraintTop_toTopOf="@id/viewStatusBorder" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvTitle"
@@ -50,8 +29,8 @@
         android:textColor="?attr/colorOnSurface"
         app:layout_constraintBottom_toTopOf="@id/tvSubtitle"
         app:layout_constraintEnd_toStartOf="@id/tvTime"
-        app:layout_constraintStart_toEndOf="@id/ivAvatar"
-        app:layout_constraintTop_toTopOf="@id/ivAvatar"
+        app:layout_constraintStart_toEndOf="@id/avatarStatusView"
+        app:layout_constraintTop_toTopOf="@id/avatarStatusView"
         app:layout_constraintVertical_chainStyle="packed"
         tools:text="Nickname or Chat Title" />
 
@@ -65,7 +44,7 @@
         android:textAppearance="?attr/textAppearanceBodyMedium"
         android:textColor="?attr/colorOnSurfaceVariant"
         android:alpha="0.7"
-        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
+        app:layout_constraintBottom_toBottomOf="@id/avatarStatusView"
         app:layout_constraintEnd_toStartOf="@id/tvUnreadCount"
         app:layout_constraintStart_toStartOf="@id/tvTitle"
         app:layout_constraintTop_toBottomOf="@id/tvTitle"

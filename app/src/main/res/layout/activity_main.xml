@@ -30,36 +30,52 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:defaultNavHost="true"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/dudeReconnectingLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/appBarLayout"
             app:navGraph="@navigation/nav_graph" />
 
-        <!-- Dude Reconnecting Overlay -->
+        <!-- Dude Reconnecting Bar (at bottom, pushes UI up) -->
         <LinearLayout
             android:id="@+id/dudeReconnectingLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#80000000"
-            android:gravity="center"
+            android:layout_height="64dp"
+            android:background="#DD333333"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="4dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
             android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent">
 
-            <ProgressBar
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:layout_marginEnd="8dp"
-                android:indeterminateTint="@color/white" />
+            <ImageView
+                android:id="@+id/ivReconnectingAnim"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@null"
+                android:src="@drawable/anim_reconnect" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/tvReconnectingStatus"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:text="@string/connecting_to_msn"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReconnectNow"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/reconnect"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                android:visibility="gone"
+                app:backgroundTint="#4DFFFFFF" />
         </LinearLayout>
 
         <FrameLayout

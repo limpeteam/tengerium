@@ -58,6 +58,10 @@
     <string name="connecting_to_msn">Подключение к MSN...</string>
     <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
     <string name="nexus_hint">Домен Nexus (напр. m1.escargot.chat)</string>
+    <string name="reconnect">Переподключиться</string>
+    <string name="connection_lost">Соединение потеряно</string>
+    <string name="reconnecting_in">Переподключение через %1$d сек...</string>
+    <string name="no_internet">Нет соединения с интернетом</string>
 
     <!-- Chat -->
     <string name="today">Сегодня</string>
@@ -75,6 +79,7 @@
     <string name="contact_unavailable">Собеседник недоступен</string>
     <string name="is_typing">печатает...</string>
     <string name="send_nudge">Отправить будильник</string>
+    <string name="send_nudge_cooldown">Будильник (%1$ds)</string>
     <string name="nudge_received">Получен будильник!</string>
     <string name="nudge_sent_sys">Вы отправили будильник!</string>
     <string name="nudge_received_sys">%1$s прислал(а) вам будильник!</string>
@@ -89,6 +94,15 @@
     <string name="link_preview">Предпросмотр ссылок</string>
     <string name="open_chats_by_default">Сначала открывать чаты</string>
     <string name="chat_header">Чат</string>
+    <string name="export_chat_history">Экспортировать историю чата</string>
+    <string name="export_success">История чата успешно экспортирована</string>
+    <string name="export_error">Не удалось экспортировать историю чата</string>
+    <string name="disable_message_queue">Отключить очередь сообщений</string>
+    <string name="disable_message_queue_desc">Если включено, вы сможете отправлять сообщения только пользователям в сети. Сообщения не будут отправлены, если соединение не готово.</string>
+    <string name="messaging_unavailable">Отправка сообщений недоступна!</string>
+    <string name="resend">Переотправить</string>
+    <string name="chat_me_prefix">Вы: %1$s</string>
+    <string name="group_participants_updated">Список участников обновлен</string>
 
     <!-- Contacts -->
     <string name="add_friend">Добавить друга</string>
@@ -134,6 +148,7 @@
     <string name="saved_to_downloads">Сохранено в загрузки</string>
     <string name="download">Скачать</string>
     <string name="chat_settings">Настройка чатов</string>
+    <string name="avatar_library">Библиотека аватаров</string>
 
     <!-- About -->
     <string name="about_app">О приложении</string>
@@ -171,6 +186,7 @@
     <string name="notify_nudge">Будильник (Nudge)</string>
     <string name="notify_added_by">Вас добавили</string>
     <string name="vibration_enabled">Вибрация в приложении</string>
+    <string name="chat_sounds">Звуки чата</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">Начнем!</string>

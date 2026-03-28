@@ -20,11 +20,15 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvMessages"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:clipToPadding="false"
             android:paddingTop="?attr/actionBarSize"
-            android:paddingBottom="80dp" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/layoutBottom"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Placeholder when no messages -->
         <LinearLayout
@@ -76,24 +80,13 @@
                     android:background="?attr/selectableItemBackground"
                     android:paddingEnd="16dp">
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/ivChatAvatar"
+                    <com.limpe.tengerium.ui.AvatarStatusView
+                        android:id="@+id/avatarStatusView"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:scaleType="centerCrop"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                        tools:src="@tools:sample/avatars" />
-
-                    <View
-                        android:id="@+id/viewStatus"
-                        android:layout_width="12dp"
-                        android:layout_height="12dp"
-                        android:background="@drawable/status_dot"
-                        app:layout_constraintBottom_toBottomOf="@id/ivChatAvatar"
-                        app:layout_constraintEnd_toEndOf="@id/ivChatAvatar" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
@@ -101,7 +94,7 @@
                         android:layout_marginStart="12dp"
                         android:orientation="vertical"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toEndOf="@id/ivChatAvatar"
+                        app:layout_constraintStart_toEndOf="@id/avatarStatusView"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
@@ -124,77 +117,85 @@
             </com.google.android.material.appbar.MaterialToolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <TextView
-            android:id="@+id/tvTypingIndicator"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="4dp"
-            android:alpha="0"
-            android:background="@drawable/bg_placeholder_bubble"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
-            android:textAppearance="?attr/textAppearanceLabelSmall"
-            android:textColor="@color/white"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/layoutInput"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="Contact is typing..."
-            tools:visibility="visible"
-            tools:alpha="1" />
-
         <LinearLayout
-            android:id="@+id/layoutInput"
+            android:id="@+id/layoutBottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:orientation="horizontal"
-            android:padding="8dp"
+            android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <EditText
-                android:id="@+id/etMessage"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/layoutNotFriend"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:hint="@string/type_message"
-                android:inputType="textMultiLine|textCapSentences"
-                android:maxLines="5"
-                android:minHeight="48dp"
-                android:paddingHorizontal="12dp" />
+                android:background="?attr/colorErrorContainer"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:visibility="gone"
+                tools:visibility="gone">
 
-            <ImageButton
-                android:id="@+id/btnSend"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@android:drawable/ic_menu_send"
-                app:tint="?attr/colorPrimary" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/not_in_contacts"
+                    android:textColor="?attr/colorOnErrorContainer" />
 
-        <LinearLayout
-            android:id="@+id/layoutNotFriend"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorErrorContainer"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@id/layoutInput">
+                <Button
+                    android:id="@+id/btnAddToContacts"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_to_contacts" />
+            </LinearLayout>
+
+            <!-- Typing Indicator with consistent spacing -->
 
             <TextView
+                android:id="@+id/tvTypingIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/not_in_contacts"
-                android:textColor="?attr/colorOnErrorContainer" />
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="0dp"
+                android:layout_marginBottom="2dp"
+                android:alpha="0"
+                android:background="@drawable/bg_placeholder_bubble"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="2dp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                tools:alpha="1"
+                tools:text="Contact is typing..."
+                tools:visibility="visible" />
 
-            <Button
-                android:id="@+id/btnAddToContacts"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/layoutInput"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/add_to_contacts" />
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <EditText
+                    android:id="@+id/etMessage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/type_message"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="5"
+                    android:minHeight="48dp"
+                    android:paddingHorizontal="12dp" />
+
+                <ImageButton
+                    android:id="@+id/btnSend"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@android:drawable/ic_menu_send"
+                    app:tint="?attr/colorPrimary" />
+            </LinearLayout>
         </LinearLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -204,7 +205,7 @@
             android:layout_margin="16dp"
             android:visibility="gone"
             app:fabSize="mini"
-            app:layout_constraintBottom_toTopOf="@id/layoutInput"
+            app:layout_constraintBottom_toTopOf="@id/layoutBottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_arrow_down" />
 

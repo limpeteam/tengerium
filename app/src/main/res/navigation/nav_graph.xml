@@ -199,6 +199,13 @@
             app:exitAnim="@anim/metro_exit"
             app:popEnterAnim="@anim/metro_pop_enter"
             app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_AvatarLibraryFragment"
+            app:destination="@id/AvatarLibraryFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
     </fragment>
 
     <fragment
@@ -219,5 +226,11 @@
             android:name="title"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/AvatarLibraryFragment"
+        android:name="com.limpe.tengerium.ui.AvatarLibraryFragment"
+        android:label="@string/avatar_library"
+        tools:layout="@layout/fragment_avatar_library" />
 
 </navigation>

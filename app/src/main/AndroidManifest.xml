@@ -66,6 +66,11 @@
             android:process=":crash"
             android:theme="@style/Theme.Tengerium" />
 
+        <!-- Добавляем Activity для обрезки изображений -->
+        <activity
+            android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.AppCompat.DayNight" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

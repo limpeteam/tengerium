@@ -15,6 +15,7 @@ import com.limpe.tengerium.databinding.ItemUserRowBinding
 import com.limpe.tengerium.domain.model.Contact
 import com.limpe.tengerium.domain.model.Group
 import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.FormattingUtils
 import java.util.*
 
 class ContactAdapter(
@@ -144,18 +145,18 @@ class ContactAdapter(
         fun updateStatus(status: String?, animate: Boolean) {
             val statusColor = StatusUtils.getStatusColor(status)
             if (animate && lastStatus != null && lastStatus != status) {
-                AnimationHelper.animateStatusChange(binding.viewStatus, statusColor)
+                AnimationHelper.animateStatusChange(binding.avatarStatusView.statusView, statusColor)
             } else {
-                binding.viewStatus.animate().cancel()
-                binding.viewStatus.background?.setTint(statusColor)
-                binding.viewStatus.scaleX = 1f
-                binding.viewStatus.scaleY = 1f
+                binding.avatarStatusView.statusView.animate().cancel()
+                binding.avatarStatusView.setStatusColor(statusColor)
+                binding.avatarStatusView.statusView.scaleX = 1f
+                binding.avatarStatusView.statusView.scaleY = 1f
             }
             lastStatus = status
         }
 
         fun updateAvatar(contact: Contact) {
-            AvatarUtils.loadAvatar(binding.ivAvatar, contact.avatarUrl, contact.account)
+            binding.avatarStatusView.setAvatar(contact.avatarUrl, contact.account)
         }
     }
 

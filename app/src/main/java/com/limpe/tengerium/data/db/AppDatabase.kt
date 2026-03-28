@@ -8,10 +8,11 @@ import androidx.room.RoomDatabase
 /**
  * Зашифрованная БД Tengerium.
  */
-@Database(entities = [MessageEntity::class], version = 4, exportSchema = false)
+@Database(entities = [MessageEntity::class, AvatarEntity::class], version = 5, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun messageDao(): MessageDao
+    abstract fun avatarDao(): AvatarDao
 
     companion object {
         @Volatile
