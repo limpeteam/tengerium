@@ -24,6 +24,7 @@ import com.limpe.tengerium.databinding.FragmentChatsBinding
 import com.limpe.tengerium.databinding.ItemUserRowBinding
 import com.limpe.tengerium.domain.model.Contact
 import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.FormattingUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -186,8 +187,6 @@ class ChatsFragment : Fragment() {
                 binding.divider.visibility = if (isLast) android.view.View.GONE else android.view.View.VISIBLE
                 updateNickname(model.contact?.nickname ?: model.otherAccount, model.isGroup)
                 updateLastMessage(model.lastMessage)
-                binding.tvTime.visibility = android.view.View.VISIBLE
-                binding.tvTime.text = FormattingUtils.formatTime(model.lastMessage.timestamp)
                 updateAvatar(model.contact?.avatarUrl, model.otherAccount, model.isGroup)
                 updateStatus(if (model.isGroup) "ONLINE" else model.contact?.status, animate = false)
                 updateUnread(model.otherAccount, repository)
@@ -195,43 +194,47 @@ class ChatsFragment : Fragment() {
 
             fun updateNickname(nickname: String, isGroup: Boolean) {
                 binding.tvTitle.text = if (isGroup) {
-                    "Групповой чат" // TODO: strings.xml
+                    itemView.context.getString(R.string.group_chat)
                 } else {
                     FormattingUtils.formatBBCode(nickname)
                 }
             }
 
             fun updateAvatar(url: String?, account: String, isGroup: Boolean) {
-                if (isGroup) {
-                    binding.ivAvatar.setImageResource(R.drawable.group_24)
-                    binding.ivAvatar.background = null
-                } else {
-                    AvatarUtils.loadAvatar(binding.ivAvatar, url, account)
-                }
+                binding.avatarStatusView.setAvatar(url, account, isGroup)
             }
 
             fun updateLastMessage(item: MessageEntity) {
+                val context = itemView.context
                 val decrypted = SafeStorage.decryptText(item.encryptedText)
-                binding.tvSubtitle.text = when {
-                    decrypted == "[NUDGE]" -> itemView.context.getString(if (item.isIncoming) R.string.nudge_received else R.string.nudge_sent_sys)
-                    decrypted == "[JOINED]" -> "Присоединился к чату"
-                    decrypted == "[LEFT]" -> "Покинул чат"
-                    decrypted.startsWith("[GROUP_UPDATE]") -> "Список участников обновлен"
+                val body = when {
+                    decrypted == "[NUDGE]" -> context.getString(if (item.isIncoming) R.string.nudge_received else R.string.nudge_sent_sys)
+                    decrypted == "[JOINED]" -> context.getString(R.string.user_joined_chat, item.senderAccount)
+                    decrypted == "[LEFT]" -> context.getString(R.string.user_left_chat, item.senderAccount)
+                    decrypted.startsWith("[GROUP_UPDATE]") -> context.getString(R.string.group_participants_updated)
                     else -> FormattingUtils.formatBBCode(decrypted)
                 }
-                binding.tvTime.text = FormattingUtils.formatTime(item.timestamp)
+
+                binding.tvSubtitle.text = if (!item.isIncoming && (decrypted != "[NUDGE]" && !decrypted.startsWith("["))) {
+                    context.getString(R.string.chat_me_prefix, body)
+                } else {
+                    body
+                }
+                
+                binding.tvTime.visibility = android.view.View.VISIBLE
+                binding.tvTime.text = FormattingUtils.formatChatDate(context, item.timestamp)
             }
 
             fun updateStatus(status: String?, animate: Boolean) {
                 val statusColor = StatusUtils.getStatusColor(status)
 
                 if (animate && lastStatus != null && lastStatus != status) {
-                    AnimationHelper.animateStatusChange(binding.viewStatus, statusColor)
+                    AnimationHelper.animateStatusChange(binding.avatarStatusView.statusView, statusColor)
                 } else {
-                    binding.viewStatus.animate().cancel()
-                    binding.viewStatus.background?.setTint(statusColor)
-                    binding.viewStatus.scaleX = 1f
-                    binding.viewStatus.scaleY = 1f
+                    binding.avatarStatusView.statusView.animate().cancel()
+                    binding.avatarStatusView.setStatusColor(statusColor)
+                    binding.avatarStatusView.statusView.scaleX = 1f
+                    binding.avatarStatusView.statusView.scaleY = 1f
                 }
                 lastStatus = status
             }
@@ -250,7 +253,7 @@ class ChatsFragment : Fragment() {
                 unreadJob?.cancel()
                 unreadJob = null
                 lastStatus = null
-                binding.viewStatus.animate().cancel()
+                binding.avatarStatusView.statusView.animate().cancel()
             }
         }
 

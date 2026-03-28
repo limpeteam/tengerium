@@ -169,6 +169,10 @@ class SecurePrefs(private val context: Context) {
         get() = plainPrefs.getBoolean("remember_me", false)
         set(value) = plainPrefs.edit().putBoolean("remember_me", value).apply()
 
+    var disableMessageQueue: Boolean
+        get() = plainPrefs.getBoolean("disable_message_queue", false)
+        set(value) = plainPrefs.edit().putBoolean("disable_message_queue", value).apply()
+
     // --- Уведомления ---
 
     var notifyMessages: Boolean
@@ -190,4 +194,8 @@ class SecurePrefs(private val context: Context) {
     var vibrationEnabled: Boolean
         get() = plainPrefs.getBoolean("vibration_enabled", true)
         set(value) = plainPrefs.edit().putBoolean("vibration_enabled", value).apply()
+
+    var chatSoundsEnabled: Boolean
+        get() = plainPrefs.getBoolean("chat_sounds_enabled", true)
+        set(value) = plainPrefs.edit().putBoolean("chat_sounds_enabled", value).apply()
 }

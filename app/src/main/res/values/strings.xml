@@ -60,6 +60,10 @@
     <string name="host_hint">Host (e.g. messenger.hotmail.com)</string>
     <string name="nexus_hint">Nexus Domain (e.g. m1.escargot.chat)</string>
     <string name="error_missing_server_settings">Please fill in server settings first</string>
+    <string name="reconnect">Reconnect</string>
+    <string name="connection_lost">Connection lost</string>
+    <string name="reconnecting_in">Reconnecting in %1$d seconds...</string>
+    <string name="no_internet">No internet connection</string>
 
     <!-- Chat -->
     <string name="today">Today</string>
@@ -77,6 +81,7 @@
     <string name="contact_unavailable">The contact is unavailable</string>
     <string name="is_typing">is typing...</string>
     <string name="send_nudge">Send Nudge</string>
+    <string name="send_nudge_cooldown">Nudge (%1$ds)</string>
     <string name="nudge_received">Received a nudge!</string>
     <string name="nudge_sent_sys">You have sent a nudge!</string>
     <string name="nudge_received_sys">%1$s has sent you a nudge!</string>
@@ -94,6 +99,12 @@
     <string name="export_chat_history">Export Chat History</string>
     <string name="export_success">Chat history exported successfully</string>
     <string name="export_error">Failed to export chat history</string>
+    <string name="disable_message_queue">Disable pending message queue</string>
+    <string name="disable_message_queue_desc">If enabled, you can only send messages to online users. Messages will fail if connection is not ready.</string>
+    <string name="messaging_unavailable">Messaging unavailable!</string>
+    <string name="resend">Resend</string>
+    <string name="chat_me_prefix">Me: %1$s</string>
+    <string name="group_participants_updated">Participants list updated</string>
 
     <!-- Contacts -->
     <string name="add_friend">Add Friend</string>
@@ -139,6 +150,7 @@
     <string name="saved_to_downloads">Saved to Downloads</string>
     <string name="download">Download</string>
     <string name="chat_settings">Chat Settings</string>
+    <string name="avatar_library">Avatar Library</string>
 
     <!-- About -->
     <string name="about_app">About App</string>
@@ -176,6 +188,7 @@
     <string name="notify_nudge">Nudge</string>
     <string name="notify_added_by">Added by</string>
     <string name="vibration_enabled">Vibration in app</string>
+    <string name="chat_sounds">Chat sounds</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">Let\'s get started!</string>

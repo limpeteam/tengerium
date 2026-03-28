@@ -31,7 +31,10 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatAdapter(private val scope: CoroutineScope) : ListAdapter<MessageEntity, RecyclerView.ViewHolder>(DiffCallback()) {
+class ChatAdapter(
+    private val scope: CoroutineScope,
+    private val onLongClick: (MessageEntity) -> Unit = {}
+) : ListAdapter<MessageEntity, RecyclerView.ViewHolder>(DiffCallback()) {
 
     private var securePrefs: SecurePrefs? = null
 
@@ -60,7 +63,7 @@ class ChatAdapter(private val scope: CoroutineScope) : ListAdapter<MessageEntity
             SystemViewHolder(binding, securePrefs!!)
         } else {
             val binding = ItemMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            MessageViewHolder(binding, scope, securePrefs!!)
+            MessageViewHolder(binding, scope, securePrefs!!, onLongClick)
         }
     }
 
@@ -76,7 +79,8 @@ class ChatAdapter(private val scope: CoroutineScope) : ListAdapter<MessageEntity
     class MessageViewHolder(
         private val binding: ItemMessageBinding, 
         private val scope: CoroutineScope,
-        private val securePrefs: SecurePrefs
+        private val securePrefs: SecurePrefs,
+        private val onLongClick: (MessageEntity) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
         private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
@@ -92,6 +96,11 @@ class ChatAdapter(private val scope: CoroutineScope) : ListAdapter<MessageEntity
             binding.tvTimestamp.text = timeFormat.format(Date(message.timestamp))
             
             Linkify.addLinks(binding.tvMessageBody, Linkify.WEB_URLS)
+
+            binding.root.setOnLongClickListener {
+                onLongClick(message)
+                true
+            }
 
             val params = binding.cardMessage.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
             
@@ -141,7 +150,7 @@ class ChatAdapter(private val scope: CoroutineScope) : ListAdapter<MessageEntity
 
             binding.pbSending.visibility = if (!message.isIncoming && !message.isSent && message.error == null) View.VISIBLE else View.GONE
             binding.tvError.visibility = if (message.error != null) android.view.View.VISIBLE else android.view.View.GONE
-            binding.tvError.text = message.error
+            binding.tvError.text = if (message.error != null) context.getString(R.string.resend) else null
 
             if (securePrefs.showLinkPreview) {
                 val url = LinkPreviewHelper.extractUrl(decryptedText)

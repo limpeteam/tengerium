@@ -55,7 +55,8 @@ class MessageManager(
             if (text == "[NUDGE]") {
                 if (securePrefs.notifyNudge) SoundUtils.playSound(context, R.raw.nudge)
             } else {
-                if (securePrefs.notifyMessages) SoundUtils.playSound(context, R.raw.online)
+                // Для обычных сообщений
+                if (securePrefs.notifyMessages) SoundUtils.playSound(context, R.raw.type)
             }
             _incomingMessageFlow.emit(IncomingMessage(target, nickname, text))
         }

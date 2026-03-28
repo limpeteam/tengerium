@@ -186,6 +186,7 @@ class ChatSettingsFragment : Fragment() {
         binding.switchSendByEnter.isChecked = securePrefs.sendByEnter
         binding.switchLinkPreview.isChecked = securePrefs.showLinkPreview
         binding.switchOpenChatsByDefault.isChecked = securePrefs.openChatsByDefault
+        binding.switchDisableQueue.isChecked = securePrefs.disableMessageQueue
         
         val currentPreset = securePrefs.themePreset
         when (currentPreset) {
@@ -209,7 +210,7 @@ class ChatSettingsFragment : Fragment() {
         binding.switchNotifyNudge.isChecked = securePrefs.notifyNudge
         binding.switchNotifyAddedBy.isChecked = securePrefs.notifyAddedBy
         binding.switchVibration.isChecked = securePrefs.vibrationEnabled
-        
+
         // Phone status state
         val hasPhonePermission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
         binding.switchPhoneStatus.isChecked = securePrefs.phoneStatusEnabled && hasPhonePermission
@@ -255,6 +256,10 @@ class ChatSettingsFragment : Fragment() {
 
         binding.switchLinkPreview.setOnCheckedChangeListener { _, isChecked ->
             securePrefs.showLinkPreview = isChecked
+        }
+
+        binding.switchDisableQueue.setOnCheckedChangeListener { _, isChecked ->
+            securePrefs.disableMessageQueue = isChecked
         }
 
         binding.themeRadioGroup.setOnCheckedChangeListener { _, checkedId ->

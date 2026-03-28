@@ -35,6 +35,7 @@ import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentChatBinding
 import com.limpe.tengerium.util.AnimationHelper
 import com.limpe.tengerium.util.ChatHistoryExporter
+import com.limpe.tengerium.util.FormattingUtils
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -84,7 +85,11 @@ class ChatFragment : Fragment() {
     }
 
     private fun setupUI() {
-        adapter = ChatAdapter(viewLifecycleOwner.lifecycleScope)
+        adapter = ChatAdapter(viewLifecycleOwner.lifecycleScope, onLongClick = { message ->
+            if (!message.isIncoming && message.error != null) {
+                repository.resendMessage(message.id)
+            }
+        })
         binding.rvMessages.layoutManager = LinearLayoutManager(requireContext()).apply {
             stackFromEnd = true
         }
@@ -293,6 +298,8 @@ class ChatFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 contactAccount?.let { account ->
+                    val normalizedAccount = account.lowercase(Locale.ROOT).trim()
+                    
                     launch {
                         repository.getMessages(account).collectLatest { messages ->
                             binding.layoutEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
@@ -308,11 +315,35 @@ class ChatFragment : Fragment() {
                         repository.contacts.collectLatest { contacts ->
                             val contact = contacts.find { it.account.equals(account, ignoreCase = true) }
                             binding.tvChatName.text = FormattingUtils.formatBBCode(contact?.nickname ?: account)
-                            AvatarUtils.loadAvatar(binding.ivChatAvatar, contact?.avatarUrl, account)
-                            updateStatusUI(contact?.status ?: MSNPProto.Status.OFFLINE, contact?.personalMessage)
+                            binding.avatarStatusView.setAvatar(contact?.avatarUrl, account)
+                            
+                            val status = contact?.status ?: MSNPProto.Status.OFFLINE
+                            updateStatusUI(status, contact?.personalMessage)
                             
                             val isFriend = contact != null
                             binding.layoutNotFriend.visibility = if (isFriend) View.GONE else View.VISIBLE
+
+                            // Handle disabled queue blocking input
+                            if (securePrefs.disableMessageQueue) {
+                                val isOffline = status == MSNPProto.Status.OFFLINE || status == "FLN"
+                                if (isOffline) {
+                                    binding.etMessage.isEnabled = false
+                                    binding.btnSend.isEnabled = false
+                                    binding.etMessage.setText(R.string.messaging_unavailable)
+                                } else {
+                                    if (!binding.etMessage.isEnabled) {
+                                        binding.etMessage.isEnabled = true
+                                        binding.btnSend.isEnabled = true
+                                        binding.etMessage.text.clear()
+                                    }
+                                }
+                            } else {
+                                if (!binding.etMessage.isEnabled) {
+                                    binding.etMessage.isEnabled = true
+                                    binding.btnSend.isEnabled = true
+                                    binding.etMessage.text.clear()
+                                }
+                            }
                         }
                     }
                     
@@ -323,6 +354,20 @@ class ChatFragment : Fragment() {
                             .collectLatest { isTyping ->
                                 updateTypingIndicator(isTyping)
                             }
+                    }
+
+                    launch {
+                        repository.nudgeCooldowns.collectLatest { cooldowns ->
+                            val secondsLeft = cooldowns[normalizedAccount] ?: 0
+                            val nudgeItem = binding.toolbar.menu.findItem(R.id.action_send_nudge)
+                            if (secondsLeft > 0) {
+                                nudgeItem?.isEnabled = false
+                                nudgeItem?.title = getString(R.string.send_nudge_cooldown, secondsLeft)
+                            } else {
+                                nudgeItem?.isEnabled = true
+                                nudgeItem?.title = getString(R.string.send_nudge)
+                            }
+                        }
                     }
                 }
             }
@@ -350,9 +395,9 @@ class ChatFragment : Fragment() {
         val color = androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
         
         if (lastStatus != null && lastStatus != status) {
-            AnimationHelper.animateStatusChange(binding.viewStatus, color)
+            AnimationHelper.animateStatusChange(binding.avatarStatusView.statusView, color)
         } else {
-            binding.viewStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(color)
+            binding.avatarStatusView.setStatusColor(color)
         }
         lastStatus = status
         

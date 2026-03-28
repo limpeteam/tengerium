@@ -59,6 +59,10 @@
     <string name="connecting_to_msn">Падключэнне да MSN...</string>
     <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
     <string name="nexus_hint">Дамен Nexus (напр. m1.escargot.chat)</string>
+    <string name="reconnect">Перападключыцца</string>
+    <string name="connection_lost">Злучэнне страчана</string>
+    <string name="reconnecting_in">Перападключэнне праз %1$d сек...</string>
+    <string name="no_internet">Няма злучэння з інтэрнэтам</string>
 
     <!-- Chat -->
     <string name="today">Сёння</string>
@@ -90,6 +94,15 @@
     <string name="link_preview">Перадпрагляд спасылак</string>
     <string name="open_chats_by_default">Адкрываць чаты па змаўчанні</string>
     <string name="chat_header">Чат</string>
+    <string name="export_chat_history">Экспартаваць гісторыю чата</string>
+    <string name="export_success">Гісторыя чата паспяхова экспартавана</string>
+    <string name="export_error">Не ўдалося экспартаваць гісторыю чата</string>
+    <string name="disable_message_queue">Адключыць чаргу паведамленняў</string>
+    <string name="disable_message_queue_desc">Калі ўключана, вы зможаце адпраўляць паведамленні толькі карыстальнікам у сеціве. Паведамленні не будуць адпраўлены, калі злучэнне не гатова.</string>
+    <string name="messaging_unavailable">Адпраўка паведамленняў недаступная!</string>
+    <string name="resend">Адправіць зноў</string>
+    <string name="chat_me_prefix">Я: %1$s</string>
+    <string name="group_participants_updated">Спіс удзельнікаў абноўлены</string>
 
     <!-- Contacts -->
     <string name="add_friend">Дадаць сябра</string>
@@ -103,7 +116,7 @@
     <string name="contact_requests">Запыты кантактаў</string>
     <string name="accept">Прыняць</string>
     <string name="decline">Адхіліць</string>
-    <string name="new_contact_request">%1$s хоча дадаць вас у кантакты</string>
+    <string name="new_contact_request">%1$s хоче дадаць вас у кантакты</string>
     <string name="delete">Выдаліць</string>
     <string name="no_requests">Няма чакаючых запытаў</string>
     <string name="search">Пошук</string>
@@ -135,6 +148,7 @@
     <string name="saved_to_downloads">Захавана ў загрузкі</string>
     <string name="download">Спампаваць</string>
     <string name="chat_settings">Налады чата</string>
+    <string name="avatar_library">Бібліятэка аватараў</string>
 
     <!-- About -->
     <string name="about_app">Аб праграме</string>
@@ -169,9 +183,10 @@
     <string name="privacy_description">Калі ўключана, толькі карыстальнікі з вашага спісу кантактаў могуць бачыць вас і адпраўляць паведамленні.</string>
     <string name="notify_messages">Паведамленні</string>
     <string name="notify_login">Уваход у сеціва</string>
-    <string name="notify_nudge">Будзільнік (Nudge)</string>
+    <string name="notify_nudge">Будзільнік</string>
     <string name="notify_added_by">Вас дадалі</string>
     <string name="vibration_enabled">Вібрацыя ў праграме</string>
+    <string name="chat_sounds">Гукі чата</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">Пачнем!</string>
@@ -192,7 +207,7 @@
 
     <!-- WebView / External Links -->
     <string name="leaving_app_title">Вы пакідаеце Tengerium</string>
-    <string name="leaving_app_message">Гэта спасылка прывядзе вас на знешні сайт:\n%1$s\n\nВы хочаце працягнуць?</string>
+    <string name="leaving_app_message">Гэтая спасылка прывядзе вас на знешні сайт:\n%1$s\n\nВы хочаце працягнуць?</string>
     <string name="leave">Пакінуць</string>
     <string name="stay">Застацца</string>
 

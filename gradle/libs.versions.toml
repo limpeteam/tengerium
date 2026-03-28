@@ -20,6 +20,7 @@ glide = "4.16.0"
 googleServices = "4.4.1"
 firebaseBom = "32.8.0"
 jna = "5.14.0"
+imageCropper = "4.5.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -64,6 +65,9 @@ firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging
 
 # JNA (for UniFFI)
 jna = { group = "net.java.dev.jna", name = "jna", version.ref = "jna" }
+
+# Image Cropper
+android-image-cropper = { group = "com.github.CanHub", name = "Android-Image-Cropper", version.ref = "imageCropper" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

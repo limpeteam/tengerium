@@ -107,6 +107,21 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/link_preview" />
 
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchDisableQueue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/disable_message_queue" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="@string/disable_message_queue_desc"
+                        android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                        android:alpha="0.7" />
+
                     <TextView
                         android:id="@+id/tvThemePresetsLabel"
                         android:layout_width="wrap_content"
@@ -317,6 +332,13 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:text="@string/vibration_enabled" />
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchChatSounds"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/chat_sounds" />
 
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"

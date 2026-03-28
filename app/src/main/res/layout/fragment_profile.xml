@@ -33,24 +33,19 @@
                         android:background="?attr/colorSurfaceVariant"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/ivAvatar"
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:padding="2dp"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/ic_default_avatar"
-                        android:background="?attr/colorSurface"
+                    <com.limpe.tengerium.ui.AvatarStatusView
+                        android:id="@+id/avatarStatusView"
+                        android:layout_width="110dp"
+                        android:layout_height="110dp"
+                        android:padding="4dp"
+                        android:background="@drawable/bg_status_border"
                         android:transitionName="avatar_transition"
                         android:clickable="true"
                         android:focusable="true"
                         app:layout_constraintBottom_toBottomOf="@id/profileBanner"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/profileBanner"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
-                        app:strokeColor="?attr/colorOutlineVariant"
-                        app:strokeWidth="2dp" />
+                        app:layout_constraintTop_toBottomOf="@id/profileBanner" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:id="@+id/btnEditAvatar"
@@ -60,8 +55,8 @@
                         app:cardCornerRadius="16dp"
                         app:cardElevation="2dp"
                         app:cardBackgroundColor="?attr/colorSecondaryContainer"
-                        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
-                        app:layout_constraintEnd_toEndOf="@id/ivAvatar"
+                        app:layout_constraintBottom_toBottomOf="@id/avatarStatusView"
+                        app:layout_constraintEnd_toEndOf="@id/avatarStatusView"
                         tools:visibility="visible">
 
                         <ImageView
@@ -72,26 +67,6 @@
                             app:tint="?attr/colorOnSecondaryContainer" />
 
                     </com.google.android.material.card.MaterialCardView>
-
-                    <View
-                        android:id="@+id/viewStatusBorder"
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:background="@drawable/bg_status_border"
-                        app:layout_constraintBottom_toBottomOf="@id/ivAvatar"
-                        app:layout_constraintEnd_toEndOf="@id/ivAvatar"
-                        app:layout_constraintHorizontal_bias="0.15"
-                        app:layout_constraintVertical_bias="0.85" />
-
-                    <View
-                        android:id="@+id/viewStatus"
-                        android:layout_width="18dp"
-                        android:layout_height="18dp"
-                        android:background="@drawable/status_dot"
-                        app:layout_constraintBottom_toBottomOf="@id/viewStatusBorder"
-                        app:layout_constraintEnd_toEndOf="@id/viewStatusBorder"
-                        app:layout_constraintStart_toStartOf="@id/viewStatusBorder"
-                        app:layout_constraintTop_toTopOf="@id/viewStatusBorder" />
 
                     <ImageButton
                         android:id="@+id/btnProfileBack"

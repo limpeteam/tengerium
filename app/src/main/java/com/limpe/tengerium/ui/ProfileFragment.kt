@@ -37,6 +37,7 @@ import com.limpe.tengerium.data.MSNPRepository
 import com.limpe.tengerium.data.protocol.MSNPProto
 import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentProfileBinding
+import com.limpe.tengerium.util.FormattingUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -54,13 +55,6 @@ class ProfileFragment : DialogFragment() {
     private var currentAvatarPath: String? = null
     private val mainViewModel: MainViewModel by activityViewModels {
         MainViewModel.Factory((requireActivity().application as TengeriumApp).repository)
-    }
-
-    private val avatarPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == android.app.Activity.RESULT_OK) {
-            val uri = result.data?.data
-            uri?.let { updateAvatar(it) }
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -149,6 +143,11 @@ class ProfileFragment : DialogFragment() {
         val isOwnProfile = profileAccount == null || profileAccount.equals(currentAccount, ignoreCase = true)
         val isModal = showsDialog && arguments?.getBoolean("as_modal") == true
         
+        if (isOwnProfile) {
+            binding.avatarStatusView.statusView.visibility = View.GONE
+            binding.avatarStatusView.statusBorderView.visibility = View.GONE
+        }
+
         binding.btnProfileBack.visibility = if (isModal || profileAccount != null) View.VISIBLE else View.GONE
         binding.btnProfileBack.setOnClickListener { 
             if (isModal) dismiss() else {
@@ -171,13 +170,18 @@ class ProfileFragment : DialogFragment() {
         binding.btnEditProfile.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
         
         binding.btnEditAvatar.setOnClickListener { 
-            val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
-            avatarPickerLauncher.launch(intent) 
+            if (AppConfig.enableAvatarLibrary) {
+                findNavController().navigate(R.id.AvatarLibraryFragment)
+            } else {
+                // Fallback to direct picker if library is disabled
+                val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
+                avatarPickerLauncher.launch(intent) 
+            }
         }
         binding.btnEditProfile.setOnClickListener { showEditProfileDialog() }
         binding.btnLogout.setOnClickListener { logout() }
         
-        binding.ivAvatar.setOnClickListener {
+        binding.avatarStatusView.setOnClickListener {
             showFullAvatar()
         }
 
@@ -206,6 +210,13 @@ class ProfileFragment : DialogFragment() {
 
         binding.btnStatusSelector.setOnClickListener {
             showStatusDialog()
+        }
+    }
+
+    private val avatarPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val uri = result.data?.data
+            uri?.let { updateAvatar(it) }
         }
     }
 
@@ -337,12 +348,16 @@ class ProfileFragment : DialogFragment() {
                             
                             binding.tvNickname.text = FormattingUtils.formatBBCode(myNickname ?: targetAccount)
                             binding.tvAccount.text = targetAccount
+                            binding.tvAccount.visibility = View.VISIBLE
                         } else {
                             binding.tvNickname.text = FormattingUtils.formatBBCode(contact?.nickname ?: targetAccount)
                             binding.tvPersonalMessage.text = FormattingUtils.formatBBCode(contact?.personalMessage ?: "")
-                            binding.tvAccount.text = targetAccount
+                            
+                            // нахуя вторая почта в профиле собеседника, спросим у никиты потом когда нибудь
+                            binding.tvAccount.visibility = View.GONE
+
                             currentAvatarPath = contact?.avatarUrl
-                            AvatarUtils.loadAvatar(binding.ivAvatar, currentAvatarPath, targetAccount)
+                            binding.avatarStatusView.setAvatar(currentAvatarPath, targetAccount)
                             
                             binding.layoutProfileDetails.visibility = View.VISIBLE
                             binding.tvDetailEmail.text = targetAccount
@@ -363,7 +378,7 @@ class ProfileFragment : DialogFragment() {
                                     val name = state.nickname.ifEmpty { securePrefs.getNickname(state.account)?.ifEmpty { state.account } ?: state.account }
                                     binding.tvNickname.text = FormattingUtils.formatBBCode(name ?: targetAccount)
                                     currentAvatarPath = state.avatarUrl
-                                    AvatarUtils.loadAvatar(binding.ivAvatar, currentAvatarPath, state.account)
+                                    binding.avatarStatusView.setAvatar(currentAvatarPath, state.account)
                                 }
                             }
                         }
@@ -388,10 +403,7 @@ class ProfileFragment : DialogFragment() {
         
         binding.btnStatusSelector.setText(textRes)
         binding.btnStatusSelector.setIconTintResource(colorRes)
-        binding.viewStatus.setBackgroundResource(R.drawable.status_dot)
-        binding.viewStatus.backgroundTintList = android.content.res.ColorStateList.valueOf(
-            androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
-        )
+        binding.avatarStatusView.setStatus(status)
     }
     
     private fun updateDetailStatusUI(status: String) {

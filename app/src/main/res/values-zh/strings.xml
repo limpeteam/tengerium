@@ -59,6 +59,11 @@
     <string name="connecting_to_msn">正在连接到 MSN...</string>
     <string name="host_hint">主机 (如 messenger.hotmail.com)</string>
     <string name="nexus_hint">Nexus 域名 (如 m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">请先填写服务器设置</string>
+    <string name="reconnect">重新连接</string>
+    <string name="connection_lost">连接已断开</string>
+    <string name="reconnecting_in">%1$d 秒后重新连接...</string>
+    <string name="no_internet">无网络连接</string>
 
     <!-- Chat -->
     <string name="today">今天</string>
@@ -76,6 +81,7 @@
     <string name="contact_unavailable">联系人不可用</string>
     <string name="is_typing">正在输入...</string>
     <string name="send_nudge">发送抖动窗口</string>
+    <string name="send_nudge_cooldown">抖动窗口 (%1$ds)</string>
     <string name="nudge_received">收到抖动窗口！</string>
     <string name="nudge_sent_sys">您发送了一个抖动窗口！</string>
     <string name="nudge_received_sys">%1$s 向您发送了一个抖动窗口！</string>
@@ -90,6 +96,15 @@
     <string name="link_preview">链接预览</string>
     <string name="open_chats_by_default">默认打开聊天</string>
     <string name="chat_header">聊天</string>
+    <string name="export_chat_history">导出聊天记录</string>
+    <string name="export_success">聊天记录导出成功</string>
+    <string name="export_error">聊天记录导出失败</string>
+    <string name="disable_message_queue">禁用待发送消息队列</string>
+    <string name="disable_message_queue_desc">如果启用，您只能向在线用户发送消息。如果连接未准备就绪，消息将发送失败。</string>
+    <string name="messaging_unavailable">消息服务不可用！</string>
+    <string name="resend">重发</string>
+    <string name="chat_me_prefix">我：%1$s</string>
+    <string name="group_participants_updated">参与者列表已更新</string>
 
     <!-- Contacts -->
     <string name="add_friend">添加好友</string>
@@ -135,6 +150,7 @@
     <string name="saved_to_downloads">已保存到下载文件夹</string>
     <string name="download">下载</string>
     <string name="chat_settings">聊天设置</string>
+    <string name="avatar_library">头像库</string>
 
     <!-- About -->
     <string name="about_app">关于应用</string>
@@ -172,6 +188,7 @@
     <string name="notify_nudge">抖动窗口</string>
     <string name="notify_added_by">被添加</string>
     <string name="vibration_enabled">应用内振动</string>
+    <string name="chat_sounds">聊天声音</string>
 
     <!-- OOBE -->
     <string name="oobe_welcome_title">让我们开始吧！</string>

@@ -58,5 +58,6 @@ interface MSNPProtocolListener {
 
     // Новые методы для обработки доп. событий
     fun onGroupAdded(name: String, guid: String) {}
+    fun onGroupRemoved(guid: String) {}
     fun onConfigReceived(config: Config) {}
 }

@@ -3,6 +3,7 @@ package com.limpe.tengerium
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.drawable.AnimationDrawable
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,9 +21,9 @@ import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.ActivityMainBinding
 import com.limpe.tengerium.databinding.ViewInAppNotificationBinding
 import com.limpe.tengerium.ui.AvatarUtils
-import com.limpe.tengerium.ui.FormattingUtils
 import com.limpe.tengerium.ui.MainFragment
 import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.FormattingUtils
 import com.limpe.tengerium.util.UiConstants
 import com.limpe.tengerium.util.VibrationHelper
 import kotlinx.coroutines.Job
@@ -36,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private var notificationJob: Job? = null
+    private var reconnectAnim: AnimationDrawable? = null
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(TengeriumApp.wrapContext(newBase))
@@ -52,6 +54,16 @@ class MainActivity : AppCompatActivity() {
         val repository = (application as TengeriumApp).repository
         val securePrefs = SecurePrefs(this)
         
+        reconnectAnim = binding.ivReconnectingAnim.drawable as? AnimationDrawable
+
+        binding.btnReconnectNow.setOnClickListener {
+            val acc = securePrefs.getSavedAccount()
+            val pwd = securePrefs.getSavedPassword()
+            if (acc != null && pwd != null) {
+                repository.login(acc, pwd, true)
+            }
+        }
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 repository.loginState.collectLatest { state ->
@@ -94,24 +106,57 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleLoginStateDude(state: MSNPLoginState) {
         when (state) {
+            is MSNPLoginState.NoInternet -> {
+                binding.dudeReconnectingLayout.visibility = View.VISIBLE
+                binding.btnReconnectNow.visibility = View.GONE
+                binding.tvReconnectingStatus.text = getString(R.string.no_internet)
+                binding.ivReconnectingAnim.setImageResource(R.drawable.ic_no_internet)
+                reconnectAnim?.stop()
+            }
             is MSNPLoginState.Reconnecting -> {
                 binding.dudeReconnectingLayout.visibility = View.VISIBLE
+                binding.btnReconnectNow.visibility = View.VISIBLE
+                binding.tvReconnectingStatus.text = getString(R.string.reconnecting_in, state.secondsRemaining)
+                binding.ivReconnectingAnim.setImageResource(R.drawable.anim_reconnect)
+                reconnectAnim = binding.ivReconnectingAnim.drawable as? AnimationDrawable
+                reconnectAnim?.start()
+            }
+            is MSNPLoginState.Loading -> {
+                binding.dudeReconnectingLayout.visibility = View.VISIBLE
+                binding.btnReconnectNow.visibility = View.GONE
+                binding.tvReconnectingStatus.text = getString(R.string.connecting_to_msn)
+                binding.ivReconnectingAnim.setImageResource(R.drawable.anim_reconnect)
+                reconnectAnim = binding.ivReconnectingAnim.drawable as? AnimationDrawable
+                reconnectAnim?.start()
             }
             is MSNPLoginState.Success -> {
                 binding.dudeReconnectingLayout.visibility = View.GONE
+                reconnectAnim?.stop()
             }
             is MSNPLoginState.LoggedInElsewhere -> {
                 binding.dudeReconnectingLayout.visibility = View.GONE
+                reconnectAnim?.stop()
                 handleLoggedInElsewhereDude()
             }
             is MSNPLoginState.Error -> {
-                binding.dudeReconnectingLayout.visibility = View.GONE
-                if (state.message == "AUTH_INVALID_PASSWORD") {
-                    handleSessionExpired()
+                // Если это ошибка соединения, показываем бар с кнопкой переподключения
+                if (state.message.contains("TIMEOUT") || state.message.contains("broken pipe") || state.message.contains("CONNECTION_LOST") || state.message.contains("FAILED")) {
+                    binding.dudeReconnectingLayout.visibility = View.VISIBLE
+                    binding.btnReconnectNow.visibility = View.VISIBLE
+                    binding.tvReconnectingStatus.text = getString(R.string.connection_lost)
+                    binding.ivReconnectingAnim.setImageResource(R.drawable.anim_reconnect)
+                    reconnectAnim?.stop()
+                } else {
+                    binding.dudeReconnectingLayout.visibility = View.GONE
+                    reconnectAnim?.stop()
+                    if (state.message == "AUTH_INVALID_PASSWORD") {
+                        handleSessionExpired()
+                    }
                 }
             }
             else -> {
                 binding.dudeReconnectingLayout.visibility = View.GONE
+                reconnectAnim?.stop()
             }
         }
     }

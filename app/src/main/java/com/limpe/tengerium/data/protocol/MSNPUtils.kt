@@ -13,7 +13,6 @@ object MSNPUtils {
 
     /**
      * Декодирует строку MSNObject из URL-encoded или возвращает как есть, если это XML.
-     * Поддерживает множественное декодирование (иногда MSNP кодирует дважды).
      */
     fun decodeMsnObject(msnObject: String?): String? {
         if (msnObject.isNullOrEmpty()) return null
