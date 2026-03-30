@@ -14,3 +14,5 @@
 .cxx
 local.properties
 .so
+app/release
+app/src/main/jnilibs
