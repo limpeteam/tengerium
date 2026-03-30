@@ -14,4 +14,4 @@ Allows you to stay connected to MSN Messenger even on new devices where good per
   
 ## License
 
-[BSD-3 clause](https://opensource.org/license/bsd-3-clause)
+[BSD-3 clause](https://github.com/lednikofff/tengerium/blob/beta/LICENSE)
