@@ -24,6 +24,7 @@ import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
 import com.limpe.tengerium.data.MSNPLoginState
 import com.limpe.tengerium.data.security.SecurePrefs
+import com.limpe.tengerium.util.NotificationUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -223,8 +224,9 @@ class MSNPService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID_FOREGROUND)
             .setContentTitle(getString(R.string.app_name))
             .setContentText(contentText)
-            .setSmallIcon(R.drawable.ic_status_dot)
+            .setSmallIcon(NotificationUtils.getSmallIconId(this))
             .setOngoing(true)
+            .setSilent(true) // Делаем уведомление всегда беззвучным
             .setContentIntent(pendingIntent)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
@@ -238,9 +240,12 @@ class MSNPService : Service() {
             val fgChannel = NotificationChannel(
                 CHANNEL_ID_FOREGROUND,
                 getString(R.string.channel_connection_status),
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_LOW // Низкий приоритет = без звука
             ).apply {
                 setShowBadge(false)
+                enableLights(false)
+                enableVibration(false)
+                setSound(null, null)
             }
             manager.createNotificationChannel(fgChannel)
 
@@ -295,10 +300,19 @@ class MSNPService : Service() {
 
         fun start(context: Context) {
             val intent = Intent(context, MSNPService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                Log.e("MSNPService", "Foreground service start failed, falling back to background start: ${e.message}")
+                try {
+                    context.startService(intent)
+                } catch (e2: Exception) {
+                    Log.e("MSNPService", "Background service start also failed: ${e2.message}")
+                }
             }
         }
 
@@ -310,6 +324,18 @@ class MSNPService : Service() {
         fun showMessageNotification(context: Context, nickname: String, message: String, sender: String) {
             val prefs = SecurePrefs(context)
             if (!prefs.notifyMessages) return
+            
+            val normalizedSender = sender.lowercase(Locale.ROOT).trim()
+            if (prefs.isChatMuted(normalizedSender)) return
+
+            val app = context.applicationContext as? TengeriumApp
+            val isAppForeground = app?.isAppInForeground ?: false
+            val activeChat = app?.repository?.activeChatAccount
+            
+            // Если мы прямо сейчас в чате с этим человеком, системное уведомление не нужно
+            if (activeChat?.lowercase(Locale.ROOT)?.trim() == normalizedSender) {
+                return
+            }
 
             val notificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 context.getSystemService(NotificationManager::class.java)
@@ -317,13 +343,15 @@ class MSNPService : Service() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
             } ?: return
             
+            val notificationId = normalizedSender.hashCode()
+            
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                putExtra("contact_account", sender)
+                putExtra("contact_account", normalizedSender)
             }
             
             val pendingIntent = PendingIntent.getActivity(
-                context, sender.hashCode(), intent,
+                context, notificationId, intent,
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
 
@@ -333,11 +361,11 @@ class MSNPService : Service() {
 
             val replyIntent = Intent(context, NotificationReplyReceiver::class.java).apply {
                 action = ACTION_REPLY
-                putExtra("contact_account", sender)
+                putExtra("contact_account", normalizedSender)
             }
 
             val replyPendingIntent = PendingIntent.getBroadcast(
-                context, sender.hashCode(), replyIntent,
+                context, notificationId, replyIntent,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT else PendingIntent.FLAG_UPDATE_CURRENT
             )
 
@@ -347,7 +375,7 @@ class MSNPService : Service() {
                 replyPendingIntent
             ).addRemoteInput(remoteInput).build()
 
-            val effectiveNickname = nickname.ifEmpty { sender }
+            val effectiveNickname = nickname.ifEmpty { normalizedSender }
             val displayMessage = if (message == "[NUDGE]") {
                 context.getString(R.string.nudge_received_sys, effectiveNickname)
             } else {
@@ -355,7 +383,7 @@ class MSNPService : Service() {
             }
 
             val builder = NotificationCompat.Builder(context, CHANNEL_ID_MESSAGES)
-                .setSmallIcon(R.drawable.ic_status_dot)
+                .setSmallIcon(NotificationUtils.getSmallIconId(context))
                 .setContentTitle(effectiveNickname)
                 .setContentText(displayMessage)
                 .setAutoCancel(true)
@@ -363,16 +391,23 @@ class MSNPService : Service() {
                 .addAction(replyAction)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
 
-            if (prefs.vibrationEnabled) {
-                builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+            if (isAppForeground) {
+                // Если приложение активно, делаем системное уведомление тихим, чтобы не мешать in-app
+                builder.setSilent(true)
             } else {
-                builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND)
-                builder.setVibrate(longArrayOf(0L))
+                // Если приложение в фоне, используем настройки звука и вибрации
+                if (prefs.vibrationEnabled) {
+                    builder.setDefaults(NotificationCompat.DEFAULT_ALL)
+                } else {
+                    builder.setDefaults(NotificationCompat.DEFAULT_LIGHTS or NotificationCompat.DEFAULT_SOUND)
+                    builder.setVibrate(longArrayOf(0L))
+                }
             }
 
-            notificationManager.notify(sender.hashCode(), builder.build())
+            notificationManager.notify(notificationId, builder.build())
 
-            if (message == "[NUDGE]" && prefs.notifyNudge && prefs.vibrationEnabled) {
+            // Дополнительная вибрация для NUDGE если разрешено, но только если не в фокусе чата
+            if (message == "[NUDGE]" && prefs.notifyNudge && prefs.vibrationEnabled && !isAppForeground) {
                 val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     context.getSystemService(Vibrator::class.java)
                 } else {
@@ -387,6 +422,26 @@ class MSNPService : Service() {
                     }
                 }
             }
+        }
+
+        fun cancelMessageNotification(context: Context, sender: String) {
+            val notificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.getSystemService(NotificationManager::class.java)
+            } else {
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            } ?: return
+            notificationManager.cancel(sender.lowercase(Locale.ROOT).trim().hashCode())
+        }
+
+        fun cancelAllEventNotifications(context: Context) {
+            val notificationManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                context.getSystemService(NotificationManager::class.java)
+            } else {
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager
+            } ?: return
+            // cancelAll() убирает все уведомления, кроме тех, что в статус-баре (foreground service)
+            // Это то что нужно при входе в приложение
+            notificationManager.cancelAll()
         }
 
         fun showEventNotification(context: Context, title: String, message: String, tag: String) {
@@ -406,7 +461,7 @@ class MSNPService : Service() {
             )
 
             val builder = NotificationCompat.Builder(context, CHANNEL_ID_EVENTS)
-                .setSmallIcon(R.drawable.ic_status_dot)
+                .setSmallIcon(NotificationUtils.getSmallIconId(context))
                 .setContentTitle(title)
                 .setContentText(message)
                 .setAutoCancel(true)

@@ -32,10 +32,8 @@
     <string name="background_removed">Фон удален</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Классическая</string>
-    <string name="theme_emerald">Изумрудная</string>
-    <string name="theme_lavender">Лавандовая</string>
-    <string name="theme_dark">Темная</string>
+    <string name="theme_standard">Стандартная</string>
+    <string name="theme_turquoise">Бирюза</string>
     <string name="preview_incoming">Пузырек входящего сообщения</string>
     <string name="preview_outgoing">Пузырек исходящего сообщения</string>
     <string name="theme">Тема</string>
@@ -76,6 +74,7 @@
     <string name="not_in_contacts">Этого человека нет в списке ваших контактов</string>
     <string name="add_to_contacts">Добавить в контакты</string>
     <string name="block">Заблокировать</string>
+    <string name="unblock">Разблокировать</string>
     <string name="contact_unavailable">Собеседник недоступен</string>
     <string name="is_typing">печатает...</string>
     <string name="send_nudge">Отправить будильник</string>
@@ -103,6 +102,13 @@
     <string name="resend">Переотправить</string>
     <string name="chat_me_prefix">Вы: %1$s</string>
     <string name="group_participants_updated">Список участников обновлен</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Закрепить</string>
+    <string name="unpin_chat">Открепить</string>
+    <string name="mute_notifications">Выключить уведомления</string>
+    <string name="unmute_notifications">Включить уведомления</string>
+    <string name="blocked_group_name">Заблокированные</string>
 
     <!-- Contacts -->
     <string name="add_friend">Добавить друга</string>
@@ -158,7 +164,6 @@
     <string name="about_library_title">В разработке использована:</string>
     <string name="about_library_name">Библиотека MSNP-11 от campos02</string>
     <string name="about_testers_title">Активные тестировщики:</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
     <string name="about_developed_by">Разработано Vasek Lednikofff</string>
     <string name="about_limpe_support">при поддержке Limpe Team</string>
 
@@ -255,4 +260,15 @@
     <string name="logs_report_title">Отчет об ошибке Tengerium</string>
     <string name="no_logs_available">Информация о логах недоступная</string>
     <string name="error_collecting_logs">Ошибка сбора логов: %1$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Запрос на подключение</string>
+    <string name="deep_link_warning_title">Внимание: Кастомный сервер!</string>
+    <string name="deep_link_warning_message">Эта ссылка пытается изменить настройки сервера на:\n\nСервер: %1$s\nNexus: %2$s\n\nИспользование сторонних серверов может быть ОПАСНО. Владелец сервера может видеть ваш пароль и перехватывать ваши сообщения. Вы уверены, что доверяете этому серверу?</string>
+    <string name="deep_link_wait_format">Подождите %1$d сек...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">Секрет названия версии %1$s</string>
+    <string name="easter_egg_content">Шоколадный торт \"Шахтерский\".\n\nНастоящий. Только шоколад и орехи. Делался по рецептуре Луганской кондитерской фабрики. Для ценителей настоящего шоколада. История этого торта очень удивительная: Его рецепт был разработан в 60-ых годах на Луганской кондитерской фабрике, в то же время был разработан и рецепт конфет Планета, если кто-то пробовал.\n\nЕсли большинство тортов фабричного изготовления делались по ГОСТу, то торт Шахтерский и Планета делались по ТУ, и их рецепт мало кому известен. Его оригинальная рецептура не занесена в реестры. Без муки и без выпечки.\n\nПотом он подиспортился, и ему поменяли название на \"Кардинал\", а под маркой \"Шахтерский\" стали продавать уже нечто другое, но тоже шоколадное с орехами и удобоваримое.\n\nПричем было это фирменное изделие Луганской кондитерской фабрики дефицитным. Многие вспоминают, что собираясь в гости в другой город, с большим трудом доставали этот сладкий сувенир. И какой он был необыкновенный на вкус: с тремя различными сортами шоколада, орехами и шоколадными розами сверху. Словом, шоколада не жалели. Хотя само словосочетание \"шахтерский торт\" звучало странно и даже вводило некоторых в заблуждение, что это какая-то особая технология угледобычи\".\n\nОрехи и чернослив заливались тремя видами шоколада, добавлялась сгущенка, цедра цитрусовых. Украшался торт шоколадными розами, фруктами из глазури и сахара и съедобной бутылочкой \"Советского Шампанского\" с ликером внутри. Весил торт до килограмма и, конечно же, был страшным дефицитом. Но за счет того что это кулинарное изделие - по сути, одна большая шоколадка, хранится он достаточно долго и зачастую использовался в качестве сувенира и подарка.</string>
+    <string name="easter_egg_source">Источник %1$s</string>
 </resources>

@@ -14,8 +14,8 @@ android {
         applicationId = "com.limpe.tengerium"
         minSdk = 23
         targetSdk = 34
-        versionCode = 8
-        versionName = "0.2.5"
+        versionCode = 10
+        versionName = "0.3.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "app_name", "Tengerium")

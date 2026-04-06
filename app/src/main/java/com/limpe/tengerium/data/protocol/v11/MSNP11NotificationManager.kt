@@ -319,9 +319,20 @@ class MSNP11NotificationManager(
         scope.safeLaunch(TAG) {
             try {
                 Log.d(TAG, "Adding contact $acc with mask $mask")
-                if ((mask and MSNPProto.List.FL) != 0) rustClient?.addContact(acc, acc, MsnpList.FORWARD_LIST)
-                if ((mask and MSNPProto.List.AL) != 0) rustClient?.addContact(acc, acc, MsnpList.ALLOW_LIST)
-                if ((mask and MSNPProto.List.BL) != 0) rustClient?.addContact(acc, acc, MsnpList.BLOCK_LIST)
+                
+                // Раньше мы просто вызывали метод и ждали событий через EventHandler.
+                // Теперь мы можем обрабатывать результат прямо здесь для ускорения обновления UI.
+                
+                if ((mask and MSNPProto.List.FL) != 0) {
+                    val event = rustClient?.addContact(acc, acc, MsnpList.FORWARD_LIST)
+                    event?.let { handleEvent(it) }
+                } else if ((mask and MSNPProto.List.AL) != 0) {
+                    val event = rustClient?.addContact(acc, acc, MsnpList.ALLOW_LIST)
+                    event?.let { handleEvent(it) }
+                } else if ((mask and MSNPProto.List.BL) != 0) {
+                    val event = rustClient?.addContact(acc, acc, MsnpList.BLOCK_LIST)
+                    event?.let { handleEvent(it) }
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to add contact: ${e.message}")
             }
@@ -431,7 +442,8 @@ class MSNP11NotificationManager(
     override fun blockContact(account: String) {
         scope.safeLaunch(TAG) {
             try {
-                rustClient?.addContact(account, account, MsnpList.BLOCK_LIST)
+                val event = rustClient?.addContact(account, account, MsnpList.BLOCK_LIST)
+                event?.let { handleEvent(it) }
                 rustClient?.removeContact(account, MsnpList.ALLOW_LIST)
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to block contact: ${e.message}")
@@ -443,7 +455,8 @@ class MSNP11NotificationManager(
         scope.safeLaunch(TAG) {
             try {
                 rustClient?.removeContact(account, MsnpList.BLOCK_LIST)
-                rustClient?.addContact(account, account, MsnpList.ALLOW_LIST)
+                val event = rustClient?.addContact(account, account, MsnpList.ALLOW_LIST)
+                event?.let { handleEvent(it) }
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to unblock contact: ${e.message}")
             }

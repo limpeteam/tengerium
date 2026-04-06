@@ -1,12 +1,18 @@
 package com.limpe.tengerium.ui
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.limpe.tengerium.data.MSNPRepository
 import com.limpe.tengerium.data.db.MessageEntity
+import com.limpe.tengerium.data.protocol.MSNPService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
 // Главная вьюмоделька, которая рулит всем движем на основных экранах.
 // Чтобы фрагменты не мучали репозиторий напрямую, всё идет через этого посредника.
@@ -37,6 +43,7 @@ class MainViewModel(private val repository: MSNPRepository) : ViewModel() {
         repository.activeChatAccount = account
         if (account != null) {
             repository.markAsRead(account)
+            MSNPService.cancelMessageNotification(repository.context, account)
         }
     }
 
@@ -60,6 +67,47 @@ class MainViewModel(private val repository: MSNPRepository) : ViewModel() {
     // Всё, пацаны, я ливаю.
     fun logout() {
         repository.logout()
+    }
+
+    // --- Методы для работы с хранилищем (используются в настройках) ---
+
+    suspend fun getCacheSize(context: Context): Long = withContext(Dispatchers.IO) {
+        getFolderSize(context.cacheDir) + (context.externalCacheDir?.let { getFolderSize(it) } ?: 0L)
+    }
+
+    suspend fun getHistorySize(): Long = withContext(Dispatchers.IO) {
+        // Примерный расчет размера БД или просто запрашиваем из репозитория/базы
+        // В данном случае просто возвращаем 0 или размер файла БД если знаем путь
+        val dbFile = repository.context.getDatabasePath("tengerium.db")
+        if (dbFile.exists()) dbFile.length() else 0L
+    }
+
+    fun clearCache(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            deleteFolderContents(context.cacheDir)
+            context.externalCacheDir?.let { deleteFolderContents(it) }
+        }
+    }
+
+    fun clearHistory() {
+        repository.clearAllMessages()
+    }
+
+    private fun getFolderSize(file: File): Long {
+        var size: Long = 0
+        if (file.isDirectory) {
+            file.listFiles()?.forEach { size += getFolderSize(it) }
+        } else {
+            size = file.length()
+        }
+        return size
+    }
+
+    private fun deleteFolderContents(file: File) {
+        file.listFiles()?.forEach { 
+            if (it.isDirectory) deleteFolderContents(it)
+            it.delete()
+        }
     }
 
     // Фабрика, потому что вьюмоделька не умеет сама прокидывать репозиторий в конструктор.

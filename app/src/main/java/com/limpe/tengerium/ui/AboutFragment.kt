@@ -26,16 +26,65 @@ class AboutFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbar.setNavigationOnClickListener {
-            val mainFragment = findMainFragment()
-            if (mainFragment != null && mainFragment.isTablet) {
-                mainFragment.childFragmentManager.popBackStack()
-            } else {
-                findNavController().popBackStack()
-            }
+            performBack()
+        }
+        
+        binding.swipeBackLayout.setOnSwipeBackListener {
+            performBack()
         }
 
         setupAppInfo()
         setupLinks()
+        
+        // Клик по логотипу - проверка обновлений
+        binding.ivAppLogo.setOnClickListener {
+            try {
+                findNavController().navigate(R.id.action_AboutFragment_to_UpdateFragment)
+            } catch (e: Exception) {}
+        }
+
+        // Пасхалка на долгое нажатие всей верхней части
+        val easterEggTrigger = View.OnLongClickListener {
+            navigateToEasterEgg()
+            true
+        }
+
+        binding.layoutAppHeader.setOnLongClickListener(easterEggTrigger)
+        
+        // Telegram link
+        binding.btnTelegram.setOnClickListener {
+            openUrl("https://t.me/tengerium")
+        }
+
+        // GitHub link
+        binding.btnGitHub.setOnClickListener {
+            openUrl("https://github.com/lednikofff/tengerium")
+        }
+
+        // Discord link
+        binding.btnDiscord.setOnClickListener {
+            openUrl("https://discord.gg/y6frBntsC5")
+        }
+    }
+
+    private fun navigateToEasterEgg() {
+        val mainFragment = findMainFragment()
+        if (mainFragment != null) {
+            mainFragment.showDetail(EasterEggFragment(), addToBackStack = true)
+        } else {
+            try {
+                findNavController().navigate(R.id.EasterEggFragment)
+            } catch (e: Exception) {}
+        }
+    }
+
+    private fun performBack() {
+        val mainFragment = findMainFragment()
+        if (mainFragment != null) {
+            mainFragment.closeDetail()
+        } else {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupAppInfo() {
@@ -78,7 +127,7 @@ class AboutFragment : Fragment() {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         } catch (e: Exception) {
-            // Fallback or error message if no browser found (unlikely)
+            // Fallback
         }
     }
     

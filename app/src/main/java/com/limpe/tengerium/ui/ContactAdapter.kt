@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.limpe.tengerium.R
+import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.ItemContactGroupBinding
 import com.limpe.tengerium.databinding.ItemDateHeaderBinding
 import com.limpe.tengerium.databinding.ItemRequestsHeaderBinding
@@ -19,6 +20,7 @@ import com.limpe.tengerium.util.FormattingUtils
 import java.util.*
 
 class ContactAdapter(
+    private val securePrefs: SecurePrefs,
     private val onClick: (Contact) -> Unit,
     private val onLongClick: (View, Contact) -> Unit,
     private val onRequestsClick: () -> Unit,
@@ -29,7 +31,7 @@ class ContactAdapter(
     private var highlightedAccount: String? = null
 
     sealed class ContactItem {
-        data class User(val contact: Contact) : ContactItem()
+        data class User(val contact: Contact, val isMuted: Boolean = false) : ContactItem()
         data class GroupHeader(val group: Group, val onlineCount: Int, val totalCount: Int, val isExpanded: Boolean) : ContactItem()
         data class Header(val count: Int) : ContactItem()
         object NotConnected : ContactItem()
@@ -57,7 +59,7 @@ class ContactAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val item = getItem(position)) {
             is ContactItem.User -> {
-                (holder as ContactViewHolder).bind(item.contact, item.contact.account == highlightedAccount)
+                (holder as ContactViewHolder).bind(item.contact, item.isMuted, item.contact.account == highlightedAccount)
                 holder.itemView.setOnClickListener { onClick(item.contact) }
                 holder.itemView.setOnLongClickListener { 
                     onLongClick(it, item.contact)
@@ -99,6 +101,9 @@ class ContactAdapter(
                         if (payload.containsKey("avatar")) {
                             holder.updateAvatar(item.contact)
                         }
+                        if (payload.containsKey("mute")) {
+                            holder.updateMuteState(payload.getBoolean("mute"))
+                        }
                     }
                 }
             }
@@ -119,10 +124,11 @@ class ContactAdapter(
     class ContactViewHolder(private val binding: ItemUserRowBinding) : RecyclerView.ViewHolder(binding.root) {
         private var lastStatus: String? = null
 
-        fun bind(contact: Contact, isHighlighted: Boolean) {
+        fun bind(contact: Contact, isMuted: Boolean, isHighlighted: Boolean) {
             updateText(contact)
             updateStatus(contact.status, animate = false)
             updateAvatar(contact)
+            updateMuteState(isMuted)
             
             if (isHighlighted) {
                 binding.root.setBackgroundResource(android.R.color.holo_blue_light)
@@ -157,6 +163,10 @@ class ContactAdapter(
 
         fun updateAvatar(contact: Contact) {
             binding.avatarStatusView.setAvatar(contact.avatarUrl, contact.account)
+        }
+
+        fun updateMuteState(isMuted: Boolean) {
+            binding.ivMuted.visibility = if (isMuted) View.VISIBLE else View.GONE
         }
     }
 
@@ -205,6 +215,7 @@ class ContactAdapter(
                 if (oldItem.contact.nickname != newItem.contact.nickname) diff.putString("nickname", newItem.contact.nickname)
                 if (oldItem.contact.personalMessage != newItem.contact.personalMessage) diff.putString("psm", newItem.contact.personalMessage)
                 if (oldItem.contact.avatarUrl != newItem.contact.avatarUrl) diff.putString("avatar", newItem.contact.avatarUrl)
+                if (oldItem.isMuted != newItem.isMuted) diff.putBoolean("mute", newItem.isMuted)
                 return if (diff.isEmpty) null else diff
             }
             return null

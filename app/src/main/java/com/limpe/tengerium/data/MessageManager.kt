@@ -50,14 +50,8 @@ class MessageManager(
         
         val id = database.messageDao().insertMessage(entity)
         
-        // Если это нам — надо пискнуть звуком.
+        // Если это нам — пуляем в поток. Звуки теперь в MSNPService для контроля фокуса.
         if (isIncoming) {
-            if (text == "[NUDGE]") {
-                if (securePrefs.notifyNudge) SoundUtils.playSound(context, R.raw.nudge)
-            } else {
-                // Для обычных сообщений
-                if (securePrefs.notifyMessages) SoundUtils.playSound(context, R.raw.type)
-            }
             _incomingMessageFlow.emit(IncomingMessage(target, nickname, text))
         }
         

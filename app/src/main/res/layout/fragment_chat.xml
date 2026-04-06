@@ -8,7 +8,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="?android:attr/windowBackground">
 
         <ImageView
             android:id="@+id/ivChatBackground"
@@ -30,7 +31,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- Placeholder when no messages -->
         <LinearLayout
             android:id="@+id/layoutEmpty"
             android:layout_width="wrap_content"
@@ -97,21 +97,39 @@
                         app:layout_constraintStart_toEndOf="@id/avatarStatusView"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <TextView
-                            android:id="@+id/tvChatName"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:ellipsize="end"
-                            android:maxLines="1"
-                            android:textAppearance="?attr/textAppearanceTitleMedium"
-                            tools:text="Contact Name" />
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvChatName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:maxLines="1"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                tools:text="" />
+
+                            <ImageView
+                                android:id="@+id/ivChatMuted"
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_marginStart="4dp"
+                                android:alpha="0.6"
+                                android:src="@drawable/ic_notifications_off"
+                                android:visibility="gone"
+                                app:tint="?attr/colorOnSurfaceVariant"
+                                tools:visibility="visible" />
+                        </LinearLayout>
 
                         <TextView
                             android:id="@+id/tvChatStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?attr/textAppearanceLabelSmall"
-                            tools:text="Online" />
+                            tools:text="" />
                     </LinearLayout>
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.appbar.MaterialToolbar>
@@ -131,8 +149,7 @@
                 android:background="?attr/colorErrorContainer"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:visibility="gone"
-                tools:visibility="gone">
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -148,14 +165,11 @@
                     android:text="@string/add_to_contacts" />
             </LinearLayout>
 
-            <!-- Typing Indicator with consistent spacing -->
-
             <TextView
                 android:id="@+id/tvTypingIndicator"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:layout_marginTop="0dp"
                 android:layout_marginBottom="2dp"
                 android:alpha="0"
                 android:background="@drawable/bg_placeholder_bubble"
@@ -163,10 +177,7 @@
                 android:paddingVertical="2dp"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/white"
-                android:visibility="gone"
-                tools:alpha="1"
-                tools:text="Contact is typing..."
-                tools:visibility="visible" />
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/layoutInput"
@@ -210,4 +221,5 @@
             app:srcCompat="@drawable/ic_arrow_down" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.limpe.tengerium.ui.SwipeBackLayout>

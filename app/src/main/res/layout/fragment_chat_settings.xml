@@ -1,63 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.limpe.tengerium.ui.SwipeBackLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeBackLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground">
+    android:layout_height="match_parent">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:background="?android:attr/windowBackground">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/ic_arrow_back"
-            app:title="@string/app_settings" />
-
-    </com.google.android.material.appbar.AppBarLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
-
-        <LinearLayout
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <!-- Theme Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardTheme"
-                style="@style/Widget.Material3.CardView.Elevated"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:title="@string/chat_settings" />
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appBarLayout">
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp">
+                android:orientation="vertical"
+                android:padding="16dp">
 
+                <!-- Theme Section -->
                 <LinearLayout
+                    android:id="@+id/cardTheme"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/interface_header"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchSystemTheme"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
                         android:text="@string/system_theme" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
@@ -81,23 +73,23 @@
                         android:layout_marginTop="8dp"
                         android:text="@string/open_chats_by_default" />
 
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchShowOnlineFirst"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/show_online_first" />
+
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
                         android:layout_marginBottom="16dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/chat_header"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchSendByEnter"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
                         android:text="@string/send_by_enter" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
@@ -142,10 +134,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
-                            <RadioButton android:id="@+id/radioTheme0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_classic" />
-                            <RadioButton android:id="@+id/radioTheme1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_emerald" />
-                            <RadioButton android:id="@+id/radioTheme2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_lavender" />
-                            <RadioButton android:id="@+id/radioTheme3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_dark" />
+                            <RadioButton android:id="@+id/radioThemeStandard" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_standard" />
+                            <RadioButton android:id="@+id/radioThemeTurquoise" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/theme_turquoise" />
                         </RadioGroup>
                     </HorizontalScrollView>
 
@@ -156,35 +146,66 @@
                         android:text="@string/preview"
                         android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                    <LinearLayout
-                        android:id="@+id/themePreview"
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/themePreviewContainer"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="180dp"
                         android:layout_marginTop="8dp"
-                        android:background="#10000000"
-                        android:padding="12dp"
-                        android:orientation="vertical">
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/previewIncoming"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="0dp">
-                            <TextView android:id="@+id/tvPreviewIncoming" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="12dp" android:text="@string/preview_incoming" />
-                        </com.google.android.material.card.MaterialCardView>
+                        <ImageView
+                            android:id="@+id/ivThemePreviewBg"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:importantForAccessibility="no" />
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:id="@+id/previewOutgoing"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="end"
-                            android:layout_marginTop="8dp"
-                            app:cardCornerRadius="12dp"
-                            app:cardElevation="0dp">
-                            <TextView android:id="@+id/tvPreviewOutgoing" android:layout_width="wrap_content" android:layout_height="wrap_content" android:padding="12dp" android:text="@string/preview_outgoing" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
+                        <LinearLayout
+                            android:id="@+id/themePreview"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="#15000000"
+                            android:padding="16dp"
+                            android:gravity="center_vertical"
+                            android:orientation="vertical">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/previewIncoming"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+                                <TextView
+                                    android:id="@+id/tvPreviewIncoming"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingHorizontal="12dp"
+                                    android:paddingVertical="8dp"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                                    android:text="@string/preview_incoming" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/previewOutgoing"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:layout_marginTop="8dp"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="2dp">
+                                <TextView
+                                    android:id="@+id/tvPreviewOutgoing"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:paddingHorizontal="12dp"
+                                    android:paddingVertical="8dp"
+                                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                                    android:text="@string/preview_outgoing" />
+                            </com.google.android.material.card.MaterialCardView>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -223,47 +244,25 @@
                             android:insetRight="0dp"
                             android:insetBottom="0dp"
                             android:visibility="gone"
-                            app:icon="@android:drawable/ic_menu_delete"
+                            app:icon="@drawable/ic_delete_background"
                             app:iconGravity="textStart"
                             app:iconPadding="0dp" />
                     </LinearLayout>
 
-                    <com.google.android.material.materialswitch.MaterialSwitch
-                        android:id="@+id/switchDebugPopups"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/enable_debug_popups" />
-
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Privacy Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardPrivacy"
-                style="@style/Widget.Material3.CardView.Elevated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp">
-
+                <!-- Privacy Section -->
                 <LinearLayout
+                    android:id="@+id/cardPrivacy"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/privacy"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchPrivacyOnlyList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:text="@string/privacy_allow_only_contacts" />
 
                     <TextView
@@ -275,34 +274,19 @@
                         android:alpha="0.7" />
 
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Notifications Section -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardNotifications"
-                style="@style/Widget.Material3.CardView.Elevated"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardCornerRadius="16dp">
-
+                <!-- Notifications Section -->
                 <LinearLayout
+                    android:id="@+id/cardNotifications"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/notifications"
-                        android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
                     <com.google.android.material.materialswitch.MaterialSwitch
                         android:id="@+id/switchNotifyMessages"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
                         android:text="@string/notify_messages" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
@@ -330,7 +314,6 @@
                         android:id="@+id/switchVibration"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
                         android:text="@string/vibration_enabled" />
 
                     <com.google.android.material.materialswitch.MaterialSwitch
@@ -361,106 +344,86 @@
                         android:alpha="0.7" />
 
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
 
-            <!-- Storage Section -->
-            <LinearLayout
-                android:id="@+id/cardStorage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.card.MaterialCardView
+                <!-- Storage Section -->
+                <LinearLayout
+                    android:id="@+id/cardStorage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="16dp"
-                    style="@style/Widget.Material3.CardView.Elevated">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
+                    <TextView
+                        android:id="@+id/tvTotalSpace"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                        tools:text="App takes 2% of device memory" />
+
+                    <!-- Диаграмма -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="16dp">
+                        android:layout_marginTop="24dp"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/storage_usage"
-                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
-
-                        <TextView
-                            android:id="@+id/tvTotalSpace"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
-                            tools:text="App takes 2% of device memory" />
-
-                        <!-- Диаграмма (упрощенная через ProgressBars) -->
-                        <LinearLayout
+                            android:id="@+id/tvCacheLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="24dp"
-                            android:orientation="vertical">
+                            android:text="@string/cache_label"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                            <TextView
-                                android:id="@+id/tvCacheLabel"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/cache_label"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progressCache"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            app:indicatorColor="?attr/colorPrimary"
+                            tools:progress="40" />
 
-                            <com.google.android.material.progressindicator.LinearProgressIndicator
-                                android:id="@+id/progressCache"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                app:indicatorColor="?attr/colorPrimary"
-                                tools:progress="40" />
+                        <TextView
+                            android:id="@+id/tvMessagesLabel"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:text="@string/messages_label"
+                            android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
 
-                            <TextView
-                                android:id="@+id/tvMessagesLabel"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
-                                android:text="@string/messages_label"
-                                android:textAppearance="@style/TextAppearance.Material3.LabelMedium" />
-
-                            <com.google.android.material.progressindicator.LinearProgressIndicator
-                                android:id="@+id/progressMessages"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                app:indicatorColor="?attr/colorTertiary"
-                                tools:progress="20" />
-
-                        </LinearLayout>
+                        <com.google.android.material.progressindicator.LinearProgressIndicator
+                            android:id="@+id/progressMessages"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            app:indicatorColor="?attr/colorTertiary"
+                            tools:progress="20" />
 
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnClearCache"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="@string/clear_cache"
-                    app:icon="@android:drawable/ic_menu_delete" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnClearCache"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:text="@string/clear_cache"
+                        app:icon="@android:drawable/ic_menu_delete" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnClearHistory"
-                    style="@style/Widget.Material3.Button.TonalButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/clear_history"
-                    android:textColor="?attr/colorError"
-                    app:icon="@android:drawable/ic_menu_delete"
-                    app:iconTint="?attr/colorError" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnClearHistory"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/clear_history"
+                        android:textColor="?attr/colorError"
+                        app:icon="@android:drawable/ic_menu_delete"
+                        app:iconTint="?attr/colorError" />
+
+                </LinearLayout>
+
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.limpe.tengerium.ui.SwipeBackLayout>

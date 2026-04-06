@@ -12,6 +12,7 @@
         android:background="?attr/colorSurface">
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/profileScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="false">
@@ -410,7 +411,5 @@
                 tools:src="@drawable/ic_default_avatar" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
     </FrameLayout>
-
 </com.limpe.tengerium.ui.SwipeBackLayout>

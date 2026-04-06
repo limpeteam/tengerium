@@ -1,11 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_send_nudge"
-        android:title="@string/send_nudge"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_export_chat"
-        android:title="@string/export_chat_history"
-        app:showAsAction="never" />
+        android:id="@+id/action_chat_menu"
+        android:title=""
+        android:icon="@drawable/ic_more_vert"
+        app:showAsAction="always" />
 </menu>

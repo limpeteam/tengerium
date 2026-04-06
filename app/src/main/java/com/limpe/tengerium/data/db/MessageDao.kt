@@ -38,6 +38,12 @@ interface MessageDao {
     @Query("SELECT * FROM messages WHERE ownerAccount = :owner AND isIncoming = 0 AND isSent = 0 AND error IS NULL")
     suspend fun getUnsentMessages(owner: String): List<MessageEntity>
 
+    @Query("SELECT * FROM messages WHERE ownerAccount = :owner AND receiverAccount = :contact AND isIncoming = 0 AND isSent = 0 AND error IS NULL")
+    suspend fun getUnsentMessagesForContact(owner: String, contact: String): List<MessageEntity>
+
     @Query("DELETE FROM messages WHERE ownerAccount = :owner")
     suspend fun clearAllMessages(owner: String)
+
+    @Query("DELETE FROM messages WHERE ownerAccount = :owner AND (senderAccount = :contact OR receiverAccount = :contact)")
+    suspend fun clearChatMessages(owner: String, contact: String)
 }

@@ -8,10 +8,6 @@ import android.content.pm.PackageManager
  */
 object AppConfig {
 
-    // Показывать ли Toast с сырыми логами протокола и отладочной информацией
-    var showDebugToasts: Boolean = false
-
-
     // Включить отображение аватарок (отключите, если есть проблемы с отображением или производительностью)
     var enableAvatars: Boolean = true
 
@@ -19,7 +15,10 @@ object AppConfig {
     var enableAvatarLibrary: Boolean = true
 
     // Специальный режим LIMPE_EXP
-    const val LIMPE_EXP = false
+    const val LIMPE_EXP = true
+
+    // Новый вид страницы входа
+    var USENEWLOGINEXP: Boolean = true
 
     // --- OOBE Configuration ---
     // Включение/выключение этапов первоначальной настройки

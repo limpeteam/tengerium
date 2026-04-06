@@ -12,8 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
+import android.widget.Button
+import android.widget.PopupWindow
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -33,6 +37,7 @@ import com.limpe.tengerium.data.MSNPRepository
 import com.limpe.tengerium.data.protocol.MSNPProto
 import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentChatBinding
+import com.limpe.tengerium.databinding.LayoutChatMenuBinding
 import com.limpe.tengerium.util.AnimationHelper
 import com.limpe.tengerium.util.ChatHistoryExporter
 import com.limpe.tengerium.util.FormattingUtils
@@ -95,23 +100,25 @@ class ChatFragment : Fragment() {
         }
         binding.rvMessages.adapter = adapter
         
+        binding.swipeBackLayout.setOnSwipeBackListener {
+            performBackNavigation()
+        }
+
         applyDynamicDesign()
         loadChatBackground()
 
-        binding.toolbar.setNavigationOnClickListener { findNavController().popBackStack() }
+        binding.toolbar.setNavigationOnClickListener { 
+            performBackNavigation()
+        }
 
         binding.toolbar.inflateMenu(R.menu.menu_chat)
         binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.action_send_nudge -> {
-                    sendNudge()
-                    true
-                }
-                R.id.action_export_chat -> {
-                    startExport()
-                    true
-                }
-                else -> false
+            if (menuItem.itemId == R.id.action_chat_menu) {
+                val anchor = activity?.findViewById<View>(R.id.action_chat_menu) ?: binding.toolbar
+                showCustomMenu(anchor)
+                true
+            } else {
+                false
             }
         }
 
@@ -169,6 +176,131 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private fun showCustomMenu(anchor: View) {
+        val menuBinding = LayoutChatMenuBinding.inflate(layoutInflater)
+        val popup = PopupWindow(menuBinding.root, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+        
+        popup.elevation = 20f
+
+        val normalizedAccount = contactAccount?.lowercase(Locale.ROOT)?.trim() ?: ""
+        val contacts = repository.contacts.value
+        val contact = contacts.find { it.account.lowercase(Locale.ROOT).trim() == normalizedAccount }
+        val isOnline = contact != null && contact.status != MSNPProto.Status.OFFLINE && contact.status != "FLN"
+        
+        // Hide elements not needed in active chat context
+        menuBinding.btnMenuPin.isVisible = false
+        menuBinding.btnMenuFolder.isVisible = false
+        menuBinding.btnMenuRemoveFolder.isVisible = false
+        
+        // Mute logic
+        val isMuted = securePrefs.isChatMuted(normalizedAccount)
+        menuBinding.btnMenuMute.text = if (isMuted) getString(R.string.unmute_notifications) else getString(R.string.mute_notifications)
+        menuBinding.btnMenuMute.setIconResource(if (isMuted) R.drawable.ic_notifications_on else R.drawable.ic_notifications_off)
+        menuBinding.btnMenuMute.setOnClickListener {
+            securePrefs.toggleMuteChat(normalizedAccount)
+            popup.dismiss()
+        }
+
+        // Nudge (Будильник)
+        menuBinding.btnMenuNudge.isVisible = true
+        val cooldown = repository.nudgeCooldowns.value[normalizedAccount] ?: 0
+        
+        if (!isOnline) {
+            menuBinding.btnMenuNudge.isEnabled = false
+            menuBinding.btnMenuNudge.alpha = 0.5f
+        } else if (cooldown > 0) {
+            menuBinding.btnMenuNudge.isEnabled = false
+            menuBinding.btnMenuNudge.text = getString(R.string.send_nudge_cooldown, cooldown)
+        } else {
+            menuBinding.btnMenuNudge.isEnabled = true
+            menuBinding.btnMenuNudge.alpha = 1.0f
+        }
+        
+        menuBinding.btnMenuNudge.setOnClickListener {
+            sendNudge()
+            popup.dismiss()
+        }
+
+        // Export
+        menuBinding.btnMenuExport.isVisible = true
+        menuBinding.btnMenuExport.setOnClickListener {
+            startExport()
+            popup.dismiss()
+        }
+
+        // Clear
+        menuBinding.btnMenuClear.isVisible = true
+        menuBinding.btnMenuClear.setOnClickListener {
+            showClearChatDialog()
+            popup.dismiss()
+        }
+        
+        // Block
+        menuBinding.btnMenuBlock.isVisible = true
+        val isBlocked = contact?.listType?.contains("BL") ?: false
+        menuBinding.btnMenuBlock.text = if (isBlocked) getString(R.string.unblock) else getString(R.string.block)
+        menuBinding.btnMenuBlock.setIconResource(if (isBlocked) R.drawable.ic_unblock else R.drawable.ic_block)
+        menuBinding.btnMenuBlock.setOnClickListener {
+            if (isBlocked) repository.unblockContact(normalizedAccount) else repository.blockContact(normalizedAccount)
+            popup.dismiss()
+        }
+
+        menuBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val xOffset = -menuBinding.root.measuredWidth + anchor.width
+        val yOffset = 0
+        
+        AnimationHelper.showSmartPopup(popup, anchor, xOffset, yOffset)
+    }
+
+    private fun showClearChatDialog() {
+        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_deep_link_warning, null)
+        val builder = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setCancelable(true)
+            
+        val dialog = builder.create()
+        dialog.show()
+
+        val tvTitle = dialogView.findViewById<TextView>(R.id.tvWarningTitle)
+        val tvMessage = dialogView.findViewById<TextView>(R.id.tvWarningMessage)
+        val btnDelete = dialogView.findViewById<Button>(R.id.btnSave)
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+
+        val colorOnSurface = com.google.android.material.color.MaterialColors.getColor(requireContext(), com.google.android.material.R.attr.colorOnSurface, 0)
+        tvTitle.setTextColor(colorOnSurface)
+
+        tvTitle.text = getString(R.string.clear_history_title)
+        tvMessage.text = getString(R.string.clear_history_message)
+        btnDelete.text = getString(R.string.delete)
+        
+        btnCancel.setOnClickListener { dialog.dismiss() }
+        btnDelete.setOnClickListener {
+            contactAccount?.let { account ->
+                repository.clearChatMessages(account)
+                Toast.makeText(requireContext(), R.string.history_cleared, Toast.LENGTH_SHORT).show()
+            }
+            dialog.dismiss()
+        }
+    }
+
+    private fun performBackNavigation() {
+        val mainFragment = findMainFragment()
+        if (mainFragment != null) {
+            mainFragment.closeDetail()
+        } else {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun findMainFragment(): MainFragment? {
+        var parent = parentFragment
+        while (parent != null) {
+            if (parent is MainFragment) return parent
+            parent = parent.parentFragment
+        }
+        return null
+    }
+
     private fun startExport() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
@@ -212,8 +344,6 @@ class ChatFragment : Fragment() {
         if (!bgPath.isNullOrEmpty()) {
             binding.ivChatBackground.isVisible = true
             binding.ivChatBackground.load(Uri.parse(bgPath))
-            
-            // If background is set, make main background transparent to see the image
             binding.root.setBackgroundColor(android.graphics.Color.TRANSPARENT)
         } else {
             binding.ivChatBackground.isVisible = false
@@ -228,18 +358,19 @@ class ChatFragment : Fragment() {
 
     private fun openProfile() {
         contactAccount?.let { account ->
-            val navController = findNavController()
-            if (navController.currentDestination?.id != R.id.ChatFragment) return
-            
             val bundle = bundleOf("account" to account)
-            val parent = parentFragment
-            if (parent is MainFragment && parent.isTablet) {
+            val parent = findMainFragment()
+            
+            if (parent != null) {
                 val profileFragment = ProfileFragment().apply {
                     arguments = bundle
                 }
-                parent.showDetail(profileFragment)
+                parent.showDetail(profileFragment, addToBackStack = true)
             } else {
-                navController.navigate(R.id.action_ChatFragment_to_ProfileFragment, bundle)
+                val navController = findNavController()
+                if (navController.currentDestination?.id == R.id.ChatFragment) {
+                    navController.navigate(R.id.action_ChatFragment_to_ProfileFragment, bundle)
+                }
             }
         }
     }
@@ -298,14 +429,13 @@ class ChatFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 contactAccount?.let { account ->
-                    val normalizedAccount = account.lowercase(Locale.ROOT).trim()
                     
                     launch {
                         repository.getMessages(account).collectLatest { messages ->
                             binding.layoutEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
-                            adapter.submitList(messages) {
+                            adapter.submitMessages(messages) {
                                 if (messages.isNotEmpty()) {
-                                    binding.rvMessages.scrollToPosition(messages.size - 1)
+                                    binding.rvMessages.scrollToPosition(adapter.itemCount - 1)
                                 }
                             }
                         }
@@ -323,7 +453,6 @@ class ChatFragment : Fragment() {
                             val isFriend = contact != null
                             binding.layoutNotFriend.visibility = if (isFriend) View.GONE else View.VISIBLE
 
-                            // Handle disabled queue blocking input
                             if (securePrefs.disableMessageQueue) {
                                 val isOffline = status == MSNPProto.Status.OFFLINE || status == "FLN"
                                 if (isOffline) {
@@ -336,12 +465,6 @@ class ChatFragment : Fragment() {
                                         binding.btnSend.isEnabled = true
                                         binding.etMessage.text.clear()
                                     }
-                                }
-                            } else {
-                                if (!binding.etMessage.isEnabled) {
-                                    binding.etMessage.isEnabled = true
-                                    binding.btnSend.isEnabled = true
-                                    binding.etMessage.text.clear()
                                 }
                             }
                         }
@@ -357,15 +480,9 @@ class ChatFragment : Fragment() {
                     }
 
                     launch {
-                        repository.nudgeCooldowns.collectLatest { cooldowns ->
-                            val secondsLeft = cooldowns[normalizedAccount] ?: 0
-                            val nudgeItem = binding.toolbar.menu.findItem(R.id.action_send_nudge)
-                            if (secondsLeft > 0) {
-                                nudgeItem?.isEnabled = false
-                                nudgeItem?.title = getString(R.string.send_nudge_cooldown, secondsLeft)
-                            } else {
-                                nudgeItem?.isEnabled = true
-                                nudgeItem?.title = getString(R.string.send_nudge)
+                        securePrefs.prefsChangedFlow.collectLatest { key ->
+                            if (key == "muted_chats") {
+                                binding.ivChatMuted.visibility = if (securePrefs.isChatMuted(account)) View.VISIBLE else View.GONE
                             }
                         }
                     }
@@ -407,6 +524,11 @@ class ChatFragment : Fragment() {
             binding.tvChatStatus.text = psm
         } else {
             binding.tvChatStatus.setText(StatusUtils.getStatusStringRes(status))
+        }
+
+        // Initialize mute state
+        contactAccount?.let { account ->
+            binding.ivChatMuted.visibility = if (securePrefs.isChatMuted(account)) View.VISIBLE else View.GONE
         }
     }
 

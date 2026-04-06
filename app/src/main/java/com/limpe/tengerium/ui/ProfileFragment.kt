@@ -23,6 +23,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -102,36 +103,30 @@ class ProfileFragment : DialogFragment() {
         observeData()
 
         if (profileAccount == null) {
-            binding.swipeBackLayout.post {
-                val scrollView = binding.swipeBackLayout.getChildAt(0) as? androidx.core.widget.NestedScrollView
-                scrollView?.scrollTo(0, mainViewModel.profileScrollY)
+            _binding?.profileScrollView?.post {
+                _binding?.profileScrollView?.scrollTo(0, mainViewModel.profileScrollY)
             }
-            
-            val scrollView = binding.swipeBackLayout.getChildAt(0) as? androidx.core.widget.NestedScrollView
-            scrollView?.setOnScrollChangeListener(androidx.core.widget.NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+            _binding?.profileScrollView?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
                 mainViewModel.profileScrollY = scrollY
             })
-            
             updateAppInfo()
         }
     }
 
     private fun updateAppInfo() {
-        val context = requireContext()
+        val context = context ?: return
         val appName = getString(R.string.app_name)
         val codeName = AppConfig.getCodeName(context)
         val branch = AppConfig.getBranch(context)
         val versionName = try {
             context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        } catch (e: Exception) {
-            "0.0.1"
-        }
+        } catch (e: Exception) { "0.0.1" }
         
-        binding.tvAppInfo.text = getString(R.string.app_info_full_format, appName, codeName, branch, versionName)
-        binding.tvAppInfo.setOnClickListener {
+        _binding?.tvAppInfo?.text = getString(R.string.app_info_full_format, appName, codeName, branch, versionName)
+        _binding?.tvAppInfo?.setOnClickListener {
             val mainFragment = findMainFragment()
-            if (mainFragment != null && mainFragment.isTablet) {
-                mainFragment.showDetail(AboutFragment())
+            if (mainFragment != null) {
+                mainFragment.showDetail(AboutFragment(), addToBackStack = true)
             } else {
                 findNavController().navigate(R.id.AboutFragment)
             }
@@ -144,52 +139,48 @@ class ProfileFragment : DialogFragment() {
         val isModal = showsDialog && arguments?.getBoolean("as_modal") == true
         
         if (isOwnProfile) {
-            binding.avatarStatusView.statusView.visibility = View.GONE
-            binding.avatarStatusView.statusBorderView.visibility = View.GONE
+            _binding?.avatarStatusView?.statusView?.visibility = View.GONE
+            _binding?.avatarStatusView?.statusBorderView?.visibility = View.GONE
         }
 
-        binding.btnProfileBack.visibility = if (isModal || profileAccount != null) View.VISIBLE else View.GONE
-        binding.btnProfileBack.setOnClickListener { 
-            if (isModal) dismiss() else {
-                val parent = parentFragment
-                if (parent is MainFragment && parent.isTablet) {
-                    parent.childFragmentManager.popBackStack()
-                } else {
-                    findNavController().popBackStack()
-                }
-            }
+        _binding?.swipeBackLayout?.setOnSwipeBackListener {
+            performCloseProfile()
         }
-        
+
+        _binding?.btnProfileBack?.visibility = if (isModal || profileAccount != null) View.VISIBLE else View.GONE
+        _binding?.btnProfileBack?.setOnClickListener { 
+            performCloseProfile()
+        }
+
         if (isModal) {
-            binding.root.clipToOutline = true
-            binding.root.background = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_modal_profile)
+            _binding?.root?.clipToOutline = true
+            _binding?.root?.background = androidx.core.content.ContextCompat.getDrawable(requireContext(), R.drawable.bg_modal_profile)
         }
 
-        binding.layoutSelfSettings.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
-        binding.btnEditAvatar.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
-        binding.btnEditProfile.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
+        _binding?.layoutSelfSettings?.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
+        _binding?.btnEditAvatar?.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
+        _binding?.btnEditProfile?.visibility = if (isOwnProfile) View.VISIBLE else View.GONE
         
-        binding.btnEditAvatar.setOnClickListener { 
+        _binding?.btnEditAvatar?.setOnClickListener { 
             if (AppConfig.enableAvatarLibrary) {
-                findNavController().navigate(R.id.AvatarLibraryFragment)
+                val mf = findMainFragment()
+                if (mf != null) {
+                    mf.showDetail(AvatarLibraryFragment(), addToBackStack = true)
+                } else {
+                    findNavController().navigate(R.id.AvatarLibraryFragment)
+                }
             } else {
-                // Fallback to direct picker if library is disabled
                 val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
                 avatarPickerLauncher.launch(intent) 
             }
         }
-        binding.btnEditProfile.setOnClickListener { showEditProfileDialog() }
-        binding.btnLogout.setOnClickListener { logout() }
+        _binding?.btnEditProfile?.setOnClickListener { showEditProfileDialog() }
+        _binding?.btnLogout?.setOnClickListener { logout() }
         
-        binding.avatarStatusView.setOnClickListener {
-            showFullAvatar()
-        }
+        _binding?.avatarStatusView?.setOnClickListener { showFullAvatar() }
+        _binding?.btnFullAvatarBack?.setOnClickListener { hideFullAvatar() }
 
-        binding.btnFullAvatarBack.setOnClickListener {
-            hideFullAvatar()
-        }
-
-        binding.btnFullAvatarMenu.setOnClickListener { view ->
+        _binding?.btnFullAvatarMenu?.setOnClickListener { view ->
             val popup = PopupMenu(requireContext(), view)
             popup.menu.add(getString(R.string.download))
             popup.setOnMenuItemClickListener {
@@ -199,18 +190,48 @@ class ProfileFragment : DialogFragment() {
             popup.show()
         }
 
-        binding.btnTheme.setOnClickListener { navigateToSettings("theme") }
-        binding.btnNotifications.setOnClickListener { navigateToSettings("notifications") }
-        binding.btnPrivacy.setOnClickListener { navigateToSettings("privacy") }
-        binding.btnStorage.setOnClickListener { navigateToSettings("storage") }
+        _binding?.btnTheme?.setOnClickListener { navigateToSettings("theme") }
+        _binding?.btnNotifications?.setOnClickListener { navigateToSettings("notifications") }
+        _binding?.btnPrivacy?.setOnClickListener { navigateToSettings("privacy") }
+        _binding?.btnStorage?.setOnClickListener { navigateToSettings("storage") }
 
-        binding.btnLanguage.setOnClickListener {
-            showLanguageDialog()
-        }
+        _binding?.btnLanguage?.setOnClickListener { showLanguageDialog() }
+        _binding?.btnStatusSelector?.setOnClickListener { showStatusDialog() }
+    }
 
-        binding.btnStatusSelector.setOnClickListener {
-            showStatusDialog()
+    private fun performCloseProfile() {
+        val isModal = showsDialog && arguments?.getBoolean("as_modal") == true
+        if (isModal) {
+            dismiss()
+        } else {
+            val parent = findMainFragment()
+            if (parent != null) {
+                parent.closeDetail()
+            } else {
+                findNavController().popBackStack()
+            }
         }
+    }
+
+    private fun navigateToSettings(mode: String) {
+        val isModal = showsDialog && arguments?.getBoolean("as_modal") == true
+        val mainFragment = findMainFragment()
+
+        if (mainFragment != null) {
+            val existing = mainFragment.childFragmentManager.findFragmentById(R.id.detail_container)
+            if (existing is ChatSettingsFragment) {
+                existing.updateMode(mode)
+            } else {
+                val fragment = ChatSettingsFragment().apply {
+                    arguments = bundleOf("mode" to mode)
+                }
+                mainFragment.showDetail(fragment, addToBackStack = true)
+            }
+        } else {
+            findNavController().navigate(R.id.ChatSettingsFragment, bundleOf("mode" to mode))
+        }
+        
+        if (isModal) dismiss()
     }
 
     private val avatarPickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -221,54 +242,35 @@ class ProfileFragment : DialogFragment() {
     }
 
     private fun showFullAvatar() {
+        val b = _binding ?: return
         if (currentAvatarPath != null) {
-            binding.layoutFullAvatar.visibility = View.VISIBLE
-            AvatarUtils.loadAvatar(binding.ivFullAvatar, currentAvatarPath, profileAccount ?: "")
-            
-            // Animation
-            binding.layoutFullAvatar.animate()
-                .alpha(1f)
-                .setDuration(300)
-                .setListener(null)
-            
-            binding.ivFullAvatar.scaleX = 0.5f
-            binding.ivFullAvatar.scaleY = 0.5f
-            binding.ivFullAvatar.animate()
-                .scaleX(1f)
-                .scaleY(1f)
-                .setDuration(300)
-                .start()
+            b.layoutFullAvatar.visibility = View.VISIBLE
+            AvatarUtils.loadAvatar(b.ivFullAvatar, currentAvatarPath, profileAccount ?: "")
+            b.layoutFullAvatar.animate().alpha(1f).setDuration(300).setListener(null)
+            b.ivFullAvatar.scaleX = 0.5f
+            b.ivFullAvatar.scaleY = 0.5f
+            b.ivFullAvatar.animate().scaleX(1f).scaleY(1f).setDuration(300).start()
         }
     }
     
     private fun hideFullAvatar() {
-        binding.layoutFullAvatar.animate()
-            .alpha(0f)
-            .setDuration(300)
-            .setListener(object : AnimatorListenerAdapter() {
+        _binding?.layoutFullAvatar?.animate()?.alpha(0f)?.setDuration(300)?.setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
-                    binding.layoutFullAvatar.visibility = View.GONE
+                    _binding?.layoutFullAvatar?.visibility = View.GONE
                 }
             })
-            
-        binding.ivFullAvatar.animate()
-            .scaleX(0.5f)
-            .scaleY(0.5f)
-            .setDuration(300)
-            .start()
+        _binding?.ivFullAvatar?.animate()?.scaleX(0.5f)?.scaleY(0.5f)?.setDuration(300)?.start()
     }
 
     private fun downloadAvatar() {
         val path = currentAvatarPath ?: return
         val account = profileAccount ?: "avatar"
-        
-        lifecycleScope.launch(Dispatchers.IO) {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
-                val bitmap = BitmapFactory.decodeFile(path)
-                if (bitmap == null) return@launch
-                
+                val bitmap = BitmapFactory.decodeFile(path) ?: return@launch
                 val appName = getString(R.string.app_name)
                 val fileName = "${account}_${System.currentTimeMillis()}.jpg"
+                val context = context ?: return@launch
                 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     val contentValues = ContentValues().apply {
@@ -276,10 +278,8 @@ class ProfileFragment : DialogFragment() {
                         put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
                         put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + File.separator + appName)
                     }
-                    
-                    val uri = requireContext().contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-                    uri?.let {
-                        requireContext().contentResolver.openOutputStream(it)?.use { stream ->
+                    val uri = context.contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    uri?.let { context.contentResolver.openOutputStream(it)?.use { stream ->
                             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
                         }
                     }
@@ -287,43 +287,18 @@ class ProfileFragment : DialogFragment() {
                     val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val appDir = File(downloadsDir, appName)
                     if (!appDir.exists()) appDir.mkdirs()
-                    
                     val file = File(appDir, fileName)
-                    FileOutputStream(file).use { stream ->
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                    }
+                    FileOutputStream(file).use { stream -> bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream) }
                 }
-                
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), R.string.saved_to_downloads, Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) { 
+                    if (isAdded) Toast.makeText(requireContext(), R.string.saved_to_downloads, Toast.LENGTH_SHORT).show() 
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(requireContext(), getString(R.string.save_error, e.message), Toast.LENGTH_SHORT).show()
+                withContext(Dispatchers.Main) { 
+                    if (isAdded) Toast.makeText(requireContext(), getString(R.string.save_error, e.message), Toast.LENGTH_SHORT).show() 
                 }
             }
         }
-    }
-
-    private fun navigateToSettings(mode: String) {
-        val isModal = showsDialog && arguments?.getBoolean("as_modal") == true
-        val mainFragment = findMainFragment()
-
-        if (mainFragment != null && mainFragment.isTablet) {
-            val existing = mainFragment.childFragmentManager.findFragmentById(R.id.chat_nav_container)
-            if (existing is ChatSettingsFragment) {
-                existing.updateMode(mode)
-            } else {
-                val fragment = ChatSettingsFragment().apply {
-                    arguments = bundleOf("mode" to mode)
-                }
-                mainFragment.showDetail(fragment)
-            }
-        } else {
-            findNavController().navigate(R.id.ChatSettingsFragment, bundleOf("mode" to mode))
-        }
-        
-        if (isModal) dismiss()
     }
 
     private fun observeData() {
@@ -336,80 +311,64 @@ class ProfileFragment : DialogFragment() {
                 launch {
                     repository.contacts.collectLatest { contacts ->
                         val contact = contacts.find { it.account.lowercase().equals(targetAccount, ignoreCase = true) }
+                        val b = _binding ?: return@collectLatest
                         
                         if (isOwnProfile) {
-                            // Для своего профиля сначала пытаемся взять ник из LoginState, потом из настроек, потом из списка контактов
                             val state = repository.loginState.value
                             val myNickname = if (state is MSNPLoginState.Success && state.account.lowercase() == targetAccount) {
                                 state.nickname.ifEmpty { securePrefs.getNickname(targetAccount)?.ifEmpty { contact?.nickname } ?: contact?.nickname }
                             } else {
                                 securePrefs.getNickname(targetAccount)?.ifEmpty { contact?.nickname } ?: contact?.nickname
                             }
-                            
-                            binding.tvNickname.text = FormattingUtils.formatBBCode(myNickname ?: targetAccount)
-                            binding.tvAccount.text = targetAccount
-                            binding.tvAccount.visibility = View.VISIBLE
+                            b.tvNickname.text = FormattingUtils.formatBBCode(myNickname ?: targetAccount)
+                            b.tvAccount.text = targetAccount
+                            b.tvAccount.visibility = View.VISIBLE
                         } else {
-                            binding.tvNickname.text = FormattingUtils.formatBBCode(contact?.nickname ?: targetAccount)
-                            binding.tvPersonalMessage.text = FormattingUtils.formatBBCode(contact?.personalMessage ?: "")
-                            
-                            // нахуя вторая почта в профиле собеседника, спросим у никиты потом когда нибудь
-                            binding.tvAccount.visibility = View.GONE
-
+                            b.tvNickname.text = FormattingUtils.formatBBCode(contact?.nickname ?: targetAccount)
+                            b.tvPersonalMessage.text = FormattingUtils.formatBBCode(contact?.personalMessage ?: "")
+                            b.tvAccount.visibility = View.GONE
                             currentAvatarPath = contact?.avatarUrl
-                            binding.avatarStatusView.setAvatar(currentAvatarPath, targetAccount)
-                            
-                            binding.layoutProfileDetails.visibility = View.VISIBLE
-                            binding.tvDetailEmail.text = targetAccount
+                            b.avatarStatusView.setAvatar(currentAvatarPath, targetAccount)
+                            b.layoutProfileDetails.visibility = View.VISIBLE
+                            b.tvDetailEmail.text = targetAccount
                             updateDetailStatusUI(contact?.status ?: MSNPProto.Status.OFFLINE)
                         }
-                        
-                        if (!isOwnProfile) {
-                            updateStatusUI(contact?.status ?: MSNPProto.Status.OFFLINE)
-                        }
+                        if (!isOwnProfile) updateStatusUI(contact?.status ?: MSNPProto.Status.OFFLINE)
                     }
                 }
 
                 if (isOwnProfile) {
                     launch {
                         repository.loginState.collectLatest { state ->
-                            if (state is MSNPLoginState.Success) {
-                                if (targetAccount.equals(state.account, ignoreCase = true)) {
+                            val b = _binding ?: return@collectLatest
+                            if (state is MSNPLoginState.Success && targetAccount.equals(state.account, ignoreCase = true)) {
                                     val name = state.nickname.ifEmpty { securePrefs.getNickname(state.account)?.ifEmpty { state.account } ?: state.account }
-                                    binding.tvNickname.text = FormattingUtils.formatBBCode(name ?: targetAccount)
+                                    b.tvNickname.text = FormattingUtils.formatBBCode(name ?: targetAccount)
                                     currentAvatarPath = state.avatarUrl
-                                    binding.avatarStatusView.setAvatar(currentAvatarPath, state.account)
-                                }
+                                    b.avatarStatusView.setAvatar(currentAvatarPath, state.account)
                             }
                         }
                     }
-                    launch {
-                        repository.myStatus.collectLatest { status ->
-                            updateStatusUI(status)
-                        }
-                    }
-                    launch {
-                        repository.myPersonalMessage.collectLatest { psm ->
-                            binding.tvPersonalMessage.text = FormattingUtils.formatBBCode(psm)
-                        }
-                    }
+                    launch { repository.myStatus.collectLatest { updateStatusUI(it) } }
+                    launch { repository.myPersonalMessage.collectLatest { _binding?.tvPersonalMessage?.text = FormattingUtils.formatBBCode(it) } }
                 }
             }
         }
     }
 
     private fun updateStatusUI(status: String) {
+        val b = _binding ?: return
         val (textRes, colorRes) = getStatusResources(status)
-        
-        binding.btnStatusSelector.setText(textRes)
-        binding.btnStatusSelector.setIconTintResource(colorRes)
-        binding.avatarStatusView.setStatus(status)
+        b.btnStatusSelector.setText(textRes)
+        b.btnStatusSelector.setIconTintResource(colorRes)
+        b.avatarStatusView.setStatus(status)
     }
     
     private fun updateDetailStatusUI(status: String) {
+        val b = _binding ?: return
         val (textRes, colorRes) = getStatusResources(status)
-        binding.tvDetailStatus.setText(textRes)
-        binding.ivDetailStatusIcon.imageTintList = android.content.res.ColorStateList.valueOf(
+        b.tvDetailStatus.setText(textRes)
+        b.ivDetailStatusIcon.imageTintList = android.content.res.ColorStateList.valueOf(
             androidx.core.content.ContextCompat.getColor(requireContext(), colorRes)
         )
     }
@@ -437,34 +396,16 @@ class ProfileFragment : DialogFragment() {
             getString(R.string.out_to_lunch) to MSNPProto.Status.LUNCH,
             getString(R.string.offline) to MSNPProto.Status.HIDDEN
         )
-
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.status_settings)
-            .setItems(statuses.map { it.first }.toTypedArray()) { _, which ->
+        AlertDialog.Builder(requireContext()).setTitle(R.string.status_settings).setItems(statuses.map { it.first }.toTypedArray()) { _, which ->
                 repository.setStatus(statuses[which].second)
-            }
-            .show()
+            }.show()
     }
 
     private fun showLanguageDialog() {
-        val languages = arrayOf(
-            getString(R.string.system_default) to "system",
-            "English" to "en",
-            "Русский" to "ru",
-            "Беларуская" to "be",
-            "Polski" to "pl",
-            "Français" to "fr",
-            "Қазақша" to "kk",
-            "Українська" to "uk",
-            "中文" to "zh"
-        )
-        
+        val languages = arrayOf(getString(R.string.system_default) to "system", "English" to "en", "Русский" to "ru", "Беларуская" to "be", "Polski" to "pl", "Français" to "fr", "Қазақша" to "kk", "Українська" to "uk", "中文" to "zh")
         val currentLang = securePrefs.language
         val checkedItem = languages.indexOfFirst { it.second == currentLang }.coerceAtLeast(0)
-
-        AlertDialog.Builder(requireContext())
-            .setTitle(R.string.language_settings)
-            .setSingleChoiceItems(languages.map { it.first }.toTypedArray(), checkedItem) { dialog, which ->
+        AlertDialog.Builder(requireContext()).setTitle(R.string.language_settings).setSingleChoiceItems(languages.map { it.first }.toTypedArray(), checkedItem) { dialog, which ->
                 val selectedLang = languages[which].second
                 if (selectedLang != null && selectedLang != currentLang) {
                     securePrefs.language = selectedLang
@@ -472,9 +413,7 @@ class ProfileFragment : DialogFragment() {
                     restartActivity()
                 }
                 dialog.dismiss()
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            }.setNegativeButton(android.R.string.cancel, null).show()
     }
 
     private fun restartActivity() {
@@ -485,48 +424,29 @@ class ProfileFragment : DialogFragment() {
 
     private fun showEditProfileDialog() {
         val context = requireContext()
+        val b = _binding ?: return
         val layout = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             val padding = (16 * resources.displayMetrics.density).toInt()
             setPadding(padding, padding, padding, padding)
         }
-
-        val etNickname = EditText(context).apply {
-            hint = getString(R.string.nickname_hint)
-            setText(binding.tvNickname.text)
-        }
-        
-        val etPersonalMessage = EditText(context).apply {
-            hint = getString(R.string.personal_message_hint)
-            setText(binding.tvPersonalMessage.text)
-        }
-
-        layout.addView(etNickname)
-        layout.addView(etPersonalMessage)
-
-        AlertDialog.Builder(context)
-            .setTitle(R.string.edit_profile)
-            .setView(layout)
-            .setPositiveButton(R.string.update) { _, _ ->
+        val etNickname = EditText(context).apply { hint = getString(R.string.nickname_hint); setText(b.tvNickname.text) }
+        val etPersonalMessage = EditText(context).apply { hint = getString(R.string.personal_message_hint); setText(b.tvPersonalMessage.text) }
+        layout.addView(etNickname); layout.addView(etPersonalMessage)
+        AlertDialog.Builder(context).setTitle(R.string.edit_profile).setView(layout).setPositiveButton(R.string.update) { _, _ ->
                 val newNick = etNickname.text.toString().trim()
-                val newPsm = etPersonalMessage.text.toString().trim()
-                
-                if (newNick.isNotEmpty() && newNick != binding.tvNickname.text.toString()) {
-                    repository.updateNickname(newNick)
-                }
-                repository.updatePersonalMessage(newPsm)
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+                if (newNick.isNotEmpty() && newNick != b.tvNickname.text.toString()) repository.updateNickname(newNick)
+                repository.updatePersonalMessage(etPersonalMessage.text.toString().trim())
+            }.setNegativeButton(android.R.string.cancel, null).show()
     }
 
     private fun updateAvatar(uri: Uri) {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
                 repository.updateAvatar(uri.toString())
-                Toast.makeText(requireContext(), R.string.avatar_updated, Toast.LENGTH_SHORT).show()
+                if (isAdded) Toast.makeText(requireContext(), R.string.avatar_updated, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(requireContext(), getString(R.string.login_error, e.message), Toast.LENGTH_SHORT).show()
+                if (isAdded) Toast.makeText(requireContext(), getString(R.string.login_error, e.message), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -538,9 +458,7 @@ class ProfileFragment : DialogFragment() {
     }
 
     private fun findMainFragment(): MainFragment? {
-        return generateSequence(parentFragment) { it.parentFragment }
-            .filterIsInstance<MainFragment>()
-            .firstOrNull()
+        return generateSequence(parentFragment) { it.parentFragment }.filterIsInstance<MainFragment>().firstOrNull()
     }
 
     override fun onDestroyView() {

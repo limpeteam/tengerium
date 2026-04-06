@@ -49,20 +49,32 @@ class AvatarLibraryFragment : Fragment() {
         repository = (requireActivity().application as TengeriumApp).repository
 
         if (!AppConfig.enableAvatarLibrary) {
-            findNavController().popBackStack()
+            performBack()
             return
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backCallback)
 
+        setupUI()
         setupRecyclerView()
         observeAvatars()
-
+        setupCropImageView()
+    }
+    
+    private fun setupUI() {
         binding.toolbar.setNavigationOnClickListener {
             if (binding.layoutCrop.isVisible) {
                 exitCropMode()
             } else {
-                findNavController().popBackStack()
+                performBack()
+            }
+        }
+        
+        binding.swipeBackLayout.setOnSwipeBackListener {
+            if (binding.layoutCrop.isVisible) {
+                exitCropMode()
+            } else {
+                performBack()
             }
         }
 
@@ -74,8 +86,6 @@ class AvatarLibraryFragment : Fragment() {
                 Toast.makeText(requireContext(), "Crop failed", Toast.LENGTH_SHORT).show()
             }
         }
-        
-        setupCropImageView()
     }
 
     private fun setupCropImageView() {
@@ -114,7 +124,7 @@ class AvatarLibraryFragment : Fragment() {
                 repository.updateAvatar(path)
                 repository.avatarLibraryManager.updateLastUsed(avatar.sha1)
                 Toast.makeText(requireContext(), R.string.avatar_updated, Toast.LENGTH_SHORT).show()
-                findNavController().popBackStack()
+                performBack()
             }
         }
     }
@@ -124,12 +134,14 @@ class AvatarLibraryFragment : Fragment() {
         binding.layoutCrop.isVisible = true
         binding.cropImageView.setImageUriAsync(uri)
         backCallback.isEnabled = true
+        binding.swipeBackLayout.isSwipeEnabled = false // Блокируем свайп в режиме кропа
     }
 
     private fun exitCropMode() {
         binding.layoutCrop.isVisible = false
         binding.rvAvatars.isVisible = true
         backCallback.isEnabled = false
+        binding.swipeBackLayout.isSwipeEnabled = true
     }
 
     private fun processCroppedBitmap(bitmap: android.graphics.Bitmap) {
@@ -137,20 +149,32 @@ class AvatarLibraryFragment : Fragment() {
             try {
                 val bytes = AvatarUtils.prepareAvatarFromBitmap(bitmap)
                 if (bytes != null) {
-                    // 1. Сохраняем в библиотеку и получаем сущность с путем
                     val entity = repository.avatarLibraryManager.addCustomAvatar(bytes)
-                    
-                    // 2. Устанавливаем как текущий аватар, используя полученный путь
                     repository.updateAvatar(entity.path ?: "")
                     repository.avatarLibraryManager.updateLastUsed(entity.sha1)
                     
                     Toast.makeText(requireContext(), R.string.avatar_updated, Toast.LENGTH_SHORT).show()
-                    findNavController().popBackStack()
+                    performBack()
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error processing image", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun performBack() {
+        val mainFragment = findMainFragment()
+        if (mainFragment != null) {
+            mainFragment.closeDetail()
+        } else {
+            findNavController().popBackStack()
+        }
+    }
+
+    private fun findMainFragment(): MainFragment? {
+        return generateSequence(parentFragment) { it.parentFragment }
+            .filterIsInstance<MainFragment>()
+            .firstOrNull()
     }
 
     override fun onDestroyView() {

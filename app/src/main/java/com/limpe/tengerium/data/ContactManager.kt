@@ -37,6 +37,14 @@ class ContactManager {
     private val _contactAddedFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
     val contactAddedFlow: SharedFlow<String> = _contactAddedFlow.asSharedFlow()
 
+    fun setContacts(contacts: List<Contact>) {
+        _contacts.value = contacts
+    }
+
+    fun setGroups(groups: List<Group>) {
+        _groups.value = groups
+    }
+
     /**
      * Обновляет статус контакта.
      * @return true, если контакт перешел из оффлайна в любой онлайн статус.
@@ -51,41 +59,20 @@ class ContactManager {
                 val oldStatus = existing.status
                 val wasOffline = oldStatus == MSNPProto.Status.OFFLINE || oldStatus == "FLN"
                 val isNowOnline = status.isNotEmpty() && status != MSNPProto.Status.OFFLINE && status != "FLN"
-                
-                if (wasOffline && isNowOnline) {
-                    cameOnline = true
-                }
-
-                // Проверяем, изменилось ли хоть что-то
-                val statusChanged = status.isNotEmpty() && existing.status != status
-                val nicknameChanged = nickname.isNotEmpty() && existing.nickname != nickname
-                val avatarChanged = avatarUrl != null && existing.avatarUrl != avatarUrl
-                val psmChanged = psm != null && existing.personalMessage != psm
-
-                if (!statusChanged && !nicknameChanged && !avatarChanged && !psmChanged) {
-                    return@update list
-                }
+                if (wasOffline && isNowOnline) cameOnline = true
 
                 list.map { 
                     if (it.account.lowercase(Locale.ROOT).trim() == normalized) {
-                        val updatedNick = if (nickname.isNotEmpty() && (nickname != account || it.nickname.isEmpty() || it.nickname == it.account)) {
-                            nickname
-                        } else {
-                            it.nickname
-                        }
-                        
                         it.copy(
                             status = if (status.isNotEmpty()) status else it.status, 
-                            nickname = updatedNick,
+                            nickname = if (nickname.isNotEmpty() && nickname != account) nickname else it.nickname,
                             avatarUrl = avatarUrl ?: it.avatarUrl,
                             personalMessage = psm ?: it.personalMessage
                         ) 
                     } else it 
                 }
             } else {
-                val isNowOnline = status.isNotEmpty() && status != MSNPProto.Status.OFFLINE && status != "FLN"
-                if (isNowOnline) cameOnline = true
-                
+                if (status.isNotEmpty() && status != MSNPProto.Status.OFFLINE && status != "FLN") cameOnline = true
                 list + Contact(account, nickname, status, avatarUrl = avatarUrl, personalMessage = psm ?: "")
             }
         }
@@ -106,34 +93,17 @@ class ContactManager {
             val existing = list.find { it.account.lowercase(Locale.ROOT).trim() == normalized }
             if (existing == null) {
                 isActuallyNew = true
-                list + Contact(account, nickname, listType = listType, guid = null, groupGuids = groupGuids)
+                list + Contact(account, nickname, listType = listType, groupGuids = groupGuids)
             } else {
                 list.map { 
                     if (it.account.lowercase(Locale.ROOT).trim() == normalized) {
-                        val updatedNick = if (nickname.isNotEmpty() && nickname != account) nickname else it.nickname
-                        it.copy(listType = listType, nickname = updatedNick, groupGuids = groupGuids)
+                        it.copy(listType = listType, nickname = if (nickname.isNotEmpty() && nickname != account) nickname else it.nickname, groupGuids = groupGuids)
                     } else it 
                 }
             }
         }
-        
-        if (groupGuids.isNotEmpty()) {
-            _groups.update { groups ->
-                groups.map { group ->
-                    if (groupGuids.contains(group.guid)) {
-                        if (!group.contactAccounts.contains(normalized)) {
-                            group.copy(contactAccounts = group.contactAccounts + normalized)
-                        } else group
-                    } else {
-                        group.copy(contactAccounts = group.contactAccounts - normalized)
-                    }
-                }
-            }
-        }
-
-        if (isActuallyNew && emitEvent) {
-            _contactAddedFlow.tryEmit(normalized)
-        }
+        updateGroupsForContact(normalized, groupGuids)
+        if (isActuallyNew && emitEvent) _contactAddedFlow.tryEmit(normalized)
     }
 
     fun updateContactFullInfo(account: String, nickname: String, guid: String, listType: String, groupGuids: List<String>) {
@@ -150,13 +120,16 @@ class ContactManager {
                 }
             }
         }
+        updateGroupsForContact(normalized, groupGuids)
+    }
 
+    private fun updateGroupsForContact(account: String, groupGuids: List<String>) {
+        val normalized = account.lowercase(Locale.ROOT).trim()
         _groups.update { groups ->
             groups.map { group ->
                 if (groupGuids.contains(group.guid)) {
-                    if (!group.contactAccounts.contains(normalized)) {
-                        group.copy(contactAccounts = group.contactAccounts + normalized)
-                    } else group
+                    if (!group.contactAccounts.contains(normalized)) group.copy(contactAccounts = group.contactAccounts + normalized)
+                    else group
                 } else {
                     group.copy(contactAccounts = group.contactAccounts - normalized)
                 }
@@ -169,17 +142,15 @@ class ContactManager {
         _contacts.update { list ->
             list.map { 
                 if (it.account.lowercase(Locale.ROOT).trim() == normalized) {
-                    if (!it.groupGuids.contains(groupGuid)) {
-                        it.copy(groupGuids = it.groupGuids + groupGuid)
-                    } else it
+                    if (!it.groupGuids.contains(groupGuid)) it.copy(groupGuids = it.groupGuids + groupGuid)
+                    else it
                 } else it
             }
         }
         _groups.update { groups ->
             groups.map { group ->
-                if (group.guid == groupGuid && !group.contactAccounts.contains(normalized)) {
-                    group.copy(contactAccounts = group.contactAccounts + normalized)
-                } else group
+                if (group.guid == groupGuid && !group.contactAccounts.contains(normalized)) group.copy(contactAccounts = group.contactAccounts + normalized)
+                else group
             }
         }
     }
@@ -188,26 +159,24 @@ class ContactManager {
         val normalized = account.lowercase(Locale.ROOT).trim()
         _contacts.update { list ->
             list.map { 
-                if (it.account.lowercase(Locale.ROOT).trim() == normalized) {
-                    it.copy(groupGuids = it.groupGuids - groupGuid)
-                } else it
+                if (it.account.lowercase(Locale.ROOT).trim() == normalized) it.copy(groupGuids = it.groupGuids - groupGuid)
+                else it
             }
         }
         _groups.update { groups ->
             groups.map { group ->
-                if (group.guid == groupGuid) {
-                    group.copy(contactAccounts = group.contactAccounts - normalized)
-                } else group
+                if (group.guid == groupGuid) group.copy(contactAccounts = group.contactAccounts - normalized)
+                else group
             }
         }
     }
 
     fun addGroup(name: String, guid: String) {
-        val accountsInGroup = _contacts.value
-            .filter { it.groupGuids.contains(guid) }
-            .map { it.account.lowercase(Locale.ROOT).trim() }
-
         _groups.update { list ->
+            val accountsInGroup = _contacts.value
+                .filter { it.groupGuids.contains(guid) }
+                .map { it.account.lowercase(Locale.ROOT).trim() }
+
             if (list.none { it.guid == guid }) {
                 list + Group(guid, name, accountsInGroup)
             } else {
@@ -239,8 +208,7 @@ class ContactManager {
     fun addPendingRequest(account: String, nickname: String) {
         val normalized = account.lowercase(Locale.ROOT).trim()
         _pendingRequests.update { list ->
-            if (list.none { it.account.lowercase(Locale.ROOT).trim() == normalized })
-                list + Contact(account, nickname)
+            if (list.none { it.account.lowercase(Locale.ROOT).trim() == normalized }) list + Contact(account, nickname)
             else list
         }
     }

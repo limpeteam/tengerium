@@ -47,6 +47,9 @@
         <action
             android:id="@+id/action_AuthFragment_to_OobeFragment"
             app:destination="@id/OobeFragment" />
+        <action
+            android:id="@+id/action_AuthFragment_to_UpdateFragment"
+            app:destination="@id/UpdateFragment" />
     </fragment>
 
     <fragment
@@ -212,7 +215,24 @@
         android:id="@+id/AboutFragment"
         android:name="com.limpe.tengerium.ui.AboutFragment"
         android:label="@string/about_app"
-        tools:layout="@layout/fragment_about" />
+        tools:layout="@layout/fragment_about">
+        <action
+            android:id="@+id/action_AboutFragment_to_UpdateFragment"
+            app:destination="@id/UpdateFragment" />
+        <action
+            android:id="@+id/action_AboutFragment_to_EasterEggFragment"
+            app:destination="@id/EasterEggFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/EasterEggFragment"
+        android:name="com.limpe.tengerium.ui.EasterEggFragment"
+        android:label="Easter Egg"
+        tools:layout="@layout/fragment_easter_egg" />
 
     <fragment
         android:id="@+id/WebViewFragment"
@@ -232,5 +252,11 @@
         android:name="com.limpe.tengerium.ui.AvatarLibraryFragment"
         android:label="@string/avatar_library"
         tools:layout="@layout/fragment_avatar_library" />
+
+    <fragment
+        android:id="@+id/UpdateFragment"
+        android:name="com.limpe.tengerium.ui.UpdateFragment"
+        android:label="@string/update_service"
+        tools:layout="@layout/fragment_update" />
 
 </navigation>

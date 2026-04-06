@@ -3,7 +3,6 @@ package com.limpe.tengerium.ui
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.text.util.Linkify
 import android.util.TypedValue
@@ -22,6 +21,9 @@ import com.limpe.tengerium.databinding.ItemDateHeaderBinding
 import com.limpe.tengerium.databinding.ItemMessageBinding
 import com.limpe.tengerium.data.security.SafeStorage
 import com.limpe.tengerium.data.security.SecurePrefs
+import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.BubbleStyleHelper
+import com.limpe.tengerium.util.FormattingUtils
 import com.limpe.tengerium.util.LinkPreview
 import com.limpe.tengerium.util.LinkPreviewHelper
 import kotlinx.coroutines.CoroutineScope
@@ -31,25 +33,64 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 
+sealed class ChatDataItem {
+    data class Message(val message: MessageEntity) : ChatDataItem()
+    data class DateHeader(val timestamp: Long) : ChatDataItem()
+    data class System(val message: MessageEntity) : ChatDataItem()
+
+    val itemId: Long
+        get() = when (this) {
+            is Message -> message.id
+            is DateHeader -> -timestamp // Используем отрицательный timestamp для уникальности
+            is System -> message.id
+        }
+}
+
 class ChatAdapter(
     private val scope: CoroutineScope,
     private val onLongClick: (MessageEntity) -> Unit = {}
-) : ListAdapter<MessageEntity, RecyclerView.ViewHolder>(DiffCallback()) {
+) : ListAdapter<ChatDataItem, RecyclerView.ViewHolder>(DiffCallback()) {
 
     private var securePrefs: SecurePrefs? = null
 
     companion object {
         private const val VIEW_TYPE_MESSAGE = 0
         private const val VIEW_TYPE_SYSTEM = 1
+        private const val VIEW_TYPE_DATE_HEADER = 2
+    }
+
+    fun submitMessages(messages: List<MessageEntity>, commitCallback: (() -> Unit)? = null) {
+        val items = mutableListOf<ChatDataItem>()
+        if (messages.isEmpty()) {
+            submitList(emptyList(), commitCallback)
+            return
+        }
+
+        var lastDate = ""
+        val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+
+        messages.forEach { msg ->
+            val msgDate = sdf.format(Date(msg.timestamp))
+            if (msgDate != lastDate) {
+                items.add(ChatDataItem.DateHeader(msg.timestamp))
+                lastDate = msgDate
+            }
+
+            val decryptedText = SafeStorage.decryptText(msg.encryptedText)
+            if (decryptedText == "[NUDGE]" || decryptedText == "[JOINED]" || decryptedText == "[LEFT]" || decryptedText.startsWith("[GROUP_UPDATE]")) {
+                items.add(ChatDataItem.System(msg))
+            } else {
+                items.add(ChatDataItem.Message(msg))
+            }
+        }
+        submitList(items, commitCallback)
     }
 
     override fun getItemViewType(position: Int): Int {
-        val message = getItem(position)
-        val decryptedText = SafeStorage.decryptText(message.encryptedText)
-        return if (decryptedText == "[NUDGE]" || decryptedText == "[JOINED]" || decryptedText == "[LEFT]" || decryptedText.startsWith("[GROUP_UPDATE]")) {
-            VIEW_TYPE_SYSTEM
-        } else {
-            VIEW_TYPE_MESSAGE
+        return when (getItem(position)) {
+            is ChatDataItem.Message -> VIEW_TYPE_MESSAGE
+            is ChatDataItem.System -> VIEW_TYPE_SYSTEM
+            is ChatDataItem.DateHeader -> VIEW_TYPE_DATE_HEADER
         }
     }
 
@@ -58,21 +99,46 @@ class ChatAdapter(
             securePrefs = SecurePrefs(parent.context)
         }
         
-        return if (viewType == VIEW_TYPE_SYSTEM) {
-            val binding = ItemDateHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            SystemViewHolder(binding, securePrefs!!)
-        } else {
-            val binding = ItemMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            MessageViewHolder(binding, scope, securePrefs!!, onLongClick)
+        return when (viewType) {
+            VIEW_TYPE_DATE_HEADER -> {
+                val binding = ItemDateHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                DateHeaderViewHolder(binding)
+            }
+            VIEW_TYPE_SYSTEM -> {
+                val binding = ItemDateHeaderBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                SystemViewHolder(binding, securePrefs!!)
+            }
+            else -> {
+                val binding = ItemMessageBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                MessageViewHolder(binding, scope, securePrefs!!, onLongClick)
+            }
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        val message = getItem(position)
-        if (holder is SystemViewHolder) {
-            holder.bind(message)
-        } else if (holder is MessageViewHolder) {
-            holder.bind(message)
+        val item = getItem(position)
+        when (holder) {
+            is DateHeaderViewHolder -> (item as? ChatDataItem.DateHeader)?.let { holder.bind(it.timestamp) }
+            is SystemViewHolder -> (item as? ChatDataItem.System)?.let { holder.bind(it.message) }
+            is MessageViewHolder -> (item as? ChatDataItem.Message)?.let { holder.bind(it.message) }
+        }
+    }
+
+    class DateHeaderViewHolder(private val binding: ItemDateHeaderBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(timestamp: Long) {
+            binding.tvDateHeader.text = FormattingUtils.formatDateHeader(itemView.context, timestamp)
+            binding.ivIcon.visibility = View.GONE
+            
+            val context = itemView.context
+            val surfaceColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceVariant, 0)
+            val onSurfaceColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorOnSurfaceVariant, 0)
+            
+            binding.cardDateHeader.apply {
+                setCardBackgroundColor(surfaceColor)
+                strokeWidth = 0
+                cardElevation = 0f
+            }
+            binding.tvDateHeader.setTextColor(onSurfaceColor)
         }
     }
 
@@ -104,8 +170,6 @@ class ChatAdapter(
 
             val params = binding.cardMessage.layoutParams as androidx.constraintlayout.widget.ConstraintLayout.LayoutParams
             
-            val useMaterialYou = securePrefs.useMaterialYou
-
             if (message.isIncoming) {
                 params.startToStart = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.PARENT_ID
                 params.endToEnd = androidx.constraintlayout.widget.ConstraintLayout.LayoutParams.UNSET
@@ -122,35 +186,29 @@ class ChatAdapter(
             params.matchConstraintMaxWidth = halfScreenWidth
             binding.cardMessage.layoutParams = params
 
-            binding.cardMessage.strokeWidth = 0
-            binding.cardMessage.cardElevation = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2f, context.resources.displayMetrics)
-            
-            if (useMaterialYou) {
-                val colorAttr = if (message.isIncoming) com.google.android.material.R.attr.colorSecondaryContainer else com.google.android.material.R.attr.colorPrimaryContainer
-                val onColorAttr = if (message.isIncoming) com.google.android.material.R.attr.colorOnSecondaryContainer else com.google.android.material.R.attr.colorOnPrimaryContainer
-                
-                val color = MaterialColors.getColor(context, colorAttr, 0)
-                val onColor = MaterialColors.getColor(context, onColorAttr, 0)
-                
-                binding.cardMessage.setCardBackgroundColor(color)
-                binding.tvMessageBody.setTextColor(onColor)
-                binding.tvTimestamp.setTextColor(onColor)
-                binding.tvMessageBody.setLinkTextColor(onColor)
-            } else {
-                val preset = ThemePreset.presets.getOrNull(securePrefs.themePreset) ?: ThemePreset.presets[0]
-                val bubbleColor = if (message.isIncoming) preset.incomingBubbleColor else preset.outgoingBubbleColor
-                val textColor = if (message.isIncoming) preset.onIncomingTextColor else preset.onOutgoingTextColor
-                
-                binding.cardMessage.setCardBackgroundColor(bubbleColor)
-                binding.tvMessageBody.setTextColor(textColor)
-                binding.tvTimestamp.setTextColor(textColor)
-                binding.tvMessageBody.setLinkTextColor(textColor)
-            }
-            binding.tvTimestamp.alpha = 0.6f
+            BubbleStyleHelper.applyStyle(
+                binding.cardMessage,
+                binding.tvMessageBody,
+                binding.tvTimestamp,
+                message.isIncoming,
+                securePrefs
+            )
 
             binding.pbSending.visibility = if (!message.isIncoming && !message.isSent && message.error == null) View.VISIBLE else View.GONE
             binding.tvError.visibility = if (message.error != null) android.view.View.VISIBLE else android.view.View.GONE
             binding.tvError.text = if (message.error != null) context.getString(R.string.resend) else null
+
+            // Animation for new messages
+            val isNewMessage = (System.currentTimeMillis() - message.timestamp) < 1000
+            if (isNewMessage && binding.cardMessage.tag != message.id) {
+                binding.cardMessage.tag = message.id
+                AnimationHelper.animateMessagePop(binding.cardMessage)
+            } else {
+                binding.cardMessage.tag = message.id
+                binding.cardMessage.alpha = 1f
+                binding.cardMessage.scaleX = 1f
+                binding.cardMessage.scaleY = 1f
+            }
 
             if (securePrefs.showLinkPreview) {
                 val url = LinkPreviewHelper.extractUrl(decryptedText)
@@ -222,21 +280,25 @@ class ChatAdapter(
             val context = itemView.context
             val decryptedText = SafeStorage.decryptText(message.encryptedText)
             
-            binding.tvDateHeader.text = when {
-                decryptedText == "[NUDGE]" -> {
-                    if (message.isIncoming) context.getString(R.string.nudge_received) else context.getString(R.string.nudge_sent_sys)
+            if (decryptedText == "[NUDGE]") {
+                binding.ivIcon.visibility = View.VISIBLE
+                binding.ivIcon.setImageResource(R.drawable.ic_nudge_menu)
+                binding.tvDateHeader.text = if (message.isIncoming) context.getString(R.string.nudge_received) else context.getString(R.string.nudge_sent_sys)
+            } else {
+                binding.ivIcon.visibility = View.GONE
+                binding.tvDateHeader.text = when {
+                    decryptedText == "[JOINED]" -> {
+                        context.getString(R.string.user_joined_chat, message.senderAccount)
+                    }
+                    decryptedText == "[LEFT]" -> {
+                        context.getString(R.string.user_left_chat, message.senderAccount)
+                    }
+                    decryptedText.startsWith("[GROUP_UPDATE]") -> {
+                        val participants = decryptedText.substringAfter("|")
+                        participants
+                    }
+                    else -> decryptedText
                 }
-                decryptedText == "[JOINED]" -> {
-                    context.getString(R.string.user_joined_chat, message.senderAccount)
-                }
-                decryptedText == "[LEFT]" -> {
-                    context.getString(R.string.user_left_chat, message.senderAccount)
-                }
-                decryptedText.startsWith("[GROUP_UPDATE]") -> {
-                    val participants = decryptedText.substringAfter("|")
-                    participants
-                }
-                else -> decryptedText
             }
 
             val surfaceColor = MaterialColors.getColor(context, com.google.android.material.R.attr.colorSurfaceVariant, 0)
@@ -252,12 +314,12 @@ class ChatAdapter(
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<MessageEntity>() {
-        override fun areItemsTheSame(oldItem: MessageEntity, newItem: MessageEntity): Boolean {
-            return oldItem.id == newItem.id
+    class DiffCallback : DiffUtil.ItemCallback<ChatDataItem>() {
+        override fun areItemsTheSame(oldItem: ChatDataItem, newItem: ChatDataItem): Boolean {
+            return oldItem.itemId == newItem.itemId
         }
 
-        override fun areContentsTheSame(oldItem: MessageEntity, newItem: MessageEntity): Boolean {
+        override fun areContentsTheSame(oldItem: ChatDataItem, newItem: ChatDataItem): Boolean {
             return oldItem == newItem
         }
     }

@@ -23,9 +23,20 @@
         <item name="textAppearanceBodyLarge">@style/TextAppearance.Material3.BodyLarge</item>
         <item name="textAppearanceBodyMedium">@style/TextAppearance.Material3.BodyMedium</item>
         <item name="textAppearanceLabelSmall">@style/TextAppearance.Material3.LabelSmall</item>
+
+        <!-- Customizing Dialog Shape -->
+        <item name="alertDialogTheme">@style/Theme.Tengerium.AlertDialog</item>
     </style>
 
     <style name="Theme.Tengerium" parent="Base.Theme.Tengerium" />
+
+    <style name="Theme.Tengerium.AlertDialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Tengerium.Dialog</item>
+    </style>
+
+    <style name="ShapeAppearance.Tengerium.Dialog" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSize">28dp</item>
+    </style>
 
     <!-- Material Design Button Style -->
     <style name="Widget.Tengerium.Button" parent="Widget.Material3.Button" />
@@ -40,6 +51,7 @@
     <style name="Theme.Tengerium.GlassBottomSheet" parent="Theme.Material3.DayNight.BottomSheetDialog" />
 
     <style name="Theme.Tengerium.ModalProfile" parent="Theme.Material3.DayNight.Dialog">
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.Tengerium.Dialog</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowNoTitle">true</item>

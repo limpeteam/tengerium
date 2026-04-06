@@ -12,6 +12,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.limpe.tengerium.MainActivity
 import com.limpe.tengerium.R
+import com.limpe.tengerium.util.NotificationUtils
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -61,7 +62,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.drawable.ic_status_dot) // Use a concrete drawable
+            .setSmallIcon(NotificationUtils.getSmallIconId(this))
+            .setColor(getColor(R.color.md_theme_light_primary))
             .setContentTitle(title)
             .setContentText(messageBody)
             .setAutoCancel(true)

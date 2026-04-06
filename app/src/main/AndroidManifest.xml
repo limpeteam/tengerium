@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
+
     <application
         android:name=".TengeriumApp"
         android:allowBackup="true"
@@ -29,6 +30,13 @@
         <!-- Client Branding -->
         <meta-data android:name="client_codename" android:value="Miner's Cake" />
         <meta-data android:name="client_branch" android:value="Beta" />
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ntficn" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/md_theme_light_primary" />
 
         <service
             android:name=".data.protocol.MSNPService"
@@ -53,10 +61,19 @@
             android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Tengerium"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Deep Link для подключения к серверу -->
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tengerium" android:host="connect" />
             </intent-filter>
         </activity>
 

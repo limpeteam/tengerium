@@ -4,11 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
-/**
- * Хранилище настроек. Чувствительные данные шифруются (AES-256), 
- * остальные хранятся в обычном SharedPreferences для быстрого доступа.
- */
 class SecurePrefs(private val context: Context) {
 
     private val masterKey by lazy {
@@ -30,7 +28,18 @@ class SecurePrefs(private val context: Context) {
     private val plainPrefs: SharedPreferences = 
         context.getSharedPreferences("app_settings", Context.MODE_PRIVATE)
 
-    // --- Методы для работы с данными ---
+    private val _prefsChangedFlow = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val prefsChangedFlow = _prefsChangedFlow.asSharedFlow()
+
+    private val preferenceListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+        if (key != null) {
+            _prefsChangedFlow.tryEmit(key)
+        }
+    }
+
+    init {
+        plainPrefs.registerOnSharedPreferenceChangeListener(preferenceListener)
+    }
 
     fun saveDatabasePassphrase(passphrase: String) {
         encryptedPrefs.edit().putString("db_passphrase", passphrase).apply()
@@ -55,7 +64,37 @@ class SecurePrefs(private val context: Context) {
             .apply()
     }
 
-    // --- OOBE & Nickname & MSNObject (Account specific) ---
+    fun getPinnedChats(): Set<String> = plainPrefs.getStringSet("pinned_chats", emptySet()) ?: emptySet()
+    
+    fun setPinnedChats(chats: Set<String>) {
+        plainPrefs.edit().putStringSet("pinned_chats", chats).apply()
+        _prefsChangedFlow.tryEmit("pinned_chats")
+    }
+
+    fun isChatPinned(account: String): Boolean = getPinnedChats().contains(account.lowercase())
+
+    fun togglePinChat(account: String) {
+        val pinned = getPinnedChats().toMutableSet()
+        val normalized = account.lowercase()
+        if (pinned.contains(normalized)) pinned.remove(normalized) else pinned.add(normalized)
+        setPinnedChats(pinned)
+    }
+
+    fun getMutedChats(): Set<String> = plainPrefs.getStringSet("muted_chats", emptySet()) ?: emptySet()
+    
+    fun setMutedChats(chats: Set<String>) {
+        plainPrefs.edit().putStringSet("muted_chats", chats).apply()
+        _prefsChangedFlow.tryEmit("muted_chats")
+    }
+
+    fun isChatMuted(account: String): Boolean = getMutedChats().contains(account.lowercase())
+
+    fun toggleMuteChat(account: String) {
+        val muted = getMutedChats().toMutableSet()
+        val normalized = account.lowercase()
+        if (muted.contains(normalized)) muted.remove(normalized) else muted.add(normalized)
+        setMutedChats(muted)
+    }
 
     fun isOobeDone(account: String): Boolean = plainPrefs.getBoolean("oobe_done_$account", false)
     
@@ -81,16 +120,12 @@ class SecurePrefs(private val context: Context) {
         plainPrefs.edit().putString("avatar_path_$account", path).apply()
     }
 
-    // --- Collapsed Groups ---
-
     fun getCollapsedGroups(): Set<String> = plainPrefs.getStringSet("collapsed_groups", emptySet()) ?: emptySet()
     
     fun setCollapsedGroups(groups: Set<String>) {
         plainPrefs.edit().putStringSet("collapsed_groups", groups).apply()
     }
 
-    // --- Обычные настройки (Plain) ---
-    
     var serverAddress: String
         get() = plainPrefs.getString("server_address", "") ?: ""
         set(value) = plainPrefs.edit().putString("server_address", value).apply()
@@ -106,10 +141,6 @@ class SecurePrefs(private val context: Context) {
     var configUrl: String
         get() = plainPrefs.getString("config_url", "") ?: ""
         set(value) = plainPrefs.edit().putString("config_url", value).apply()
-
-    var debugEnabled: Boolean
-        get() = plainPrefs.getBoolean("debug_enabled", false)
-        set(value) = plainPrefs.edit().putBoolean("debug_enabled", value).apply()
 
     var themePreset: Int
         get() = plainPrefs.getInt("theme_preset", 0)
@@ -132,14 +163,12 @@ class SecurePrefs(private val context: Context) {
         set(value) = plainPrefs.edit().putString("app_language", value).apply()
 
     var showOnlineFirst: Boolean
-        get() = plainPrefs.getBoolean("show_online_first", false)
+        get() = plainPrefs.getBoolean("show_online_first", true)
         set(value) = plainPrefs.edit().putBoolean("show_online_first", value).apply()
 
     var privacyAllowOnlyFromList: Boolean
         get() = plainPrefs.getBoolean("privacy_only_from_list", false)
         set(value) = plainPrefs.edit().putBoolean("privacy_only_from_list", value).apply()
-
-    // --- Новые настройки ---
 
     var showLinkPreview: Boolean
         get() = plainPrefs.getBoolean("show_link_preview", true)
@@ -172,8 +201,6 @@ class SecurePrefs(private val context: Context) {
     var disableMessageQueue: Boolean
         get() = plainPrefs.getBoolean("disable_message_queue", false)
         set(value) = plainPrefs.edit().putBoolean("disable_message_queue", value).apply()
-
-    // --- Уведомления ---
 
     var notifyMessages: Boolean
         get() = plainPrefs.getBoolean("notify_messages", true)

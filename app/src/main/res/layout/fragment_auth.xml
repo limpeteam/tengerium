@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <ImageButton
         android:id="@+id/btnAuthMenu"
@@ -25,7 +27,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="32dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        app:layout_constraintBottom_toTopOf="@+id/layoutFooter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -34,10 +38,10 @@
 
         <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="24dp"
             android:src="@drawable/tengerium_logo_n26"
             android:contentDescription="@null" />
 
@@ -58,7 +62,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/hotmail_account_hint"
-            app:startIconDrawable="@android:drawable/ic_dialog_email"
+            app:startIconDrawable="@drawable/ic_email_login"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -75,7 +79,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/password_hint"
             app:passwordToggleEnabled="true"
-            app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
+            app:startIconDrawable="@drawable/ic_password_login"
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -146,18 +150,25 @@
 
     </LinearLayout>
 
-    <ImageView
-        android:id="@+id/ivFooterLogo"
+    <LinearLayout
+        android:id="@+id/layoutFooter"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginBottom="16dp"
-        android:adjustViewBounds="true"
-        android:src="@drawable/tengerium_logo_n26"
-        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible"
-        android:contentDescription="@null" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/ivFooterLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:adjustViewBounds="true"
+            android:src="@drawable/footer_logo_bg"
+            android:contentDescription="@null" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

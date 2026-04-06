@@ -26,17 +26,14 @@
     <string name="theme_presets">Theme Presets</string>
     <string name="preview">Preview</string>
     <string name="choose_background">Choose Chat Background</string>
-    <string name="enable_debug_popups">Enable Debug Popups</string>
     <string name="language">Language</string>
     <string name="current_language">Change Language</string>
     <string name="background_updated">Background updated</string>
     <string name="background_removed">Background removed</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Classic</string>
-    <string name="theme_emerald">Emerald</string>
-    <string name="theme_lavender">Lavender</string>
-    <string name="theme_dark">Dark</string>
+    <string name="theme_standard">Standard</string>
+    <string name="theme_turquoise">Turquoise</string>
     <string name="preview_incoming">Incoming message bubble</string>
     <string name="preview_outgoing">Outgoing message bubble</string>
     <string name="theme">Theme</string>
@@ -78,6 +75,7 @@
     <string name="not_in_contacts">This person is not in your contacts</string>
     <string name="add_to_contacts">Add to contacts</string>
     <string name="block">Block</string>
+    <string name="unblock">Unblock</string>
     <string name="contact_unavailable">The contact is unavailable</string>
     <string name="is_typing">is typing...</string>
     <string name="send_nudge">Send Nudge</string>
@@ -105,6 +103,17 @@
     <string name="resend">Resend</string>
     <string name="chat_me_prefix">Me: %1$s</string>
     <string name="group_participants_updated">Participants list updated</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Pin</string>
+    <string name="unpin_chat">Unpin</string>
+    <string name="mute_notifications">Mute Notifications</string>
+    <string name="unmute_notifications">Unmute Notifications</string>
+    <string name="blocked_group_name">Blocked</string>
+    <string name="add_to_folder">Add to folder</string>
+    <string name="move_to_folder">Move to folder</string>
+    <string name="select_folder">Select folder</string>
+    <string name="remove_from_folder">Remove from folder</string>
 
     <!-- Contacts -->
     <string name="add_friend">Add Friend</string>
@@ -160,9 +169,10 @@
     <string name="about_library_title">Libraries used:</string>
     <string name="about_library_name">MSNP-11 library by campos02</string>
     <string name="about_testers_title">Active testers:</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Developed by Vasek Lednikofff</string>
     <string name="about_limpe_support">supported by Limpe Team</string>
+    <string name="telegram">Telegram</string>
 
     <!-- Storage -->
     <string name="storage">Storage</string>
@@ -176,6 +186,9 @@
     <string name="clear_history_message">This will permanently delete all your messages from all chats.</string>
     <string name="cache_cleared">Cache cleared</string>
     <string name="history_cleared">History cleared</string>
+    <string name="cache_label_size">Cache: %1$s</string>
+    <string name="messages_label_size">History: %1$s</string>
+    <string name="total_storage_usage">Total usage: %1$s</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Dark Theme</string>
@@ -257,4 +270,27 @@
     <string name="logs_report_title">Tengerium Bug Report</string>
     <string name="no_logs_available">No log information available</string>
     <string name="error_collecting_logs">Error collecting logs: %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Update Service</string>
+    <string name="update_checking">Checking for updates...</string>
+    <string name="update_no_updates">No updates available</string>
+    <string name="update_ready">Update ready to install</string>
+    <string name="update_downloading">Downloading update (%1$d%%)</string>
+    <string name="update_unavailable">Update service temporarily unavailable</string>
+    <string name="update_install">Install Update</string>
+    <string name="update_changelog">Changelog</string>
+    <string name="update_download">Download</string>
+    <string name="update_version_info">Current: %1$s • New: %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Connection Request</string>
+    <string name="deep_link_warning_title">Warning: Custom Server!</string>
+    <string name="deep_link_warning_message">This link is trying to change server settings to:\n\nServer: %1$s\nNexus: %2$s\n\nUsing third-party servers can be DANGEROUS. The server owner might see your password and intercept your messages. Are you sure you trust this server?</string>
+    <string name="deep_link_wait_format">Wait %1$d sec...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">Secret of Version Name %1$s</string>
+    <string name="easter_egg_content">Chocolate cake \"Shakhtyorsky\" (Miner\'s Cake).\n\nReal. Only chocolate and nuts. It was made according to the recipe of the Lugansk confectionery factory. For connoisseurs of real chocolate. The history of this cake is very amazing: its recipe was developed in the 60s at the Lugansk confectionery factory, at the same time the recipe for Planeta candies was developed, if anyone tried them.\n\nWhile most factory-made cakes were made according to GOST, the Shakhtyorsky cake and Planeta were made according to TU, and their recipe is known to few. Its original formulation is not entered in the registers. No flour and no baking.\n\nThen it got a bit worse, and its name was changed to \"Cardinal\", and under the brand \"Shakhtyorsky\" they began to sell something else, but also chocolate with nuts and digestible.\n\nMoreover, this signature product of the Lugansk confectionery factory was in short supply. Many remember that when they went to visit another city, they got this sweet souvenir with great difficulty. And how extraordinary it tasted: with three different types of chocolate, nuts, and chocolate roses on top. In short, they did not spare the chocolate. Although the phrase \"miner\'s cake\" sounded strange and even misled some that it was some special coal mining technology.\n\nNuts and prunes were poured with three types of chocolate, condensed milk and citrus zest were added. The cake was decorated with chocolate roses, fruits made of glaze and sugar, and an edible bottle of \"Soviet Champagne\" with liqueur inside. The cake weighed up to a kilogram and, of course, was a terrible deficit. But due to the fact that this culinary product is, in essence, one big chocolate bar, it is stored long enough and was often used as a souvenir and a gift.</string>
+    <string name="easter_egg_source">Source %1$s</string>
 </resources>

@@ -1,17 +1,20 @@
 package com.limpe.tengerium
 
+import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Bundle
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import com.limpe.tengerium.data.AppConfig
 import com.limpe.tengerium.data.MSNPRepository
+
 import com.limpe.tengerium.data.protocol.MSNPService
 import com.limpe.tengerium.data.security.SecurePrefs
 import net.sqlcipher.database.SQLiteDatabase
@@ -24,6 +27,9 @@ class TengeriumApp : Application() {
     
     lateinit var repository: MSNPRepository
         private set
+    
+    var isAppInForeground: Boolean = false
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -33,8 +39,15 @@ class TengeriumApp : Application() {
         }
         
         setupCrashHandler()
+        setupForegroundTracking()
         
         val securePrefs = SecurePrefs(this)
+        
+        // Миграция тем: если стояла старая нестандартная тема (индекс > 0), пересаживаем на Бирюзу (индекс 1)
+        if (securePrefs.themePreset > 1) {
+            securePrefs.themePreset = 1
+        }
+
         applyLanguage(this, securePrefs.language)
         applyAppTheme(securePrefs)
         
@@ -46,16 +59,38 @@ class TengeriumApp : Application() {
         
         SQLiteDatabase.loadLibs(this)
         repository = MSNPRepository(this)
-        
-        AppConfig.showDebugToasts = securePrefs.debugEnabled
 
-        MSNPService.start(this)
+        // MSNPService.start(this) // Перенесено в MainActivity для предотвращения ForegroundServiceStartNotAllowedException
         
         // Автоматический вход только если OOBE завершен для текущего аккаунта
         val savedAcc = securePrefs.getSavedAccount()
         if (savedAcc != null && securePrefs.isOobeDone(savedAcc)) {
             repository.autoLogin()
         }
+    }
+
+    private fun setupForegroundTracking() {
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            private var startedActivities = 0
+
+            override fun onActivityStarted(activity: Activity) {
+                startedActivities++
+                isAppInForeground = true
+            }
+
+            override fun onActivityStopped(activity: Activity) {
+                startedActivities--
+                if (startedActivities <= 0) {
+                    isAppInForeground = false
+                }
+            }
+
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
     }
 
     private fun applyAppTheme(prefs: SecurePrefs) {
@@ -104,44 +139,27 @@ class TengeriumApp : Application() {
         }
     }
 
-    override fun attachBaseContext(base: Context) {
-        super.attachBaseContext(wrapContext(base))
-    }
-
     companion object {
-        /**
-         * Обертка контекста для применения языка. 
-         * Используется в attachBaseContext приложения и всех Activity.
-         */
-        fun wrapContext(base: Context): Context {
-            val securePrefs = SecurePrefs(base)
-            val lang = securePrefs.language
-            if (lang == "system") return base
-            
-            val locale = Locale(lang)
-            Locale.setDefault(locale)
-            
-            val config = Configuration(base.resources.configuration)
-            config.setLocale(locale)
-            config.setLayoutDirection(locale)
-            
-            return base.createConfigurationContext(config)
-        }
-
         fun applyLanguage(context: Context, lang: String) {
-            // Установка через AppCompatDelegate для системной поддержки
+            // Установка через AppCompatDelegate для системной поддержки.
+            // Это современный способ, который автоматически обрабатывает context wrapping в Activity.
             val appLocale: LocaleListCompat = if (lang == "system") {
                 LocaleListCompat.getEmptyLocaleList()
             } else {
                 LocaleListCompat.forLanguageTags(lang)
             }
             AppCompatDelegate.setApplicationLocales(appLocale)
+            
+            // Для Application context и совместимости со старыми API обновляем конфигурацию вручную,
+            // но НЕ заменяем базовый контекст через createConfigurationContext в attachBaseContext,
+            // так как это вызывает ClassCastException на некоторых OEM-устройствах (ActivityImpl).
             if (lang != "system") {
                 val locale = Locale(lang)
                 Locale.setDefault(locale)
                 val config = Configuration(context.resources.configuration)
                 config.setLocale(locale)
                 config.setLayoutDirection(locale)
+                @Suppress("DEPRECATION")
                 context.resources.updateConfiguration(config, context.resources.displayMetrics)
             }
         }

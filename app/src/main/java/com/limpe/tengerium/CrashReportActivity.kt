@@ -8,10 +8,6 @@ import com.limpe.tengerium.databinding.ActivityCrashReportBinding
 
 class CrashReportActivity : AppCompatActivity() {
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(TengeriumApp.wrapContext(newBase))
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding = ActivityCrashReportBinding.inflate(layoutInflater)

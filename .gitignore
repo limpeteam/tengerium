@@ -13,6 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
-.so
-app/release
-app/src/main/jnilibs
+.idea/deploymentTargetSelector.xml
+/.idea
+/app
+.idea/deploymentTargetSelector.xml
+/temp
+*.keystore

@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -22,10 +24,14 @@ import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
 import com.limpe.tengerium.data.MSNPLoginState
 import com.limpe.tengerium.databinding.FragmentContactsBinding
+import com.limpe.tengerium.databinding.LayoutChatMenuBinding
 import com.limpe.tengerium.domain.model.Contact
 import com.limpe.tengerium.domain.model.Group
-import kotlinx.coroutines.delay
+import com.limpe.tengerium.util.AnimationHelper
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import java.util.Locale
 
@@ -42,7 +48,7 @@ class ContactsFragment : Fragment() {
     }
 
     private var isScrollRestored = false
-    private val collapsedGroups = mutableSetOf<String>()
+    private val collapsedGroups = MutableStateFlow<Set<String>>(emptySet())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentContactsBinding.inflate(inflater, container, false)
@@ -55,8 +61,7 @@ class ContactsFragment : Fragment() {
         repository = (requireActivity().application as TengeriumApp).repository
         securePrefs = com.limpe.tengerium.data.security.SecurePrefs(requireContext())
         
-        collapsedGroups.clear()
-        collapsedGroups.addAll(securePrefs.getCollapsedGroups())
+        collapsedGroups.value = securePrefs.getCollapsedGroups()
 
         setupRecyclerView()
         setupFab()
@@ -66,38 +71,33 @@ class ContactsFragment : Fragment() {
 
     private fun setupRecyclerView() {
         adapter = ContactAdapter(
+            securePrefs = securePrefs,
             onClick = { contact ->
                 val mainFragment = findMainFragment()
-                if (mainFragment != null && mainFragment.isTablet) {
+                if (mainFragment != null) {
                     mainFragment.openChatOnTablet(contact.account)
                 } else {
                     val bundle = bundleOf("account" to contact.account)
                     findNavController().navigate(R.id.action_MainFragment_to_ChatFragment, bundle)
                 }
             },
-            onLongClick = { view, contact ->
-                showContactContextMenu(view, contact)
-            },
+            onLongClick = { anchor, contact -> showContactContextMenu(anchor, contact) },
             onRequestsClick = {
                 val mainFragment = findMainFragment()
-                if (mainFragment != null && mainFragment.isTablet) {
-                    mainFragment.showDetail(RequestsFragment())
+                if (mainFragment != null) {
+                    mainFragment.showDetail(RequestsFragment(), addToBackStack = true)
                 } else {
                     findNavController().navigate(R.id.action_MainFragment_to_RequestsFragment)
                 }
             },
             onGroupClick = { group ->
-                if (collapsedGroups.contains(group.guid)) {
-                    collapsedGroups.remove(group.guid)
-                } else {
-                    collapsedGroups.add(group.guid)
-                }
-                securePrefs.setCollapsedGroups(collapsedGroups)
-                refreshList()
+                val current = collapsedGroups.value.toMutableSet()
+                if (current.contains(group.guid)) current.remove(group.guid)
+                else current.add(group.guid)
+                collapsedGroups.value = current
+                securePrefs.setCollapsedGroups(current)
             },
-            onGroupLongClick = { view, group ->
-                showGroupContextMenu(view, group)
-            }
+            onGroupLongClick = { view, group -> showGroupContextMenu(view, group) }
         )
         binding.rvContacts.layoutManager = LinearLayoutManager(context)
         binding.rvContacts.adapter = adapter
@@ -114,76 +114,96 @@ class ContactsFragment : Fragment() {
         })
     }
 
-    private fun showContactContextMenu(view: View, contact: Contact) {
-        val popup = PopupMenu(requireContext(), view)
-        popup.menu.add(getString(R.string.block))
-        popup.menu.add(getString(R.string.contacts_settings))
-        popup.menu.add(getString(R.string.delete))
+    private fun showContactContextMenu(anchor: View, contact: Contact) {
+        val menuBinding = LayoutChatMenuBinding.inflate(layoutInflater)
+        val popup = PopupWindow(menuBinding.root, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
         
-        popup.setOnMenuItemClickListener { item ->
-            when (item.title) {
-                getString(R.string.block) -> repository.blockContact(contact.account)
-                getString(R.string.contacts_settings) -> showChangeGroupDialog(contact)
-                getString(R.string.delete) -> repository.removeContact(contact.account)
-            }
-            true
+        popup.elevation = 20f
+
+        menuBinding.btnMenuPin.isVisible = false
+        menuBinding.btnMenuNudge.isVisible = false
+        menuBinding.btnMenuExport.isVisible = false
+        menuBinding.btnMenuClear.isVisible = false
+
+        val allGroups = repository.groups.value
+        val availableGroups = allGroups.filter { group -> !contact.groupGuids.contains(group.guid) }
+        
+        menuBinding.btnMenuFolder.isVisible = availableGroups.isNotEmpty()
+        menuBinding.btnMenuFolder.setOnClickListener {
+            popup.dismiss()
+            showChangeGroupDialog(contact, availableGroups)
         }
-        popup.show()
+
+        val isInAnyGroup = contact.groupGuids.isNotEmpty()
+        menuBinding.btnMenuRemoveFolder.isVisible = isInAnyGroup
+        menuBinding.btnMenuRemoveFolder.setOnClickListener {
+            popup.dismiss()
+            val contactGuid = contact.guid
+            if (contactGuid != null) {
+                contact.groupGuids.forEach { groupGuid ->
+                    repository.removeContactFromGroup(contact.account, contactGuid, groupGuid)
+                }
+            }
+        }
+
+        val isMuted = securePrefs.isChatMuted(contact.account)
+        menuBinding.btnMenuMute.isVisible = true
+        menuBinding.btnMenuMute.text = if (isMuted) getString(R.string.unmute_notifications) else getString(R.string.mute_notifications)
+        menuBinding.btnMenuMute.setIconResource(if (isMuted) R.drawable.ic_notifications_on else R.drawable.ic_notifications_off)
+        menuBinding.btnMenuMute.setOnClickListener {
+            securePrefs.toggleMuteChat(contact.account)
+            popup.dismiss()
+        }
+
+        val isBlocked = contact.listType.contains("BL")
+        menuBinding.btnMenuBlock.isVisible = true
+        menuBinding.btnMenuBlock.text = if (isBlocked) getString(R.string.unblock) else getString(R.string.block)
+        menuBinding.btnMenuBlock.setIconResource(if (isBlocked) R.drawable.ic_unblock else R.drawable.ic_block)
+        menuBinding.btnMenuBlock.setOnClickListener {
+            if (isBlocked) repository.unblockContact(contact.account) else repository.blockContact(contact.account)
+            popup.dismiss()
+        }
+
+        menuBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val xOffset = -menuBinding.root.measuredWidth / 2 + anchor.width / 2
+        val yOffset = -anchor.height / 2
+        
+        AnimationHelper.showSmartPopup(popup, anchor, xOffset, yOffset)
     }
 
     private fun showGroupContextMenu(view: View, group: Group) {
         if (group.guid == "other") return
-        
         val popup = PopupMenu(requireContext(), view)
         popup.menu.add(getString(R.string.delete))
-        
         popup.setOnMenuItemClickListener { item ->
-            when (item.title) {
-                getString(R.string.delete) -> {
-                    AlertDialog.Builder(requireContext())
-                        .setTitle(R.string.delete)
-                        .setMessage(getString(R.string.clear_history_message)) // Reuse or add new string
-                        .setPositiveButton(R.string.delete) { _, _ ->
-                            repository.deleteGroup(group.guid)
-                        }
-                        .setNegativeButton(android.R.string.cancel, null)
-                        .show()
-                }
+            if (item.title == getString(R.string.delete)) {
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.delete)
+                    .setMessage(R.string.delete_group_confirm)
+                    .setPositiveButton(R.string.delete) { _, _ -> repository.deleteGroup(group.guid) }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
             true
         }
         popup.show()
     }
 
-    private fun showChangeGroupDialog(contact: Contact) {
-        val groups = repository.groups.value
-        if (groups.isEmpty()) {
+    private fun showChangeGroupDialog(contact: Contact, availableGroups: List<Group>) {
+        if (availableGroups.isEmpty()) {
             Toast.makeText(requireContext(), R.string.no_groups_error, Toast.LENGTH_SHORT).show()
             return
         }
-
-        val groupNames = groups.map { it.name }.toTypedArray()
-
+        val groupNames = availableGroups.map { it.name }.toTypedArray()
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.move_to_group_title, contact.nickname.ifEmpty { contact.account }))
             .setItems(groupNames) { _, which ->
-                val targetGroup = groups[which]
+                val targetGroup = availableGroups[which]
                 val contactGuid = contact.guid
-                
                 if (contactGuid != null) {
                     repository.addContactToGroup(contact.account, contactGuid, targetGroup.guid)
-                    val currentGroupGuids = groups.filter { it.contactAccounts.contains(contact.account.lowercase(Locale.ROOT).trim()) }.map { it.guid }
-                    currentGroupGuids.forEach { oldGuid ->
-                        if (oldGuid != targetGroup.guid) {
-                            repository.removeContactFromGroup(contact.account, contactGuid, oldGuid)
-                        }
-                    }
-                } else {
-                    Toast.makeText(requireContext(), R.string.contact_guid_error, Toast.LENGTH_LONG).show()
                 }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
+            }.setNegativeButton(android.R.string.cancel, null).show()
     }
 
     private fun observeData() {
@@ -193,18 +213,16 @@ class ContactsFragment : Fragment() {
                     repository.contacts,
                     repository.groups,
                     repository.pendingRequests,
-                    repository.loginState
-                ) { contacts, groups, requests, loginState ->
-                    buildItemList(contacts, groups, requests, loginState)
+                    repository.loginState,
+                    combine(collapsedGroups, securePrefs.prefsChangedFlow.onStart { emit("init") }) { c, _ -> c }
+                ) { contacts, groups, requests, loginState, collapsed ->
+                    buildItemList(contacts, groups, requests, loginState, collapsed)
                 }.collect { (items, requestsCount, isConnected) ->
                     val binding = _binding ?: return@collect
-                    val hadNoRequests = adapter.currentList.none { it is ContactAdapter.ContactItem.Header }
                     adapter.submitList(items) {
                         val innerBinding = _binding ?: return@submitList
                         if (!isScrollRestored) {
-                            if (requestsCount > 0 && hadNoRequests && mainViewModel.contactsScrollPosition == 0) {
-                                innerBinding.rvContacts.scrollToPosition(0)
-                            } else if (mainViewModel.contactsScrollPosition != 0 || mainViewModel.contactsScrollOffset != 0) {
+                            if (mainViewModel.contactsScrollPosition != 0 || mainViewModel.contactsScrollOffset != 0) {
                                 (innerBinding.rvContacts.layoutManager as? LinearLayoutManager)
                                     ?.scrollToPositionWithOffset(mainViewModel.contactsScrollPosition, mainViewModel.contactsScrollOffset)
                             }
@@ -212,10 +230,8 @@ class ContactsFragment : Fragment() {
                         }
                         innerBinding.rvContacts.alpha = 1f
                     }
-                    
                     val hasRealContacts = items.any { it is ContactAdapter.ContactItem.User || it is ContactAdapter.ContactItem.GroupHeader }
-                    val hasRequests = requestsCount > 0
-                    binding.layoutEmpty.visibility = if (isConnected && !hasRealContacts && !hasRequests) View.VISIBLE else View.GONE
+                    binding.layoutEmpty.visibility = if (isConnected && !hasRealContacts && requestsCount <= 0) View.VISIBLE else View.GONE
                     binding.layoutNotConnected.visibility = if (!isConnected) View.VISIBLE else View.GONE
                 }
             }
@@ -226,147 +242,147 @@ class ContactsFragment : Fragment() {
         contacts: List<Contact>,
         groups: List<Group>,
         requests: List<Contact>,
-        loginState: MSNPLoginState
+        loginState: MSNPLoginState,
+        collapsed: Set<String>
     ): Triple<List<ContactAdapter.ContactItem>, Int, Boolean> {
         val items = mutableListOf<ContactAdapter.ContactItem>()
         val isConnected = loginState is MSNPLoginState.Success
-        
         val myAcc = repository.getSavedAccount()?.lowercase(Locale.ROOT)?.trim()
+        
+        // Filter out self from the contacts list
+        val filteredContacts = contacts.filter { it.account.lowercase(Locale.ROOT).trim() != myAcc }
         
         if (requests.isNotEmpty()) {
             val filteredRequests = requests.filter { it.account.lowercase(Locale.ROOT).trim() != myAcc }
-            if (filteredRequests.isNotEmpty()) {
-                items.add(ContactAdapter.ContactItem.Header(filteredRequests.size))
-            }
+            if (filteredRequests.isNotEmpty()) items.add(ContactAdapter.ContactItem.Header(filteredRequests.size))
         }
-        
-        val filteredContacts = contacts.filter { it.account.lowercase(Locale.ROOT).trim() != myAcc }
 
-        if (groups.isNotEmpty()) {
-            groups.forEach { group ->
-                val groupContacts = filteredContacts.filter { contact -> 
-                    group.contactAccounts.contains(contact.account.lowercase(Locale.ROOT).trim())
-                }
-                
-                val onlineInGroup = groupContacts.count { it.status != "FLN" }
-                val isExpanded = !collapsedGroups.contains(group.guid)
-                
-                items.add(ContactAdapter.ContactItem.GroupHeader(group, onlineInGroup, groupContacts.size, isExpanded))
-                
-                if (isExpanded) {
-                    val sortedGroupContacts = if (securePrefs.showOnlineFirst) {
-                        groupContacts.sortedWith(compareByDescending<Contact> { 
-                            it.status != "FLN" 
-                        }.thenBy { it.nickname.lowercase() })
-                    } else {
-                        groupContacts.sortedBy { it.nickname.lowercase() }
-                    }
-                    items.addAll(sortedGroupContacts.map { ContactAdapter.ContactItem.User(it) })
-                }
-            }
-            
-            val contactsInGroups = groups.flatMap { it.contactAccounts }.toSet()
-            val otherContacts = filteredContacts.filter { !contactsInGroups.contains(it.account.lowercase(Locale.ROOT).trim()) }
-            if (otherContacts.isNotEmpty()) {
-                val otherGroup = Group("other", getString(R.string.other_contacts), otherContacts.map { it.account })
-                val isExpanded = !collapsedGroups.contains("other")
-                val onlineInOther = otherContacts.count { it.status != "FLN" }
-                
-                items.add(ContactAdapter.ContactItem.GroupHeader(otherGroup, onlineInOther, otherContacts.size, isExpanded))
-                if (isExpanded) {
-                    val sortedOther = if (securePrefs.showOnlineFirst) {
-                        otherContacts.sortedWith(compareByDescending<Contact> { it.status != "FLN" }.thenBy { it.nickname.lowercase() })
-                    } else {
-                        otherContacts.sortedBy { it.nickname.lowercase() }
-                    }
-                    items.addAll(sortedOther.map { ContactAdapter.ContactItem.User(it) })
-                }
-            }
-        } else {
-            val sortedContacts = if (securePrefs.showOnlineFirst) {
-                filteredContacts.sortedWith(compareByDescending<Contact> { 
-                    it.status != "FLN" 
-                }.thenBy { it.nickname.lowercase() })
-            } else {
-                filteredContacts.sortedBy { it.nickname.lowercase() }
-            }
-            items.addAll(sortedContacts.map { ContactAdapter.ContactItem.User(it) })
+        if (!isConnected) {
+            items.add(ContactAdapter.ContactItem.NotConnected)
+            return Triple(items, requests.size, isConnected)
         }
-        
+
+        val displayedAccounts = mutableSetOf<String>()
+
+        // 1. Показываем группы, которые есть в списке groups
+        groups.forEach { group ->
+            val groupContacts = filteredContacts.filter { it.groupGuids.contains(group.guid) }
+            val onlineInGroup = groupContacts.filter { it.status != "FLN" }.sortedBy { it.nickname.lowercase(Locale.ROOT) }
+            val offlineInGroup = groupContacts.filter { it.status == "FLN" }.sortedBy { it.nickname.lowercase(Locale.ROOT) }
+            val isExpanded = !collapsed.contains(group.guid)
+            
+            items.add(ContactAdapter.ContactItem.GroupHeader(group, onlineInGroup.size, groupContacts.size, isExpanded))
+            
+            if (isExpanded) {
+                onlineInGroup.forEach { 
+                    items.add(ContactAdapter.ContactItem.User(it, securePrefs.isChatMuted(it.account)))
+                    displayedAccounts.add(it.account.lowercase(Locale.ROOT))
+                }
+                offlineInGroup.forEach { 
+                    items.add(ContactAdapter.ContactItem.User(it, securePrefs.isChatMuted(it.account)))
+                    displayedAccounts.add(it.account.lowercase(Locale.ROOT))
+                }
+            } else {
+                // Если группа свернута, всё равно помечаем контакты как отображенные (в этой группе)
+                groupContacts.forEach { displayedAccounts.add(it.account.lowercase(Locale.ROOT)) }
+            }
+        }
+
+        // 2. Все остальные контакты (без групп или с GUID-ами, которых нет в groups)
+        val remainingContacts = filteredContacts.filter { !displayedAccounts.contains(it.account.lowercase(Locale.ROOT)) }
+        if (remainingContacts.isNotEmpty()) {
+            val onlineOther = remainingContacts.filter { it.status != "FLN" }.sortedBy { it.nickname.lowercase(Locale.ROOT) }
+            val offlineOther = remainingContacts.filter { it.status == "FLN" }.sortedBy { it.nickname.lowercase(Locale.ROOT) }
+            val isExpanded = !collapsed.contains("other")
+            
+            items.add(ContactAdapter.ContactItem.GroupHeader(
+                Group("other", getString(R.string.other_contacts), emptyList()),
+                onlineOther.size,
+                remainingContacts.size,
+                isExpanded
+            ))
+            
+            if (isExpanded) {
+                onlineOther.forEach { items.add(ContactAdapter.ContactItem.User(it, securePrefs.isChatMuted(it.account))) }
+                offlineOther.forEach { items.add(ContactAdapter.ContactItem.User(it, securePrefs.isChatMuted(it.account))) }
+            }
+        }
+
         return Triple(items, requests.size, isConnected)
     }
 
-    private fun refreshList() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val contacts = repository.contacts.value
-            val groups = repository.groups.value
-            val requests = repository.pendingRequests.value
-            val loginState = repository.loginState.value
-            
-            val (items, _, _) = buildItemList(contacts, groups, requests, loginState)
-            adapter.submitList(items)
-        }
+    private fun observeNewContacts() {
     }
 
     private fun setupFab() {
-        binding.fabAddContact.setOnClickListener { view ->
-            // Поворачиваем плюсик в крестик (45 градусов)
-            view.animate().rotation(45f).setDuration(200).start()
-            
-            val popup = PopupMenu(requireContext(), view)
-            popup.menuInflater.inflate(R.menu.menu_add_contact, popup.menu)
-            
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_add_contact -> {
-                        val mainFragment = findMainFragment()
-                        if (mainFragment != null && mainFragment.isTablet) {
-                            mainFragment.showDetail(AddContactFragment())
-                        } else {
-                            findNavController().navigate(R.id.action_MainFragment_to_AddContactFragment)
-                        }
-                        true
-                    }
-                    R.id.action_create_group -> {
-                        showCreateGroupDialog()
-                        true
-                    }
-                    else -> false
-                }
-            }
-            
-            popup.setOnDismissListener {
-                // Возвращаем плюсик обратно при закрытии меню
-                view.animate().rotation(0f).setDuration(200).start()
-            }
-            
-            popup.show()
+        binding.fabAddContact.setOnClickListener {
+            showFabMenu(it)
+        }
+    }
+
+    private fun showFabMenu(anchor: View) {
+        val menuBinding = LayoutChatMenuBinding.inflate(layoutInflater)
+        val popup = PopupWindow(menuBinding.root, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+        popup.elevation = 20f
+
+        // Скрываем все ненужные кнопки
+        menuBinding.btnMenuPin.isVisible = false
+        menuBinding.btnMenuNudge.isVisible = false
+        menuBinding.btnMenuMute.isVisible = false
+        menuBinding.btnMenuBlock.isVisible = false
+        menuBinding.btnMenuExport.isVisible = false
+        menuBinding.btnMenuClear.isVisible = false
+        menuBinding.btnMenuRemoveFolder.isVisible = false
+
+        // Используем btnMenuFolder для "Add Friend" (переход на фрагмент)
+        menuBinding.btnMenuFolder.isVisible = true
+        menuBinding.btnMenuFolder.text = getString(R.string.add_friend)
+        menuBinding.btnMenuFolder.setIconResource(R.drawable.ic_email_login)
+        menuBinding.btnMenuFolder.setOnClickListener {
+            popup.dismiss()
+            navigateToAddFriend()
+        }
+
+        // Используем btnMenuPin для "Create Group" (модалка для имени группы нужна)
+        val btnCreateGroup = menuBinding.btnMenuPin
+        btnCreateGroup.isVisible = true
+        btnCreateGroup.text = getString(R.string.create_group)
+        btnCreateGroup.setIconResource(R.drawable.ic_folder)
+        btnCreateGroup.setOnClickListener {
+            popup.dismiss()
+            showCreateGroupDialog()
+        }
+
+        menuBinding.root.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val xOffset = anchor.width - menuBinding.root.measuredWidth
+        val yOffset = -anchor.height - menuBinding.root.measuredHeight
+        
+        AnimationHelper.showSmartPopup(popup, anchor, xOffset, yOffset)
+    }
+
+    private fun navigateToAddFriend() {
+        val mainFragment = findMainFragment()
+        if (mainFragment != null) {
+            mainFragment.showDetail(AddContactFragment(), addToBackStack = true)
+        } else {
+            findNavController().navigate(R.id.action_MainFragment_to_AddContactFragment)
         }
     }
 
     private fun showCreateGroupDialog() {
-        val editText = EditText(requireContext()).apply {
-            hint = getString(R.string.nickname_hint)
-            setSingleLine()
-        }
-        
-        val container = FrameLayout(requireContext()).apply {
-            val params = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            ).apply {
-                marginEnd = (24 * resources.displayMetrics.density).toInt()
-                marginStart = (24 * resources.displayMetrics.density).toInt()
-                topMargin = (8 * resources.displayMetrics.density).toInt()
-            }
-            addView(editText, params)
-        }
+        val input = EditText(requireContext())
+        input.hint = getString(R.string.create_group)
+        val container = FrameLayout(requireContext())
+        val params = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        params.setMargins(48, 24, 48, 24)
+        input.layoutParams = params
+        container.addView(input)
 
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.create_group)
             .setView(container)
             .setPositiveButton(R.string.add) { _, _ ->
-                val name = editText.text.toString().trim()
+                val name = input.text.toString().trim()
                 if (name.isNotEmpty()) {
                     repository.createGroup(name)
                 }
@@ -375,43 +391,17 @@ class ContactsFragment : Fragment() {
             .show()
     }
 
-    private fun observeNewContacts() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                repository.contactAddedFlow.collect { account ->
-                    delay(300)
-                    val binding = _binding ?: return@collect
-                    val position = adapter.currentList.indexOfFirst { it is ContactAdapter.ContactItem.User && it.contact.account == account }
-                    if (position != -1) {
-                        binding.rvContacts.smoothScrollToPosition(position)
-                        adapter.setHighlightedAccount(account)
-                        
-                        launch {
-                            delay(3000)
-                            if (isAdded) {
-                                adapter.setHighlightedAccount(null)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     private fun findMainFragment(): MainFragment? {
-        return generateSequence(parentFragment) { it.parentFragment }
-            .filterIsInstance<MainFragment>()
-            .firstOrNull()
+        var parent = parentFragment
+        while (parent != null) {
+            if (parent is MainFragment) return parent
+            parent = parent.parentFragment
+        }
+        return null
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        val layoutManager = _binding?.rvContacts?.layoutManager as? LinearLayoutManager
-        val firstVisibleItemView = layoutManager?.getChildAt(0)
-        if (firstVisibleItemView != null) {
-            mainViewModel.contactsScrollPosition = layoutManager.findFirstVisibleItemPosition()
-            mainViewModel.contactsScrollOffset = firstVisibleItemView.top
-        }
         _binding = null
     }
 }

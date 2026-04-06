@@ -7,11 +7,14 @@ import android.animation.ObjectAnimator
 import android.animation.PropertyValuesHolder
 import android.animation.ValueAnimator
 import android.graphics.Color
+import android.graphics.Rect
 import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.AnticipateOvershootInterpolator
 import android.view.animation.CycleInterpolator
 import android.view.animation.OvershootInterpolator
+import android.widget.PopupWindow
 import android.widget.TextView
 import com.google.android.material.color.MaterialColors
 import com.limpe.tengerium.R
@@ -41,7 +44,65 @@ object AnimationHelper {
     }
 
     /**
-     * Анимация изменения статуса (пульсация с изменением цвета).
+     * Анимация логотипа на экране входа.
+     */
+    fun animateLoginLogo(logoView: View?) {
+        logoView ?: return
+        logoView.alpha = 0f
+        logoView.scaleX = 0.2f
+        logoView.scaleY = 0.2f
+        
+        logoView.animate()
+            .alpha(1f)
+            .scaleX(1.2f)
+            .scaleY(1.2f)
+            .setDuration(700)
+            .setInterpolator(OvershootInterpolator(2f))
+            .withEndAction {
+                logoView.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(300)
+                    .start()
+            }
+            .start()
+    }
+
+    /**
+     * Анимация появления полей ввода на экране входа.
+     */
+    fun animateLoginInputs(views: List<View?>, baseDelay: Long = 500L) {
+        views.filterNotNull().forEachIndexed { index, view ->
+            view.alpha = 0f
+            view.translationY = 100f
+            view.animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(600)
+                .setStartDelay(baseDelay + (index * 100L))
+                .setInterpolator(OvershootInterpolator(0.8f))
+                .start()
+        }
+    }
+
+    /**
+     * Анимация появления сообщения.
+     */
+    fun animateMessagePop(view: View) {
+        view.alpha = 0f
+        view.scaleX = 0.8f
+        view.scaleY = 0.8f
+        view.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(300)
+            .setInterpolator(OvershootInterpolator(1.2f))
+            .start()
+    }
+
+    /**
+     * Анимация изменения статуса.
      */
     fun animateStatusChange(view: View, color: Int) {
         view.animate().cancel()
@@ -122,10 +183,10 @@ object AnimationHelper {
     /**
      * Анимация перехода для экрана загрузки/авторизации.
      */
-    fun animateLoadingState(mainView: View, loadingView: View?, isLoading: Boolean) {
+    fun animateLoadingState(mainView: View?, loadingView: View?, isLoading: Boolean) {
         if (isLoading) {
-            mainView.isEnabled = false
-            mainView.animate().alpha(0f).setDuration(UiConstants.ANIM_DURATION_MEDIUM).start()
+            mainView?.isEnabled = false
+            mainView?.animate()?.alpha(0f)?.setDuration(UiConstants.ANIM_DURATION_MEDIUM)?.start()
             
             loadingView?.apply {
                 alpha = 0f
@@ -141,8 +202,8 @@ object AnimationHelper {
                     .start()
             }
         } else {
-            mainView.isEnabled = true
-            mainView.animate().alpha(1f).setDuration(UiConstants.ANIM_DURATION_MEDIUM).start()
+            mainView?.isEnabled = true
+            mainView?.animate()?.alpha(1f)?.setDuration(UiConstants.ANIM_DURATION_MEDIUM)?.start()
             
             loadingView?.animate()
                 ?.alpha(0f)
@@ -206,6 +267,58 @@ object AnimationHelper {
             .scaleY(1f)
             .setDuration(500)
             .setInterpolator(AnticipateOvershootInterpolator())
+            .start()
+    }
+
+    /**
+     * Чтоб новое контекстное меню не проебалось и не получило пизды.
+     */
+    fun showSmartPopup(popup: PopupWindow, anchor: View, preferredXOffset: Int = 0, preferredYOffset: Int = 0) {
+        val menuView = popup.contentView
+        menuView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val menuWidth = menuView.measuredWidth
+        val menuHeight = menuView.measuredHeight
+
+        val screenPos = IntArray(2)
+        anchor.getLocationOnScreen(screenPos)
+        val anchorX = screenPos[0]
+        val anchorY = screenPos[1]
+
+        val displayMetrics = anchor.resources.displayMetrics
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+
+        // Рассчитываем идеальные координаты
+        var finalX = anchorX + preferredXOffset
+        var finalY = anchorY + anchor.height + preferredYOffset
+
+        // Проверка по горизонтали
+        if (finalX + menuWidth > screenWidth) {
+            finalX = screenWidth - menuWidth - 16
+        }
+        if (finalX < 16) finalX = 16
+
+        // Проверка по вертикали (если снизу не влезает - показываем сверху)
+        if (finalY + menuHeight > screenHeight) {
+            finalY = anchorY - menuHeight - preferredYOffset
+        }
+        
+        // ГЛОБАЛЬНЫЙ ОГРАНИЧИТЕЛЬ: не залезать выше тулбара (примерно 80dp от верха)
+        val topLimit = (80 * displayMetrics.density).toInt()
+        if (finalY < topLimit) finalY = topLimit
+
+        popup.showAtLocation(anchor, android.view.Gravity.NO_GRAVITY, finalX, finalY)
+        
+        // Добавляем микро-анимацию появления
+        menuView.alpha = 0f
+        menuView.scaleX = 0.9f
+        menuView.scaleY = 0.9f
+        menuView.animate()
+            .alpha(1f)
+            .scaleX(1f)
+            .scaleY(1f)
+            .setDuration(200)
+            .setInterpolator(OvershootInterpolator(1.0f))
             .start()
     }
 }

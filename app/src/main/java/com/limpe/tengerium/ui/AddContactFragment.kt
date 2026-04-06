@@ -6,13 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import androidx.core.widget.doAfterTextChanged
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
 import com.limpe.tengerium.databinding.FragmentAddContactBinding
-import com.limpe.tengerium.util.AnimationHelper
 
 class AddContactFragment : Fragment() {
 
@@ -28,68 +27,49 @@ class AddContactFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.toolbar.setNavigationOnClickListener {
-            findNavController().popBackStack()
-        }
-
-        binding.etEmail.doAfterTextChanged { text ->
-            val email = text?.toString()?.trim() ?: ""
-            val isValid = Patterns.EMAIL_ADDRESS.matcher(email).matches()
-            
-            if (isValid) {
-                showResultCard(email)
-            } else {
-                hideResultCard()
+            if (!findNavController().navigateUp()) {
+                requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
 
         binding.etEmail.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_SEARCH) {
-                val email = binding.etEmail.text.toString().trim()
-                if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    showResultCard(email)
-                }
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                performAdd()
                 true
             } else false
         }
 
-        binding.btnSearch.setOnClickListener {
-            val email = binding.etEmail.text.toString().trim()
-            if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                showResultCard(email)
-            } else {
-                binding.tilEmail.error = getString(R.string.invalid_email)
-            }
+        binding.btnAdd.setOnClickListener {
+            performAdd()
         }
     }
 
-    private fun showResultCard(email: String) {
-        if (binding.itemResult.root.visibility == View.VISIBLE && binding.itemResult.tvAccount.text == email) return
+    private fun performAdd() {
+        val email = binding.etEmail.text.toString().trim()
         
+        if (email.isEmpty()) {
+            binding.tilEmail.error = getString(R.string.fill_all_fields)
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = getString(R.string.invalid_email)
+            return
+        }
+
         binding.tilEmail.error = null
-        
-        // Настройка карточки результата
-        binding.itemResult.tvAccount.text = email
-        binding.itemResult.tvMessage.text = getString(R.string.press_to_add)
-        binding.itemResult.btnAccept.text = getString(R.string.add)
-        binding.itemResult.btnDecline.visibility = View.GONE
-        
-        AvatarUtils.loadAvatar(binding.itemResult.ivAvatar, null, email)
+        binding.btnAdd.isEnabled = false
+        binding.progressBar.visibility = View.VISIBLE
 
-        binding.itemResult.btnAccept.setOnClickListener {
-            val repository = (requireActivity().application as TengeriumApp).repository
+        val repository = (requireActivity().application as TengeriumApp).repository
+        
+        try {
             repository.addContact(email)
-            findNavController().popBackStack()
-        }
-
-        // Плавное появление
-        if (binding.itemResult.root.visibility != View.VISIBLE) {
-            AnimationHelper.fadeVisibility(binding.itemResult.root, true)
-        }
-    }
-
-    private fun hideResultCard() {
-        if (binding.itemResult.root.visibility == View.VISIBLE) {
-            AnimationHelper.fadeVisibility(binding.itemResult.root, false)
+            findNavController().navigateUp()
+        } catch (e: Exception) {
+            binding.btnAdd.isEnabled = true
+            binding.progressBar.visibility = View.GONE
+            Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 

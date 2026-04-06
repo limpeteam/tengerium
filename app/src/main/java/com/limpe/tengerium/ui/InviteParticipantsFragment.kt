@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.limpe.tengerium.TengeriumApp
+import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentInviteParticipantsBinding
 import com.limpe.tengerium.domain.model.Contact
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +39,7 @@ class InviteParticipantsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val repository = (requireActivity().application as TengeriumApp).repository
+        val securePrefs = SecurePrefs(requireContext())
         val chatAccount = args.account
 
         binding.toolbar.setNavigationOnClickListener {
@@ -45,6 +47,7 @@ class InviteParticipantsFragment : Fragment() {
         }
 
         val adapter = ContactAdapter(
+            securePrefs = securePrefs,
             onClick = { contact ->
                 repository.inviteContactToChat(chatAccount, contact.account)
                 findNavController().popBackStack()

@@ -1,8 +1,6 @@
 package com.limpe.tengerium.ui.oobe
 
 import android.Manifest
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
@@ -11,11 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -37,6 +32,8 @@ import com.limpe.tengerium.databinding.FragmentOobePermissionsBinding
 import com.limpe.tengerium.databinding.FragmentOobeWelcomeBinding
 import com.limpe.tengerium.ui.AuthViewModel
 import com.limpe.tengerium.ui.AvatarUtils
+import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.ConnectionDialogHelper
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -179,8 +176,14 @@ class OobeFragment : Fragment() {
                     } else null
 
                     when (state) {
-                        is MSNPLoginState.Loading, is MSNPLoginState.Reconnecting -> {
+                        is MSNPLoginState.Loading -> {
                             authHolder?.setLoading(true)
+                            authHolder?.authBinding?.tvLoadingStatus?.visibility = View.GONE
+                        }
+                        is MSNPLoginState.Reconnecting -> {
+                            authHolder?.setLoading(true)
+                            authHolder?.authBinding?.tvLoadingStatus?.visibility = View.VISIBLE
+                            authHolder?.authBinding?.tvLoadingStatus?.text = getString(R.string.reconnecting_in, state.secondsRemaining)
                         }
                         is MSNPLoginState.Success -> {
                             authHolder?.setLoading(false)
@@ -213,7 +216,6 @@ class OobeFragment : Fragment() {
                         }
                         is MSNPLoginState.NoInternet -> {
                             authHolder?.setLoading(false)
-                            // Не показываем ошибку в OOBE на экране входа, так как она обрабатывается отдельно в MainActivity
                             authHolder?.authBinding?.tvError?.visibility = View.GONE
                         }
                         is MSNPLoginState.Idle -> {
@@ -230,60 +232,11 @@ class OobeFragment : Fragment() {
         popup.menu.add(0, 1, 0, getString(R.string.connection_settings))
         popup.setOnMenuItemClickListener { item ->
             if (item.itemId == 1) {
-                showConnectionDialog()
+                ConnectionDialogHelper.showConnectionDialog(requireContext(), securePrefs)
                 true
             } else false
         }
         popup.show()
-    }
-
-    private fun showConnectionDialog() {
-        val context = requireContext()
-        val layout = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 24, 48, 24)
-        }
-
-        val etHost = EditText(context).apply {
-            hint = getString(R.string.host_hint)
-            setText(securePrefs.serverAddress)
-            setSingleLine(true)
-        }
-
-        val etNexusDomain = EditText(context).apply {
-            hint = getString(R.string.nexus_hint)
-            setText(securePrefs.nexusDomain)
-            setSingleLine(true)
-        }
-
-        val etConfigUrl = EditText(context).apply {
-            hint = "Config URL"
-            setText(securePrefs.configUrl)
-            setSingleLine(true)
-        }
-
-        layout.addView(etHost)
-        layout.addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 16) }) 
-        layout.addView(etNexusDomain)
-        layout.addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 16) })
-        layout.addView(etConfigUrl)
-
-        AlertDialog.Builder(context)
-            .setTitle(R.string.connection_settings)
-            .setView(layout)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val host = etHost.text.toString().trim()
-                val nexusDomain = etNexusDomain.text.toString().trim()
-                val configUrl = etConfigUrl.text.toString().trim()
-                if (host.isNotEmpty() && nexusDomain.isNotEmpty() && configUrl.isNotEmpty()) {
-                    securePrefs.serverAddress = host
-                    securePrefs.nexusDomain = nexusDomain
-                    securePrefs.configUrl = configUrl
-                    Toast.makeText(context, R.string.settings_saved, Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 
     private inner class OobeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -323,7 +276,12 @@ class OobeFragment : Fragment() {
 
     private inner class AuthViewHolder(val authBinding: FragmentAuthBinding) : RecyclerView.ViewHolder(authBinding.root) {
         fun bind() {
-            authBinding.ivLogo?.setImageResource(AvatarUtils.getAppLogoResId(authBinding.root.context))
+            if (AppConfig.USENEWLOGINEXP) {
+                setupNewExperience()
+            } else {
+                authBinding.ivLogo?.setImageResource(AvatarUtils.getAppLogoResId(authBinding.root.context))
+            }
+            
             val savedAccount = viewModel.getSavedAccount()
             val savedPass = viewModel.getSavedPassword()
             if (savedAccount != null && savedPass != null) {
@@ -353,27 +311,26 @@ class OobeFragment : Fragment() {
             authBinding.btnAuthMenu.setOnClickListener { showPopupMenu(it) }
         }
 
+        private fun setupNewExperience() {
+            authBinding.tvAppName?.visibility = View.GONE
+            authBinding.ivFooterLogo.visibility = View.VISIBLE
+            authBinding.layoutFooter?.visibility = View.VISIBLE
+
+            AnimationHelper.animateLoginLogo(authBinding.ivLogo)
+
+            val inputViews = listOf(
+                authBinding.tilAccount,
+                authBinding.tilPassword,
+                authBinding.cbRememberMe,
+                authBinding.flLoginContainer,
+                authBinding.layoutFooter
+            )
+
+            AnimationHelper.animateLoginInputs(inputViews)
+        }
+
         fun setLoading(isLoading: Boolean) {
-            if (isLoading) {
-                authBinding.btnLogin.isEnabled = false
-                authBinding.btnLogin.animate().alpha(0f).setDuration(250).start()
-                authBinding.progressBar.apply {
-                    alpha = 0f
-                    scaleX = 0f
-                    scaleY = 0f
-                    visibility = View.VISIBLE
-                    animate().alpha(1f).scaleX(1f).scaleY(1f).setDuration(300).setListener(null).start()
-                }
-            } else {
-                authBinding.btnLogin.isEnabled = true
-                authBinding.btnLogin.animate().alpha(1f).setDuration(250).start()
-                authBinding.progressBar.animate().alpha(0f).scaleX(0f).scaleY(0f).setDuration(200)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator) {
-                            authBinding.progressBar.visibility = View.GONE
-                        }
-                    }).start()
-            }
+            AnimationHelper.animateLoadingState(authBinding.btnLogin, authBinding.loadingLayout, isLoading)
         }
     }
 
@@ -396,7 +353,6 @@ class OobeFragment : Fragment() {
     }
 
     private inner class PermissionViewHolder(val binding: FragmentOobePermissionsBinding, private val step: OobeStep? = null) : RecyclerView.ViewHolder(binding.root) {
-        // Конструктор с type оставлен для совместимости если нужно, но лучше использовать step
         constructor(binding: FragmentOobePermissionsBinding, type: Int) : this(binding, OobeStep.values()[type])
 
         fun bind(currentStep: OobeStep) {

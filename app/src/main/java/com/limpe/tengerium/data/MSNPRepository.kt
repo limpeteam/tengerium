@@ -4,12 +4,17 @@ import android.content.Context
 import android.util.Log
 import androidx.core.net.toUri
 import com.limpe.tengerium.data.db.AppDatabase
+import com.limpe.tengerium.data.db.ContactEntity
+import com.limpe.tengerium.data.db.GroupEntity
 import com.limpe.tengerium.data.protocol.*
 import com.limpe.tengerium.data.protocol.v11.MSNP11NotificationManager
 import com.limpe.tengerium.data.security.SafeStorage
 import com.limpe.tengerium.data.security.SecurePrefs
+import com.limpe.tengerium.domain.model.Contact
+import com.limpe.tengerium.domain.model.Group
 import com.limpe.tengerium.util.UiConstants
 import com.limpe.tengerium.ui.AvatarUtils
+import com.limpe.tengerium.util.NetworkObserver
 import com.limpe.tengerium.util.SoundUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -75,20 +80,82 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
     private var lastKnownNetworkState = true
     private var isCurrentSessionRemembered = false
 
+    init {
+        // Наблюдаем за состоянием сети глобально
+        scope.launch {
+            NetworkObserver(context.applicationContext).isConnected.collectLatest { isConnected ->
+                updateNetworkState(isConnected)
+            }
+        }
+
+        // Load initial data from DB if available
+        scope.launch {
+            val owner = getCurrentAccount() ?: return@launch
+            
+            // Collect groups first
+            val initialGroups = database.groupDao().getGroupsSync(owner).map { 
+                Group(it.guid, it.name, emptyList()) 
+            }
+            contactManager.setGroups(initialGroups)
+
+            // Collect contacts
+            val initialContacts = database.contactDao().getContactsSync(owner).map { entity ->
+                Contact(
+                    account = entity.account,
+                    nickname = entity.nickname,
+                    status = "FLN", // Always offline from DB
+                    listType = entity.listType,
+                    avatarUrl = entity.avatarUrl,
+                    personalMessage = entity.personalMessage,
+                    guid = entity.guid,
+                    groupGuids = entity.groupGuids.split(",").filter { it.isNotEmpty() }
+                )
+            }
+            contactManager.setContacts(initialContacts)
+            
+            // Re-sync groups with contact accounts
+            val updatedGroups = initialGroups.map { g ->
+                g.copy(contactAccounts = initialContacts.filter { it.groupGuids.contains(g.guid) }.map { it.account })
+            }
+            contactManager.setGroups(updatedGroups)
+        }
+    }
+
     fun updateNetworkState(isConnected: Boolean) {
+        val wasConnected = lastKnownNetworkState
         lastKnownNetworkState = isConnected
+        
+        Log.d(TAG, "Network state updated: $isConnected (was $wasConnected), state=${_loginState.value}")
+        
         if (!isConnected) {
             _loginState.value = MSNPLoginState.NoInternet
             nsManager.disconnect()
+            reconnectJob?.cancel()
+        } else if (!wasConnected) {
+            // Network restored
+            if (_loginState.value == MSNPLoginState.NoInternet) {
+                _loginState.value = MSNPLoginState.Idle
+                if (!userInitiatedLogout && getSavedAccount() != null) {
+                    Log.d(TAG, "Network restored, auto-logging in...")
+                    autoLogin()
+                }
+            }
         }
     }
 
     fun login(account: String, pass: String, remember: Boolean) {
+        Log.d(TAG, "Manual login requested for $account")
         isCurrentSessionRemembered = remember
         if (remember) {
             securePrefs.saveCredentials(account, pass)
         }
         userInitiatedLogout = false
+        
+        // Сбрасываем очередь переподключения при ручном входе
+        reconnectJob?.cancel()
+        isReconnecting.set(false)
+        reconnectAttempt.set(0)
+
         performLoginDude(account, pass)
     }
 
@@ -96,20 +163,71 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
         val acc = securePrefs.getSavedAccount()
         val pwd = securePrefs.getSavedPassword()
         if (acc != null && pwd != null) {
-            login(acc, pwd, true)
+            Log.d(TAG, "Auto-login for $acc")
+            performLoginDude(acc, pwd)
+        } else {
+            Log.d(TAG, "Auto-login skipped: no credentials")
         }
     }
 
     private fun performLoginDude(account: String, pass: String) {
         if (!lastKnownNetworkState) {
+            Log.w(TAG, "Cannot login: no internet")
             _loginState.value = MSNPLoginState.NoInternet
             return
         }
-        if (!isReconnecting.get()) _loginState.value = MSNPLoginState.Loading
+        if (!isReconnecting.get()) {
+            _loginState.value = MSNPLoginState.Loading
+        }
         nsManager.connect(securePrefs.serverAddress, securePrefs.serverPort, account, pass, MSNPProto.getNexusUrl(securePrefs))
     }
 
+    private fun startReconnectionLoop() {
+        if (userInitiatedLogout || !lastKnownNetworkState || getSavedAccount() == null) {
+            Log.d(TAG, "Reconnection loop skipped: userLogout=$userInitiatedLogout, hasNet=$lastKnownNetworkState, hasAcc=${getSavedAccount() != null}")
+            return
+        }
+
+        if (isReconnecting.get()) {
+            Log.d(TAG, "Reconnection loop already running")
+            return
+        }
+
+        reconnectJob?.cancel()
+        reconnectJob = scope.launch {
+            isReconnecting.set(true)
+            try {
+                val attempt = reconnectAttempt.get()
+                val delaySeconds = when (attempt) {
+                    0 -> 3
+                    1 -> 10
+                    2 -> 30
+                    3 -> 60
+                    else -> 120
+                }
+
+                Log.d(TAG, "Reconnection attempt $attempt starting in $delaySeconds seconds")
+
+                for (i in delaySeconds downTo 1) {
+                    if (userInitiatedLogout || !lastKnownNetworkState) break
+                    _loginState.value = MSNPLoginState.Reconnecting(i)
+                    delay(1000)
+                }
+
+                if (!userInitiatedLogout && lastKnownNetworkState) {
+                    reconnectAttempt.incrementAndGet()
+                    autoLogin()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Reconnection loop error", e)
+            } finally {
+                isReconnecting.set(false)
+            }
+        }
+    }
+
     fun logout() {
+        Log.d(TAG, "Logout requested")
         userInitiatedLogout = true
         isReconnecting.set(false)
         reconnectAttempt.set(0)
@@ -194,10 +312,21 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
     fun getRecentChats() = database.messageDao().getRecentChats(getCurrentAccount() ?: "")
     fun getUnreadChatsCount() = database.messageDao().getUnreadChatsCount(getCurrentAccount() ?: "")
     fun getUnreadCountForAccount(contact: String) = database.messageDao().getUnreadCountForAccount(getCurrentAccount() ?: "", contact.lowercase(Locale.ROOT).trim())
-    fun markAsRead(contact: String) = messageManager.markAsRead(getCurrentAccount() ?: "", contact)
+    
+    fun markAsRead(contact: String) {
+        messageManager.markAsRead(getCurrentAccount() ?: "", contact)
+        MSNPService.cancelMessageNotification(context, contact)
+    }
 
     fun clearAllMessages() {
         scope.launch { getCurrentAccount()?.let { database.messageDao().clearAllMessages(it) } }
+    }
+
+    fun clearChatMessages(contact: String) {
+        scope.launch {
+            val owner = getCurrentAccount() ?: return@launch
+            database.messageDao().clearChatMessages(owner, contact.lowercase(Locale.ROOT).trim())
+        }
     }
 
     fun setPrivacyMode(allowOnlyFromList: Boolean) = nsManager.setPrivacyMode(allowOnlyFromList)
@@ -256,20 +385,55 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
     fun addContactToGroup(account: String, contactGuid: String, groupGuid: String) {
         nsManager.addContactToGroup(contactGuid, groupGuid)
         contactManager.addContactToGroupLocally(account, groupGuid)
+        saveContactsAndGroupsToDb()
     }
 
     fun removeContactFromGroup(account: String, contactGuid: String, groupGuid: String) {
         nsManager.removeContactFromGroup(contactGuid, groupGuid)
         contactManager.removeContactFromGroupLocally(account, groupGuid)
+        saveContactsAndGroupsToDb()
     }
 
     fun inviteContactToChat(chatAccount: String, contactToInvite: String) {
         sessionManager.inviteToChat(chatAccount, contactToInvite)
     }
 
-    override fun onConnected() { reconnectAttempt.set(0) }
+    private fun saveContactsAndGroupsToDb() {
+        scope.launch {
+            val owner = getCurrentAccount() ?: return@launch
+            
+            val entities = contacts.value.map { contact ->
+                ContactEntity(
+                    account = contact.account.lowercase(Locale.ROOT).trim(),
+                    ownerAccount = owner,
+                    nickname = contact.nickname,
+                    listType = contact.listType,
+                    avatarUrl = contact.avatarUrl,
+                    personalMessage = contact.personalMessage,
+                    guid = contact.guid,
+                    groupGuids = contact.groupGuids.joinToString(",")
+                )
+            }
+            database.contactDao().syncContacts(owner, entities)
+
+            val groupEntities = groups.value.map { group ->
+                GroupEntity(
+                    guid = group.guid,
+                    ownerAccount = owner,
+                    name = group.name
+                )
+            }
+            database.groupDao().syncGroups(owner, groupEntities)
+        }
+    }
+
+    override fun onConnected() { 
+        Log.d(TAG, "onConnected")
+        reconnectAttempt.set(0) 
+    }
 
     override fun onAuthSuccess(account: String, nickname: String) {
+        Log.d(TAG, "onAuthSuccess for $account")
         val normalized = account.lowercase(Locale.ROOT).trim()
         currentAccount = normalized
         reconnectAttempt.set(0)
@@ -294,23 +458,61 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
     }
 
     override fun onContactStatusChanged(account: String, status: String, nickname: String, isInitial: Boolean, msnObject: String?) {
+        val normalized = account.lowercase(Locale.ROOT).trim()
         val avatarFile = avatarManager.getAvatarFile(msnObject)
-        contactManager.updateContactStatus(account, status, nickname, avatarFile?.absolutePath)
+        val avatarPath = avatarFile?.absolutePath
+        
+        val cameOnline = contactManager.updateContactStatus(account, status, nickname, avatarPath)
+        
+        // Если контакт появился в сети, проверяем очередь сообщений
+        if (cameOnline && !securePrefs.disableMessageQueue) {
+            processPendingMessages(normalized)
+        }
+        
+        // Обновляем наш собственный аватар и ник в стейте логина, если пришло обновление по нам
+        if (normalized == currentAccount) {
+            _loginState.update { state ->
+                if (state is MSNPLoginState.Success) {
+                    state.copy(
+                        nickname = if (nickname.isNotEmpty()) nickname else state.nickname,
+                        avatarUrl = avatarPath ?: state.avatarUrl
+                    )
+                } else state
+            }
+        }
+
         if (msnObject != null && avatarFile == null && status != MSNPProto.Status.OFFLINE) {
             avatarManager.requestAvatar(account, msnObject)
         }
     }
 
+    private fun processPendingMessages(targetAccount: String) {
+        scope.launch {
+            val owner = getCurrentAccount() ?: return@launch
+            val pending = database.messageDao().getUnsentMessagesForContact(owner, targetAccount)
+            if (pending.isNotEmpty()) {
+                Log.d(TAG, "Sending ${pending.size} pending messages to $targetAccount")
+                pending.forEach { msg ->
+                    val text = SafeStorage.decryptText(msg.encryptedText)
+                    performSendMessageInternal(msg.id, targetAccount, text)
+                }
+            }
+        }
+    }
+
     override fun onContactAdded(account: String, nickname: String, listType: String, isInitial: Boolean) {
         contactManager.addOrUpdateContact(account, nickname, listType)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onContactRemoved(account: String, listType: String) {
         contactManager.removeContact(account)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onContactRenamed(account: String, newNickname: String) {
         contactManager.updateContactStatus(account, "", newNickname)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onPrivacySettingChanged(type: String, value: String) {}
@@ -320,6 +522,7 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
     override fun onMessageReceived(target: String, senderAccount: String, nickname: String, message: String) {
         scope.launch {
             messageManager.saveAndEmitMessage(getCurrentAccount() ?: "", senderAccount, message, true, nickname)
+            MSNPService.showMessageNotification(context, nickname, message, senderAccount)
         }
     }
 
@@ -337,10 +540,38 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
 
     override fun onError(message: String) {
         Log.e(TAG, "Protocol Error: $message")
+        scope.launch {
+            if (message == "ERROR_LOGGED_IN_ANOTHER_DEVICE") {
+                _loginState.value = MSNPLoginState.LoggedInElsewhere(message)
+            } else {
+                if (message == "AUTH_INVALID_PASSWORD" || message == "AUTH_INVALID_ACCOUNT" || message == "ERROR_AUTH_FAILED") {
+                    _loginState.value = MSNPLoginState.Error(message)
+                    return@launch
+                }
+                
+                // Если мы пытались подключиться и получили ошибку - показываем её и пробуем снова (если не юзер вышел)
+                _loginState.value = MSNPLoginState.Error(message)
+                if (!userInitiatedLogout) {
+                    startReconnectionLoop()
+                }
+            }
+        }
     }
 
     override fun onDisconnected() {
+        Log.d(TAG, "onDisconnected. userInitiatedLogout=$userInitiatedLogout, state=${_loginState.value}, acc=${getSavedAccount()}")
         if (!userInitiatedLogout) {
+            val currentState = _loginState.value
+            // Если мы были онлайн или в процессе подключения и дисконнектнулись - это ошибка соединения
+            if (currentState is MSNPLoginState.Success || currentState is MSNPLoginState.Loading || currentState is MSNPLoginState.Reconnecting) {
+                _loginState.value = MSNPLoginState.Error("CONNECTION_LOST")
+                startReconnectionLoop()
+            } else if (currentState is MSNPLoginState.Idle && getSavedAccount() != null) {
+                // Если мы внезапно Idle, но есть аккаунт - пробуем переподключиться
+                _loginState.value = MSNPLoginState.Error("DISCONNECTED_UNEXPECTEDLY")
+                startReconnectionLoop()
+            }
+        } else {
             _loginState.value = MSNPLoginState.Idle
         }
         contactManager.setAllOffline()
@@ -367,17 +598,21 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
 
     override fun onContactFullInfo(account: String, nickname: String, guid: String, listTypes: String, groupGuids: List<String>) {
         contactManager.updateContactFullInfo(account, nickname, guid, listTypes, groupGuids)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onContactPersonalMessageChanged(account: String, psm: String) {
         contactManager.updateContactStatus(account, "", "", psm = psm)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onGroupAdded(name: String, guid: String) {
         contactManager.addGroup(name, guid)
+        saveContactsAndGroupsToDb()
     }
 
     override fun onGroupRemoved(guid: String) {
         contactManager.removeGroup(guid)
+        saveContactsAndGroupsToDb()
     }
 }

@@ -1,14 +1,12 @@
 package com.limpe.tengerium.ui
 
 import android.os.Bundle
+import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -17,9 +15,12 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
+import com.limpe.tengerium.data.AppConfig
 import com.limpe.tengerium.data.MSNPLoginState
 import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentAuthBinding
+import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.ConnectionDialogHelper
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -47,6 +48,12 @@ class AuthFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         securePrefs = SecurePrefs(requireContext())
 
+        if (AppConfig.USENEWLOGINEXP) {
+            setupNewLoginExperience()
+        }
+
+        setupValidation()
+
         binding.btnAuthMenu.setOnClickListener {
             showPopupMenu(it)
         }
@@ -56,12 +63,13 @@ class AuthFragment : Fragment() {
             val password = binding.etPassword.text.toString().trim()
             val rememberMe = binding.cbRememberMe.isChecked
 
-            if (account.isEmpty() || password.isEmpty()) {
-                Toast.makeText(requireContext(), R.string.fill_all_fields, Toast.LENGTH_SHORT).show()
+            if (!validateInputs(account, password)) {
                 return@setOnClickListener
             }
 
+            securePrefs.rememberMe = rememberMe
             binding.tvError.visibility = View.GONE
+            
             viewModel.login(account, password, rememberMe)
         }
 
@@ -71,12 +79,13 @@ class AuthFragment : Fragment() {
                     when (state) {
                         is MSNPLoginState.Loading -> {
                             binding.loadingLayout.visibility = View.VISIBLE
-                            binding.tvLoadingStatus.text = getString(R.string.connecting_to_msn)
+                            binding.tvLoadingStatus.visibility = View.GONE
                             binding.btnLogin.visibility = View.GONE
                             binding.tvError.visibility = View.GONE
                         }
                         is MSNPLoginState.Reconnecting -> {
                             binding.loadingLayout.visibility = View.VISIBLE
+                            binding.tvLoadingStatus.visibility = View.VISIBLE
                             binding.tvLoadingStatus.text = getString(R.string.reconnecting_in, state.secondsRemaining)
                             binding.btnLogin.visibility = View.GONE
                             binding.tvError.visibility = View.GONE
@@ -122,7 +131,6 @@ class AuthFragment : Fragment() {
             }
         }
 
-        // Заполняем данные только если включен Remember Me
         binding.cbRememberMe.isChecked = securePrefs.rememberMe
         if (securePrefs.rememberMe) {
             val savedAcc = viewModel.getSavedAccount()
@@ -134,66 +142,67 @@ class AuthFragment : Fragment() {
         }
     }
 
+    private fun setupNewLoginExperience() {
+        binding.tvAppName.visibility = View.GONE
+        
+        // Показываем футер с логотипом Limpe
+        binding.layoutFooter.visibility = View.VISIBLE
+        binding.ivFooterLogo.visibility = View.VISIBLE
+
+        AnimationHelper.animateLoginLogo(binding.ivLogo)
+
+        val inputViews = listOf(
+            binding.tilAccount,
+            binding.tilPassword,
+            binding.cbRememberMe,
+            binding.flLoginContainer,
+            binding.layoutFooter
+        )
+        AnimationHelper.animateLoginInputs(inputViews)
+    }
+
+    private fun setupValidation() {
+        binding.etAccount.doAfterTextChanged {
+            binding.tilAccount.error = null
+        }
+        binding.etPassword.doAfterTextChanged {
+            binding.tilPassword.error = null
+        }
+    }
+
+    private fun validateInputs(account: String, password: String): Boolean {
+        var isValid = true
+
+        if (account.isEmpty()) {
+            binding.tilAccount.error = getString(R.string.fill_all_fields)
+            isValid = false
+        } else if (!Patterns.EMAIL_ADDRESS.matcher(account).matches()) {
+            binding.tilAccount.error = getString(R.string.invalid_email)
+            isValid = false
+        }
+
+        if (password.isEmpty()) {
+            binding.tilPassword.error = getString(R.string.fill_all_fields)
+            isValid = false
+        }
+
+        return isValid
+    }
+
     private fun showPopupMenu(view: View) {
         val popup = PopupMenu(requireContext(), view)
         popup.menu.add(0, 1, 0, getString(R.string.connection_settings))
         
         popup.setOnMenuItemClickListener { item ->
-            if (item.itemId == 1) {
-                showConnectionDialog()
-                true
-            } else false
+            when (item.itemId) {
+                1 -> {
+                    ConnectionDialogHelper.showConnectionDialog(requireContext(), securePrefs)
+                    true
+                }
+                else -> false
+            }
         }
         popup.show()
-    }
-
-    private fun showConnectionDialog() {
-        val context = requireContext()
-        val layout = LinearLayout(context).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(48, 24, 48, 24)
-        }
-
-        val etHost = EditText(context).apply {
-            hint = getString(R.string.host_hint)
-            setText(securePrefs.serverAddress)
-            setSingleLine(true)
-        }
-
-        val etNexusDomain = EditText(context).apply {
-            hint = getString(R.string.nexus_hint)
-            setText(securePrefs.nexusDomain)
-            setSingleLine(true)
-        }
-
-        val etConfigUrl = EditText(context).apply {
-            hint = "Config URL"
-            setText(securePrefs.configUrl)
-            setSingleLine(true)
-        }
-
-        layout.addView(etHost)
-        layout.addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 16) }) 
-        layout.addView(etNexusDomain)
-        layout.addView(View(context).apply { layoutParams = LinearLayout.LayoutParams(1, 16) })
-        layout.addView(etConfigUrl)
-
-        AlertDialog.Builder(context)
-            .setTitle(R.string.connection_settings)
-            .setView(layout)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                val host = etHost.text.toString().trim()
-                val nexusDomain = etNexusDomain.text.toString().trim()
-                val configUrl = etConfigUrl.text.toString().trim()
-                if (host.isNotEmpty() && nexusDomain.isNotEmpty() && configUrl.isNotEmpty()) {
-                    securePrefs.serverAddress = host
-                    securePrefs.nexusDomain = nexusDomain
-                    securePrefs.configUrl = configUrl
-                    Toast.makeText(context, R.string.settings_saved, Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton(android.R.string.cancel, null)
-            .show()
     }
 
     override fun onDestroyView() {
