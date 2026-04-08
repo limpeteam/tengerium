@@ -131,7 +131,9 @@
                         android:layout_marginTop="4dp"
                         android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        tools:text="Personal Message Status" />
+                        android:visibility="gone"
+                        tools:text="Personal Message Status"
+                        tools:visibility="visible" />
 
                     <TextView
                         android:id="@+id/tvAccount"

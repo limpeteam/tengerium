@@ -46,4 +46,10 @@ interface MessageDao {
 
     @Query("DELETE FROM messages WHERE ownerAccount = :owner AND (senderAccount = :contact OR receiverAccount = :contact)")
     suspend fun clearChatMessages(owner: String, contact: String)
+
+    @Query("SELECT COUNT(*) FROM messages WHERE ownerAccount = :owner")
+    suspend fun getMessageCount(owner: String): Long
+
+    @Query("SELECT SUM(LENGTH(encryptedText)) FROM messages WHERE ownerAccount = :owner")
+    suspend fun getMessagesSize(owner: String): Long?
 }

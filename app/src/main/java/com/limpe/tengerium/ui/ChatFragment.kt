@@ -10,6 +10,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
@@ -41,6 +42,7 @@ import com.limpe.tengerium.databinding.LayoutChatMenuBinding
 import com.limpe.tengerium.util.AnimationHelper
 import com.limpe.tengerium.util.ChatHistoryExporter
 import com.limpe.tengerium.util.FormattingUtils
+import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -126,8 +128,26 @@ class ChatFragment : Fragment() {
 
         binding.btnSend.setOnClickListener { sendMessage() }
         
+        // Инициализация кнопки
+        binding.btnSend.post {
+            val btn = binding.btnSend as? MaterialButton
+            if (btn != null) {
+                AnimationHelper.animateSendButtonToggle(btn, false)
+            }
+        }
+
+        var wasEmpty = true
         binding.etMessage.addTextChangedListener { s ->
-            if (!s.isNullOrEmpty()) {
+            val isEmpty = s.isNullOrBlank()
+            if (isEmpty != wasEmpty) {
+                val btn = binding.btnSend as? MaterialButton
+                if (btn != null) {
+                    AnimationHelper.animateSendButtonToggle(btn, !isEmpty)
+                }
+                wasEmpty = isEmpty
+            }
+            
+            if (!isEmpty) {
                 repository.sendTyping(contactAccount ?: "")
             }
         }
@@ -176,6 +196,8 @@ class ChatFragment : Fragment() {
         }
     }
 
+    private fun isOnline(): Boolean = repository.loginState.value is MSNPLoginState.Success
+
     private fun showCustomMenu(anchor: View) {
         val menuBinding = LayoutChatMenuBinding.inflate(layoutInflater)
         val popup = PopupWindow(menuBinding.root, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
@@ -185,7 +207,8 @@ class ChatFragment : Fragment() {
         val normalizedAccount = contactAccount?.lowercase(Locale.ROOT)?.trim() ?: ""
         val contacts = repository.contacts.value
         val contact = contacts.find { it.account.lowercase(Locale.ROOT).trim() == normalizedAccount }
-        val isOnline = contact != null && contact.status != MSNPProto.Status.OFFLINE && contact.status != "FLN"
+        val online = isOnline()
+        val isContactOnline = contact != null && contact.status != MSNPProto.Status.OFFLINE && contact.status != "FLN"
         
         // Hide elements not needed in active chat context
         menuBinding.btnMenuPin.isVisible = false
@@ -205,7 +228,7 @@ class ChatFragment : Fragment() {
         menuBinding.btnMenuNudge.isVisible = true
         val cooldown = repository.nudgeCooldowns.value[normalizedAccount] ?: 0
         
-        if (!isOnline) {
+        if (!isContactOnline || !online) {
             menuBinding.btnMenuNudge.isEnabled = false
             menuBinding.btnMenuNudge.alpha = 0.5f
         } else if (cooldown > 0) {
@@ -238,6 +261,8 @@ class ChatFragment : Fragment() {
         // Block
         menuBinding.btnMenuBlock.isVisible = true
         val isBlocked = contact?.listType?.contains("BL") ?: false
+        menuBinding.btnMenuBlock.isEnabled = online
+        menuBinding.btnMenuBlock.alpha = if (online) 1.0f else 0.5f
         menuBinding.btnMenuBlock.text = if (isBlocked) getString(R.string.unblock) else getString(R.string.block)
         menuBinding.btnMenuBlock.setIconResource(if (isBlocked) R.drawable.ic_unblock else R.drawable.ic_block)
         menuBinding.btnMenuBlock.setOnClickListener {
@@ -420,8 +445,16 @@ class ChatFragment : Fragment() {
     private fun sendMessage() {
         val text = binding.etMessage.text.toString().trim()
         if (text.isNotEmpty() && contactAccount != null) {
-            repository.sendMessage(contactAccount!!, text)
-            binding.etMessage.text.clear()
+            val btn = binding.btnSend as? MaterialButton
+            if (btn != null) {
+                AnimationHelper.animateSendAction(btn) {
+                    repository.sendMessage(contactAccount!!, text)
+                    binding.etMessage.text.clear()
+                }
+            } else {
+                repository.sendMessage(contactAccount!!, text)
+                binding.etMessage.text.clear()
+            }
         }
     }
 
@@ -462,7 +495,6 @@ class ChatFragment : Fragment() {
                                 } else {
                                     if (!binding.etMessage.isEnabled) {
                                         binding.etMessage.isEnabled = true
-                                        binding.btnSend.isEnabled = true
                                         binding.etMessage.text.clear()
                                     }
                                 }
@@ -528,7 +560,7 @@ class ChatFragment : Fragment() {
 
         // Initialize mute state
         contactAccount?.let { account ->
-            binding.ivChatMuted.visibility = if (securePrefs.isChatMuted(account)) View.VISIBLE else View.GONE
+            binding.ivChatMuted.visibility = if (securePrefs.isChatMuted(account)) View.GONE else View.GONE
         }
     }
 

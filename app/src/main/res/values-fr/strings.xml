@@ -33,10 +33,8 @@
     <string name="background_removed">Fond d\'écran supprimé</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Classique</string>
-    <string name="theme_emerald">Émeraude</string>
-    <string name="theme_lavender">Lavande</string>
-    <string name="theme_dark">Sombre</string>
+    <string name="theme_standard">Standard</string>
+    <string name="theme_turquoise">Turquoise</string>
     <string name="preview_incoming">Bulle de message entrant</string>
     <string name="preview_outgoing">Bulle de message sortant</string>
     <string name="theme">Thème</string>
@@ -78,6 +76,7 @@
     <string name="not_in_contacts">Cette personne ne fait pas partie de vos contacts</string>
     <string name="add_to_contacts">Ajouter aux contacts</string>
     <string name="block">Bloquer</string>
+    <string name="unblock">Débloquer</string>
     <string name="contact_unavailable">Le contact est indisponible</string>
     <string name="is_typing">est en train d\'écrire...</string>
     <string name="send_nudge">Envoyer un clin d\'œil</string>
@@ -105,6 +104,17 @@
     <string name="resend">Renvoyer</string>
     <string name="chat_me_prefix">Moi : %1$s</string>
     <string name="group_participants_updated">Liste des participants mise à jour</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Épingler</string>
+    <string name="unpin_chat">Désépingler</string>
+    <string name="mute_notifications">Couper les notifications</string>
+    <string name="unmute_notifications">Réactiver les notifications</string>
+    <string name="blocked_group_name">Bloqué</string>
+    <string name="add_to_folder">Ajouter au dossier</string>
+    <string name="move_to_folder">Déplacer vers le dossier</string>
+    <string name="select_folder">Sélectionner le dossier</string>
+    <string name="remove_from_folder">Supprimer du dossier</string>
 
     <!-- Contacts -->
     <string name="add_friend">Ajouter un ami</string>
@@ -160,22 +170,44 @@
     <string name="about_library_title">Bibliothèques utilisées :</string>
     <string name="about_library_name">Bibliothèque MSNP-11 par campos02</string>
     <string name="about_testers_title">Testeurs actifs :</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Développé par Vasek Lednikofff</string>
     <string name="about_limpe_support">soutenu par l\'équipe Limpe</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Données et stockage</string>
+    <string name="memory_usage">Utilisation de la mémoire</string>
+    <string name="traffic_usage">Utilisation du trafic</string>
     <string name="storage">Stockage</string>
     <string name="storage_usage">Utilisation du stockage</string>
     <string name="app_memory_percent">L\'application occupe %1$s%% de la mémoire de l\'appareil (%2$s)</string>
     <string name="cache_label">Cache (avatars, aperçus) : %1$s</string>
     <string name="messages_label">Historique des messages : %1$s</string>
     <string name="clear_cache">Effacer le cache</string>
-    <string name="clear_history">Effacer l\'historique des messages</string>
+    <string name="clear_history">Effacer les journaux de messages</string>
     <string name="clear_history_title">Effacer l\'historique ?</string>
     <string name="clear_history_message">Cela supprimera définitivement tous vos messages de toutes les discussions.</string>
     <string name="cache_cleared">Cache effacé</string>
     <string name="history_cleared">Historique effacé</string>
+    <string name="cache_label_size">Cache : %1$s</string>
+    <string name="messages_label_size">Historique : %1$s</string>
+    <string name="total_storage_usage">Utilisation totale : %1$s</string>
+    <string name="tengerium_usage_format">Tengerium occupe %1$d%% du volume du cache des applications</string>
+    <string name="storage_profiles">Photos de profil</string>
+    <string name="storage_messages">Journaux de chat</string>
+    <string name="storage_avatars">Bibliothèque d\'avatars</string>
+    <string name="storage_contacts">Liste de contacts</string>
+    <string name="no_cache_message">Aucun cache trouvé</string>
+    <string name="clear_selected">Effacer</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Tout</string>
+    <string name="traffic_mobile">Mobile</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Itinérance</string>
+    <string name="traffic_sent">Envoyé</string>
+    <string name="traffic_received">Reçu</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Thème sombre</string>
@@ -257,4 +289,29 @@
     <string name="logs_report_title">Rapport de bug Tengerium</string>
     <string name="no_logs_available">Aucune information de journal disponible</string>
     <string name="error_collecting_logs">Erreur lors de la collecte des journaux : %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Service de mise à jour</string>
+    <string name="update_checking">Vérification des mises à jour...</string>
+    <string name="update_no_updates">Aucune mise à jour disponible</string>
+    <string name="update_ready">Mise à jour prête à être installée</string>
+    <string name="update_downloading">Téléchargement de la mise à jour (%1$d%%)</string>
+    <string name="update_unavailable">Service de mise à jour temporairement indisponible</string>
+    <string name="update_install">Installer la mise à jour</string>
+    <string name="update_changelog">Journal des modifications</string>
+    <string name="update_download">Télécharger</string>
+    <string name="update_version_info">Actuelle : %1$s • Nouvelle : %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Demande de connexion</string>
+    <string name="deep_link_warning_title">Attention : Serveur personnalisé !</string>
+    <string name="deep_link_warning_message">Ce lien tente de modifier les paramètres du serveur en :\n\nServeur : %1$s\nNexus : %2$s\n\nL\'utilisation de serveurs tiers peut être DANGEREUSE. Le propriétaire du serveur pourrait voir votre mot de passe et intercepter vos messages. Êtes-vous sûr de faire confiance à ce serveur ?</string>
+    <string name="deep_link_wait_format">Attendez %1$d sec...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">Secret du nom de version %1$s</string>
+    <string name="easter_egg_content">Gâteau au chocolat « Chakhtiorsky » (gâteau du mineur).\n\nRéel. Seulement du chocolat et des noix. Il a été fabriqué selon la recette de la fabrique de confiserie de Louhansk. Pour les amateurs de vrai chocolat. L\'histoire de ce gâteau est tout à fait étonnante : sa recette a été élaborée dans les années 60 à la fabrique de confiserie de Louhansk, en même temps que la recette des bonbons Planeta, si quelqu\'un les a essayés.\n\nAlors que la plupart des gâteaux fabriqués en usine étaient faits selon GOST, le gâteau Chakhtiorsky et Planeta étaient faits selon TU, et leur recette est connue de peu de personnes. Sa formulation originale n\'est pas inscrite dans les registres. Pas de farine et pas de cuisson.\n\nEnsuite, c\'est devenu un peu moins bon, et son nom a été changé en « Cardinal », et sous la marque « Chakhtiorsky », ils ont commencé à vendre autre chose, mais aussi du chocolat avec des noix et digestible.\n\nDe plus, ce produit phare de la fabrique de confiserie de Louhansk était en pénurie. Beaucoup se souviennent que lorsqu\'ils allaient rendre visite à une autre ville, ils obtenaient ce souvenir sucré avec beaucoup de difficulté. Et quel goût extraordinaire il avait : avec trois types de chocolat différents, des noix et des roses en chocolat sur le dessus. En bref, ils n\'ont pas épargné le chocolat. Bien que l\'expression « gâteau du mineur » sonnait bizarrement et induisait même certains en erreur en pensant qu\'il s\'agissait d\'une technologie d\'extraction de charbon spéciale.\n\nLes noix et les pruneaux étaient nappés de trois types de chocolat, du lait concentré et du zeste d\'agrumes étaient ajoutés. Le gâteau était décoré de roses en chocolat, de fruits en glaçage et en sucre, et d\'une bouteille comestible de « Champagne soviétique » avec de la liqueur à l\'intérieur. Le gâteau pesait jusqu\'à un kilogramme et, bien sûr, était un terrible déficit. Mais du fait que ce produit culinaire est, par essence, une grosse barre de chocolat, il se conserve assez longtemps et a souvent été utilisé comme souvenir et cadeau.</string>
+    <string name="easter_egg_source">Source %1$s</string>
+    <string name="whats_new_title">Quoi de neuf</string>
+
 </resources>

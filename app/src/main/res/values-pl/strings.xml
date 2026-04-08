@@ -33,10 +33,8 @@
     <string name="background_removed">Tło usunięte</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Klasyczny</string>
-    <string name="theme_emerald">Szmaragdowy</string>
-    <string name="theme_lavender">Lawendowy</string>
-    <string name="theme_dark">Ciemny</string>
+    <string name="theme_standard">Standardowy</string>
+    <string name="theme_turquoise">Turkusowy</string>
     <string name="preview_incoming">Bąbelek wiadomości przychodzącej</string>
     <string name="preview_outgoing">Bąbelek wiadomości wychodzącej</string>
     <string name="theme">Motyw</string>
@@ -78,6 +76,7 @@
     <string name="not_in_contacts">Tej osoby nie ma na Twojej liście kontaktów</string>
     <string name="add_to_contacts">Dodaj do kontaktów</string>
     <string name="block">Zablokuj</string>
+    <string name="unblock">Odblokuj</string>
     <string name="contact_unavailable">Kontakt jest niedostępny</string>
     <string name="is_typing">pisze...</string>
     <string name="send_nudge">Wyślij szturchnięcie</string>
@@ -105,6 +104,17 @@
     <string name="resend">Wyślij ponownie</string>
     <string name="chat_me_prefix">Ja: %1$s</string>
     <string name="group_participants_updated">Lista uczestników została zaktualizowana</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Przypnij</string>
+    <string name="unpin_chat">Odepnij</string>
+    <string name="mute_notifications">Wycisz powiadomienia</string>
+    <string name="unmute_notifications">Wyłącz wyciszenie powiadomień</string>
+    <string name="blocked_group_name">Zablokowane</string>
+    <string name="add_to_folder">Dodaj do folderu</string>
+    <string name="move_to_folder">Przenieś do folderu</string>
+    <string name="select_folder">Wybierz folder</string>
+    <string name="remove_from_folder">Usuń z folderu</string>
 
     <!-- Contacts -->
     <string name="add_friend">Dodaj znajomego</string>
@@ -160,11 +170,15 @@
     <string name="about_library_title">Użyte biblioteki:</string>
     <string name="about_library_name">Biblioteka MSNP-11 autorstwa campos02</string>
     <string name="about_testers_title">Aktywni testerzy:</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Stworzone przez Vasek Lednikofff</string>
     <string name="about_limpe_support">wspierane przez Limpe Team</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Dane i pamięć</string>
+    <string name="memory_usage">Zużycie pamięci</string>
+    <string name="traffic_usage">Zużycie danych</string>
     <string name="storage">Pamięć</string>
     <string name="storage_usage">Użycie pamięci</string>
     <string name="app_memory_percent">Aplikacja zajmuje %1$s%% pamięci urządzenia (%2$s)</string>
@@ -176,6 +190,24 @@
     <string name="clear_history_message">To trwale usunie wszystkie Twoje wiadomości ze wszystkich czatów.</string>
     <string name="cache_cleared">Pamięć podręczna wyczyszczona</string>
     <string name="history_cleared">Historia wyczyszczona</string>
+    <string name="cache_label_size">Pamięć podręczna: %1$s</string>
+    <string name="messages_label_size">Historia: %1$s</string>
+    <string name="total_storage_usage">Całkowite użycie: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium zajmuje %1$d%% całkowitej pamięci podręcznej aplikacji</string>
+    <string name="storage_profiles">Zdjęcia profilowe</string>
+    <string name="storage_messages">Logi czatu</string>
+    <string name="storage_avatars">Biblioteka awatarów</string>
+    <string name="storage_contacts">Lista kontaktów</string>
+    <string name="no_cache_message">Nie znaleziono pamięci podręcznej</string>
+    <string name="clear_selected">Wyczyść</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Wszystkie</string>
+    <string name="traffic_mobile">Komórkowe</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Roaming</string>
+    <string name="traffic_sent">Wysłane</string>
+    <string name="traffic_received">Odebrane</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Ciemny motyw</string>
@@ -257,4 +289,29 @@
     <string name="logs_report_title">Raport błędów Tengerium</string>
     <string name="no_logs_available">Brak dostępnych informacji z logów</string>
     <string name="error_collecting_logs">Błąd podczas zbierania logów: %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Usługa aktualizacji</string>
+    <string name="update_checking">Sprawdzanie aktualizacji...</string>
+    <string name="update_no_updates">Brak dostępnych aktualizacji</string>
+    <string name="update_ready">Aktualizacja gotowa do zainstalowania</string>
+    <string name="update_downloading">Pobieranie aktualizacji (%1$d%%)</string>
+    <string name="update_unavailable">Usługa aktualizacji tymczasowo niedostępna</string>
+    <string name="update_install">Zainstaluj aktualizację</string>
+    <string name="update_changelog">Lista zmian</string>
+    <string name="update_download">Pobierz</string>
+    <string name="update_version_info">Obecna: %1$s • Nowa: %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Prośba o połączenie</string>
+    <string name="deep_link_warning_title">Uwaga: Niestandardowy serwer!</string>
+    <string name="deep_link_warning_message">Ten link próbuje zmienić ustawienia serwera na:\n\nSerwer: %1$s\nNexus: %2$s\n\nUżywanie serwerów innych firm może być NIEBEZPIECZNE. Właściciel serwera może widzieć Twoje hasło i przechwytywać Twoje wiadomości. Czy na pewno ufasz temu serwerowi?</string>
+    <string name="deep_link_wait_format">Czekaj %1$d s...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">Sekret nazwy wersji %1$s</string>
+    <string name="easter_egg_content">Tort czekoladowy „Shakhtyorsky” (Tort Górnika).\n\nPrawdziwy. Tylko czekolada i orzechy. Został wykonany według receptury Ługańskiej fabryki słodyczy. Dla koneserów prawdziwej czekolady. Historia tego tortu jest niesamowita: jego receptura została opracowana w latach 60. w Ługańskiej fabryce słodyczy, w tym samym czasie powstała receptura cukierków Planeta, jeśli ktoś ich próbował.\n\nPodczas gdy większość tortów fabrycznych powstawała według norm GOST, tort Shakhtyorsky i Planeta powstawały według TU (warunków technicznych), a ich receptura jest znana niewielu osobom. Jego oryginalny skład nie figuruje w rejestrach. Bez mąki i bez pieczenia.\n\nPotem było nieco gorzej, jego nazwę zmieniono na „Kardynał”, a pod marką „Shakhtyorsky” zaczęto sprzedawać coś innego, choć też czekoladowego z orzechami.\n\nCo więcej, ten sztandarowy produkt Ługańskiej fabryki słodyczy był towarem deficytowym. Wielu pamięta, że jadąc w odwiedziny do innego miasta, z wielkim trudem zdobywali tę słodką pamiątkę. A jak niezwykle smakował: z trzema różnymi rodzajami czekolady, orzechami i czekoladowymi różami na wierzchu. Krótko mówiąc, nie żałowano czekolady. Choć nazwa „tort górniczy” brzmiała dziwnie i niektórych nawet wprowadzała w błąd, że to jakaś specjalna technologia wydobycia węgla.\n\nOrzechy i suszone śliwki zalewano trzema rodzajami czekolady, dodawano mleko skondensowane i skórkę cytrusową. Tort dekorowano czekoladowymi różami, owocami z lukru i cukru oraz jadalną buteleczką „Radzieckiego Szampana” z likierem w środku. Tort ważył do kilograma i, oczywiście, był ogromnym rarytasem. Ale dzięki temu, że ten wyrób kulinarny jest w istocie jedną wielką tabliczką czekolady, przechowuje się on dość długo i często służył jako pamiątka i prezent.</string>
+    <string name="easter_egg_source">Źródło %1$s</string>
+    <string name="whats_new_title">Co nowego</string>
+
 </resources>

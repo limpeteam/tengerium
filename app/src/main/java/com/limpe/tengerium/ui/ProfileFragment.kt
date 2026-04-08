@@ -193,7 +193,16 @@ class ProfileFragment : DialogFragment() {
         _binding?.btnTheme?.setOnClickListener { navigateToSettings("theme") }
         _binding?.btnNotifications?.setOnClickListener { navigateToSettings("notifications") }
         _binding?.btnPrivacy?.setOnClickListener { navigateToSettings("privacy") }
-        _binding?.btnStorage?.setOnClickListener { navigateToSettings("storage") }
+        
+        // новый экран
+        _binding?.btnStorage?.setOnClickListener {
+            val mf = findMainFragment()
+            if (mf != null) {
+                mf.showDetail(DataAndStorageFragment(), addToBackStack = true)
+            } else {
+                findNavController().navigate(R.id.DataAndStorageFragment)
+            }
+        }
 
         _binding?.btnLanguage?.setOnClickListener { showLanguageDialog() }
         _binding?.btnStatusSelector?.setOnClickListener { showStatusDialog() }
@@ -325,7 +334,11 @@ class ProfileFragment : DialogFragment() {
                             b.tvAccount.visibility = View.VISIBLE
                         } else {
                             b.tvNickname.text = FormattingUtils.formatBBCode(contact?.nickname ?: targetAccount)
-                            b.tvPersonalMessage.text = FormattingUtils.formatBBCode(contact?.personalMessage ?: "")
+                            
+                            val pm = contact?.personalMessage ?: ""
+                            b.tvPersonalMessage.text = FormattingUtils.formatBBCode(pm)
+                            b.tvPersonalMessage.visibility = if (pm.isEmpty()) View.GONE else View.VISIBLE
+                            
                             b.tvAccount.visibility = View.GONE
                             currentAvatarPath = contact?.avatarUrl
                             b.avatarStatusView.setAvatar(currentAvatarPath, targetAccount)
@@ -350,7 +363,12 @@ class ProfileFragment : DialogFragment() {
                         }
                     }
                     launch { repository.myStatus.collectLatest { updateStatusUI(it) } }
-                    launch { repository.myPersonalMessage.collectLatest { _binding?.tvPersonalMessage?.text = FormattingUtils.formatBBCode(it) } }
+                    launch { 
+                        repository.myPersonalMessage.collectLatest { pm ->
+                            _binding?.tvPersonalMessage?.text = FormattingUtils.formatBBCode(pm) 
+                            _binding?.tvPersonalMessage?.visibility = if (pm.isEmpty()) View.GONE else View.VISIBLE
+                        } 
+                    }
                 }
             }
         }

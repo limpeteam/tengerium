@@ -1,21 +1,13 @@
 package com.limpe.tengerium.util
 
-import android.animation.Animator
-import android.animation.AnimatorListenerAdapter
-import android.animation.ArgbEvaluator
-import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
-import android.animation.ValueAnimator
+import android.animation.*
+import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Rect
 import android.view.View
-import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AnticipateOvershootInterpolator
-import android.view.animation.CycleInterpolator
-import android.view.animation.OvershootInterpolator
+import android.view.animation.*
 import android.widget.PopupWindow
 import android.widget.TextView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import com.limpe.tengerium.R
 import kotlinx.coroutines.*
@@ -30,14 +22,11 @@ object AnimationHelper {
      */
     fun animateNudge(view: View) {
         val density = view.resources.displayMetrics.density
-        val offset = 12f * density // 12dp
-        
+        val offset = 12f * density
         val pvhX = PropertyValuesHolder.ofFloat(View.TRANSLATION_X, 0f, offset)
         val pvhY = PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, 0f, offset / 2)
-        
         ObjectAnimator.ofPropertyValuesHolder(view, pvhX, pvhY).apply {
             duration = 500
-            // CycleInterpolator(5) заставит значение "сходить" туда-обратно 5 раз
             interpolator = CycleInterpolator(5f)
             start()
         }
@@ -51,7 +40,7 @@ object AnimationHelper {
         logoView.alpha = 0f
         logoView.scaleX = 0.2f
         logoView.scaleY = 0.2f
-        
+
         logoView.animate()
             .alpha(1f)
             .scaleX(1.2f)
@@ -123,6 +112,22 @@ object AnimationHelper {
     }
 
     /**
+     * Анимация набора текста (троеточие).
+     */
+    fun startTypingAnimation(scope: CoroutineScope, textView: TextView, baseText: String): Job {
+        return scope.launch {
+            val isTypingSuffix = textView.context.getString(R.string.is_typing)
+            val textWithoutDots = baseText.removeSuffix(isTypingSuffix).trim()
+            var dots = 1
+            while (isActive) {
+                textView.text = "$textWithoutDots $isTypingSuffix${".".repeat(dots)}"
+                dots = if (dots >= 3) 1 else dots + 1
+                delay(500)
+            }
+        }
+    }
+
+    /**
      * Анимация появления In-App уведомления.
      */
     fun animateNotificationIn(view: View) {
@@ -150,23 +155,6 @@ object AnimationHelper {
     }
 
     /**
-     * Анимация набора текста (троеточие).
-     * Возвращает Job, который нужно отменить при остановке.
-     */
-    fun startTypingAnimation(scope: CoroutineScope, textView: TextView, baseText: String): Job {
-        return scope.launch {
-            val isTypingSuffix = textView.context.getString(R.string.is_typing)
-            val textWithoutDots = baseText.removeSuffix(isTypingSuffix).trim()
-            var dots = 1
-            while (isActive) {
-                textView.text = "$textWithoutDots $isTypingSuffix${".".repeat(dots)}"
-                dots = if (dots >= 3) 1 else dots + 1
-                delay(500)
-            }
-        }
-    }
-    
-    /**
      * Анимация появления/скрытия (Alpha).
      */
     fun fadeVisibility(view: View, isVisible: Boolean, duration: Long = UiConstants.ANIM_DURATION_SHORT) {
@@ -187,7 +175,7 @@ object AnimationHelper {
         if (isLoading) {
             mainView?.isEnabled = false
             mainView?.animate()?.alpha(0f)?.setDuration(UiConstants.ANIM_DURATION_MEDIUM)?.start()
-            
+
             loadingView?.apply {
                 alpha = 0f
                 scaleX = 0.5f
@@ -204,7 +192,7 @@ object AnimationHelper {
         } else {
             mainView?.isEnabled = true
             mainView?.animate()?.alpha(1f)?.setDuration(UiConstants.ANIM_DURATION_MEDIUM)?.start()
-            
+
             loadingView?.animate()
                 ?.alpha(0f)
                 ?.scaleX(0.5f)
@@ -228,7 +216,7 @@ object AnimationHelper {
         } catch (e: Exception) {
             Color.CYAN
         }
-        
+
         return ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom).apply {
             duration = 1000
             repeatCount = 2
@@ -271,45 +259,103 @@ object AnimationHelper {
     }
 
     /**
-     * Чтоб новое контекстное меню не проебалось и не получило пизды.
+     * Анимация кнопки отправки: появление кружочка и смена цвета иконки.
+     */
+    fun animateSendButtonToggle(button: MaterialButton, active: Boolean) {
+        val colorSurface = MaterialColors.getColor(button, com.google.android.material.R.attr.colorSurface)
+        val colorPrimary = MaterialColors.getColor(button, com.google.android.material.R.attr.colorPrimary)
+        val colorGray = MaterialColors.getColor(button, com.google.android.material.R.attr.colorOnSurfaceVariant)
+
+        val targetBgColor = if (active) colorPrimary else Color.TRANSPARENT
+        val targetIconColor = if (active) colorSurface else colorGray
+
+        button.animate().cancel()
+
+        // Анимация цвета фона (кружочка)
+        val startBgColor = button.backgroundTintList?.defaultColor ?: Color.TRANSPARENT
+        ValueAnimator.ofObject(ArgbEvaluator(), startBgColor, targetBgColor).apply {
+            duration = 250
+            addUpdateListener { button.backgroundTintList = ColorStateList.valueOf(it.animatedValue as Int) }
+            start()
+        }
+
+        // Анимация цвета иконки
+        val startIconColor = button.iconTint?.defaultColor ?: colorGray
+        ValueAnimator.ofObject(ArgbEvaluator(), startIconColor, targetIconColor).apply {
+            duration = 250
+            addUpdateListener { button.iconTint = ColorStateList.valueOf(it.animatedValue as Int) }
+            start()
+        }
+
+        if (active) {
+            button.scaleX = 0.5f
+            button.scaleY = 0.5f
+            button.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(300)
+                .setInterpolator(OvershootInterpolator())
+                .start()
+        } else {
+            button.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(200)
+                .start()
+        }
+    }
+
+    /**
+     * Анимация "засасывания" при отправке сообщения.
+     */
+    fun animateSendAction(view: MaterialButton, onEnd: () -> Unit) {
+        view.animate()
+            .scaleX(0f)
+            .scaleY(0f)
+            .alpha(0f)
+            .setDuration(200)
+            .setInterpolator(AccelerateInterpolator())
+            .withEndAction {
+                onEnd()
+                view.alpha = 1f
+                view.scaleX = 1f
+                view.scaleY = 1f
+                animateSendButtonToggle(view, false)
+            }
+            .start()
+    }
+
+    /**
+     * Анимация текстового значения (счётчик).
+     */
+    fun animateTextValue(textView: TextView, start: Int, end: Int, suffix: String = "") {
+        ValueAnimator.ofInt(start, end).apply {
+            duration = 1000
+            interpolator = DecelerateInterpolator()
+            addUpdateListener {
+                textView.text = "${it.animatedValue}$suffix"
+            }
+            start()
+        }
+    }
+    /**
+     * Умный показ PopupWindow.
      */
     fun showSmartPopup(popup: PopupWindow, anchor: View, preferredXOffset: Int = 0, preferredYOffset: Int = 0) {
         val menuView = popup.contentView
         menuView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        val menuWidth = menuView.measuredWidth
-        val menuHeight = menuView.measuredHeight
-
         val screenPos = IntArray(2)
         anchor.getLocationOnScreen(screenPos)
-        val anchorX = screenPos[0]
-        val anchorY = screenPos[1]
-
         val displayMetrics = anchor.resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
-
-        // Рассчитываем идеальные координаты
-        var finalX = anchorX + preferredXOffset
-        var finalY = anchorY + anchor.height + preferredYOffset
-
-        // Проверка по горизонтали
-        if (finalX + menuWidth > screenWidth) {
-            finalX = screenWidth - menuWidth - 16
-        }
-        if (finalX < 16) finalX = 16
-
-        // Проверка по вертикали (если снизу не влезает - показываем сверху)
-        if (finalY + menuHeight > screenHeight) {
-            finalY = anchorY - menuHeight - preferredYOffset
-        }
         
-        // ГЛОБАЛЬНЫЙ ОГРАНИЧИТЕЛЬ: не залезать выше тулбара (примерно 80dp от верха)
-        val topLimit = (80 * displayMetrics.density).toInt()
-        if (finalY < topLimit) finalY = topLimit
-
+        var finalX = screenPos[0] + preferredXOffset
+        var finalY = screenPos[1] + anchor.height + preferredYOffset
+        
+        if (finalX + menuView.measuredWidth > displayMetrics.widthPixels) finalX = displayMetrics.widthPixels - menuView.measuredWidth - 16
+        if (finalY + menuView.measuredHeight > displayMetrics.heightPixels) finalY = screenPos[1] - menuView.measuredHeight - preferredYOffset
+        
         popup.showAtLocation(anchor, android.view.Gravity.NO_GRAVITY, finalX, finalY)
         
-        // Добавляем микро-анимацию появления
         menuView.alpha = 0f
         menuView.scaleX = 0.9f
         menuView.scaleY = 0.9f
@@ -318,7 +364,7 @@ object AnimationHelper {
             .scaleX(1f)
             .scaleY(1f)
             .setDuration(200)
-            .setInterpolator(OvershootInterpolator(1.0f))
+            .setInterpolator(OvershootInterpolator())
             .start()
     }
 }

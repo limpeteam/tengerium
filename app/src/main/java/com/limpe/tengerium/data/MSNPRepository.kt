@@ -15,7 +15,6 @@ import com.limpe.tengerium.domain.model.Group
 import com.limpe.tengerium.util.UiConstants
 import com.limpe.tengerium.ui.AvatarUtils
 import com.limpe.tengerium.util.NetworkObserver
-import com.limpe.tengerium.util.SoundUtils
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import uniffi.msnp11_sdk.Config
@@ -318,8 +317,19 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
         MSNPService.cancelMessageNotification(context, contact)
     }
 
-    fun clearAllMessages() {
-        scope.launch { getCurrentAccount()?.let { database.messageDao().clearAllMessages(it) } }
+    suspend fun clearAllMessages() = withContext(Dispatchers.IO) {
+        getCurrentAccount()?.let { owner ->
+            database.messageDao().clearAllMessages(owner)
+            try {
+                database.openHelper.writableDatabase.execSQL("VACUUM")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to vacuum", e)
+            }
+        }
+    }
+
+    suspend fun getMessageCount(): Long = withContext(Dispatchers.IO) {
+        getCurrentAccount()?.let { database.messageDao().getMessageCount(it) } ?: 0L
     }
 
     fun clearChatMessages(contact: String) {

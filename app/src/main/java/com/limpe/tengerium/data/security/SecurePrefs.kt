@@ -126,6 +126,11 @@ class SecurePrefs(private val context: Context) {
         plainPrefs.edit().putStringSet("collapsed_groups", groups).apply()
     }
 
+    // Позволяет отслеживать версию, на которой пользователь был в последний раз
+    var lastUsedVersionCode: Int
+        get() = plainPrefs.getInt("last_version_code", 0)
+        set(value) = plainPrefs.edit().putInt("last_version_code", value).apply()
+
     var serverAddress: String
         get() = plainPrefs.getString("server_address", "") ?: ""
         set(value) = plainPrefs.edit().putString("server_address", value).apply()

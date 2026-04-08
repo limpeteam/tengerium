@@ -24,9 +24,9 @@ import com.limpe.tengerium.databinding.ViewInAppNotificationBinding
 import com.limpe.tengerium.ui.AvatarUtils
 import com.limpe.tengerium.ui.MainFragment
 import com.limpe.tengerium.util.AnimationHelper
+import com.limpe.tengerium.util.ChangelogManager
 import com.limpe.tengerium.util.DeepLinkHandler
 import com.limpe.tengerium.util.FormattingUtils
-import com.limpe.tengerium.util.NetworkObserver
 import com.limpe.tengerium.util.SoundUtils
 import com.limpe.tengerium.util.UiConstants
 import com.limpe.tengerium.util.VibrationHelper
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val isKeyboardVisible = keypadHeight > screenHeight * 0.15
         
         // Автоматически скрываем любой футер при открытой клавиатуре на экранах входа
-        val navController = try { findNavController(R.id.nav_host_fragment_content_main) } catch (e: Exception) { null }
+        val navController = try { findNavController(R.id.nav_host_fragment_content_main) } catch (_: Exception) { null }
         val currentDest = navController?.currentDestination?.id
         
         if (currentDest == R.id.AuthFragment || currentDest == R.id.OobeFragment) {
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     navController.addOnDestinationChangedListener { _, _, _ ->
                         handleLoginStateDude(repository.loginState.value)
                     }
-                } catch (e: Exception) {}
+                } catch (_: Exception) {}
             }
         }
 
@@ -160,10 +160,15 @@ class MainActivity : AppCompatActivity() {
         if (securePrefs.getSavedAccount() != null && repository.loginState.value is MSNPLoginState.Idle) {
             repository.autoLogin()
         }
+
+        // Проверка и показ Changelog
+        lifecycleScope.launch {
+            ChangelogManager.checkAndShowChangelog(this@MainActivity, securePrefs)
+        }
     }
 
     private fun handleLoginStateDude(state: MSNPLoginState) {
-        val navController = try { findNavController(R.id.nav_host_fragment_content_main) } catch (e: Exception) { null }
+        val navController = try { findNavController(R.id.nav_host_fragment_content_main) } catch (_: Exception) { null }
         val currentDest = navController?.currentDestination?.id
         val isAuthOrOobe = currentDest == R.id.AuthFragment || currentDest == R.id.OobeFragment
         
@@ -275,7 +280,7 @@ class MainActivity : AppCompatActivity() {
             val viewBinding = ViewInAppNotificationBinding.inflate(LayoutInflater.from(this@MainActivity), binding.notificationContainer, false)
             viewBinding.tvNotificationName.text = FormattingUtils.formatBBCode(incoming.nickname.ifEmpty { incoming.senderAccount })
             viewBinding.tvNotificationMessage.text = if (incoming.message == "[NUDGE]") getString(R.string.nudge_received) else incoming.message
-            val contact = repository.contacts.value.find { it.account.lowercase(Locale.ROOT) == incoming.senderAccount.lowercase(Locale.ROOT) }
+            val contact = repository.contacts.value.find { it.account.equals(incoming.senderAccount, ignoreCase = true) }
             AvatarUtils.loadAvatar(viewBinding.ivNotificationAvatar, contact?.avatarUrl, incoming.senderAccount)
 
             viewBinding.root.setOnClickListener {

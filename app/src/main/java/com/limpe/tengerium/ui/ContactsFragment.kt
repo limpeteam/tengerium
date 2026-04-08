@@ -10,6 +10,7 @@ import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.PopupMenu
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
+import com.limpe.tengerium.data.AppConfig
 import com.limpe.tengerium.data.MSNPLoginState
 import com.limpe.tengerium.databinding.FragmentContactsBinding
 import com.limpe.tengerium.databinding.LayoutChatMenuBinding
@@ -114,6 +116,17 @@ class ContactsFragment : Fragment() {
         })
     }
 
+    private fun isOnline(): Boolean = repository.loginState.value is MSNPLoginState.Success
+
+    private fun checkOnlineAndNotify(): Boolean {
+        return if (isOnline()) {
+            true
+        } else {
+            Toast.makeText(requireContext(), R.string.not_connected_message, Toast.LENGTH_SHORT).show()
+            false
+        }
+    }
+
     private fun showContactContextMenu(anchor: View, contact: Contact) {
         val menuBinding = LayoutChatMenuBinding.inflate(layoutInflater)
         val popup = PopupWindow(menuBinding.root, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
@@ -128,14 +141,22 @@ class ContactsFragment : Fragment() {
         val allGroups = repository.groups.value
         val availableGroups = allGroups.filter { group -> !contact.groupGuids.contains(group.guid) }
         
+        val online = isOnline()
+
+        // Перемещение в папку
         menuBinding.btnMenuFolder.isVisible = availableGroups.isNotEmpty()
+        menuBinding.btnMenuFolder.isEnabled = online
+        menuBinding.btnMenuFolder.alpha = if (online) 1.0f else 0.5f
         menuBinding.btnMenuFolder.setOnClickListener {
             popup.dismiss()
             showChangeGroupDialog(contact, availableGroups)
         }
 
+        // Удаление из папки
         val isInAnyGroup = contact.groupGuids.isNotEmpty()
         menuBinding.btnMenuRemoveFolder.isVisible = isInAnyGroup
+        menuBinding.btnMenuRemoveFolder.isEnabled = online
+        menuBinding.btnMenuRemoveFolder.alpha = if (online) 1.0f else 0.5f
         menuBinding.btnMenuRemoveFolder.setOnClickListener {
             popup.dismiss()
             val contactGuid = contact.guid
@@ -155,8 +176,11 @@ class ContactsFragment : Fragment() {
             popup.dismiss()
         }
 
+        // Блокировка
         val isBlocked = contact.listType.contains("BL")
         menuBinding.btnMenuBlock.isVisible = true
+        menuBinding.btnMenuBlock.isEnabled = online
+        menuBinding.btnMenuBlock.alpha = if (online) 1.0f else 0.5f
         menuBinding.btnMenuBlock.text = if (isBlocked) getString(R.string.unblock) else getString(R.string.block)
         menuBinding.btnMenuBlock.setIconResource(if (isBlocked) R.drawable.ic_unblock else R.drawable.ic_block)
         menuBinding.btnMenuBlock.setOnClickListener {
@@ -174,7 +198,11 @@ class ContactsFragment : Fragment() {
     private fun showGroupContextMenu(view: View, group: Group) {
         if (group.guid == "other") return
         val popup = PopupMenu(requireContext(), view)
-        popup.menu.add(getString(R.string.delete))
+        val deleteItem = popup.menu.add(getString(R.string.delete))
+        
+        val online = isOnline()
+        deleteItem.isEnabled = online
+        
         popup.setOnMenuItemClickListener { item ->
             if (item.title == getString(R.string.delete)) {
                 AlertDialog.Builder(requireContext())
@@ -232,7 +260,9 @@ class ContactsFragment : Fragment() {
                     }
                     val hasRealContacts = items.any { it is ContactAdapter.ContactItem.User || it is ContactAdapter.ContactItem.GroupHeader }
                     binding.layoutEmpty.visibility = if (isConnected && !hasRealContacts && requestsCount <= 0) View.VISIBLE else View.GONE
-                    binding.layoutNotConnected.visibility = if (!isConnected) View.VISIBLE else View.GONE
+                    
+                    // Если OFFCLIS включен, скрываем плашку "не вошли", так как показываем локальный список.
+                    binding.layoutNotConnected.visibility = if (!isConnected && !AppConfig.OFFCLIS) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -257,8 +287,8 @@ class ContactsFragment : Fragment() {
             if (filteredRequests.isNotEmpty()) items.add(ContactAdapter.ContactItem.Header(filteredRequests.size))
         }
 
-        if (!isConnected) {
-            items.add(ContactAdapter.ContactItem.NotConnected)
+        // Если мы не в сети и флаг оффлайн-списка выключен — ничего не показываем
+        if (!isConnected && !AppConfig.OFFCLIS) {
             return Triple(items, requests.size, isConnected)
         }
 
@@ -334,8 +364,12 @@ class ContactsFragment : Fragment() {
         menuBinding.btnMenuClear.isVisible = false
         menuBinding.btnMenuRemoveFolder.isVisible = false
 
-        // Используем btnMenuFolder для "Add Friend" (переход на фрагмент)
+        val online = isOnline()
+
+        // Используем btnMenuFolder для "Add Friend"
         menuBinding.btnMenuFolder.isVisible = true
+        menuBinding.btnMenuFolder.isEnabled = online
+        menuBinding.btnMenuFolder.alpha = if (online) 1.0f else 0.5f
         menuBinding.btnMenuFolder.text = getString(R.string.add_friend)
         menuBinding.btnMenuFolder.setIconResource(R.drawable.ic_email_login)
         menuBinding.btnMenuFolder.setOnClickListener {
@@ -343,9 +377,11 @@ class ContactsFragment : Fragment() {
             navigateToAddFriend()
         }
 
-        // Используем btnMenuPin для "Create Group" (модалка для имени группы нужна)
+        // Используем btnMenuPin для "Create Group"
         val btnCreateGroup = menuBinding.btnMenuPin
         btnCreateGroup.isVisible = true
+        btnCreateGroup.isEnabled = online
+        btnCreateGroup.alpha = if (online) 1.0f else 0.5f
         btnCreateGroup.text = getString(R.string.create_group)
         btnCreateGroup.setIconResource(R.drawable.ic_folder)
         btnCreateGroup.setOnClickListener {

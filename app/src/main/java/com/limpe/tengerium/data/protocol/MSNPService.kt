@@ -168,6 +168,8 @@ class MSNPService : Service() {
                         return@collectLatest
                     }
 
+                    val myAccount = repository.getCurrentAccount()?.lowercase(Locale.ROOT)?.trim()
+
                     currentMap.forEach { (account, newStatus) ->
                         val oldStatus = contactStatuses[account]
                         
@@ -176,7 +178,10 @@ class MSNPService : Service() {
                             val wasOffline = oldStatus == null || oldStatus == MSNPProto.Status.OFFLINE
                             val isOnline = newStatus != MSNPProto.Status.OFFLINE
                             
-                            if (wasOffline && isOnline) {
+                            // Не присылаем уведомление о том, что наш собственный аккаунт в сети
+                            val isNotMe = account != myAccount
+                            
+                            if (wasOffline && isOnline && isNotMe) {
                                 val contact = repository.contacts.value.find { it.account.lowercase(Locale.ROOT) == account }
                                 val nickname = contact?.nickname?.ifEmpty { account } ?: account
                                 showEventNotification(

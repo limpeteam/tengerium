@@ -199,13 +199,18 @@
                     android:minHeight="48dp"
                     android:paddingHorizontal="12dp" />
 
-                <ImageButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSend"
+                    style="@style/Widget.Material3.Button.IconButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_send"
-                    app:tint="?attr/colorPrimary" />
+                    android:layout_marginStart="4dp"
+                    app:icon="@android:drawable/ic_menu_send"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    app:iconSize="24dp"
+                    app:iconTint="?attr/colorOnSurfaceVariant"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
             </LinearLayout>
         </LinearLayout>
 

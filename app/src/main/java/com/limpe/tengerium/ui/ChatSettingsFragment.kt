@@ -156,22 +156,20 @@ class ChatSettingsFragment : Fragment() {
         binding.switchPhoneStatus.setOnCheckedChangeListener { _, isChecked ->
             securePrefs.phoneStatusEnabled = isChecked
         }
-
-        binding.btnClearCache.setOnClickListener { clearCache() }
-        binding.btnClearHistory.setOnClickListener { clearHistory() }
     }
 
     fun updateMode(mode: String) {
         binding.cardTheme.visibility = if (mode == "theme") View.VISIBLE else View.GONE
         binding.cardNotifications.visibility = if (mode == "notifications") View.VISIBLE else View.GONE
         binding.cardPrivacy.visibility = if (mode == "privacy") View.VISIBLE else View.GONE
-        binding.cardStorage.visibility = if (mode == "storage") View.VISIBLE else View.GONE
+        
+        // РАЗДЕЛ STORAGE ЗДЕСЬ БОЛЬШЕ НЕ НУЖЕН - ОН В ОТДЕЛЬНОМ ФРАГМЕНТЕ
+        binding.cardStorage.visibility = View.GONE
         
         val titleRes = when(mode) {
             "theme" -> R.string.chat_settings
             "notifications" -> R.string.notifications
             "privacy" -> R.string.privacy
-            "storage" -> R.string.storage
             else -> R.string.app_settings
         }
         binding.toolbar.setTitle(titleRes)
@@ -182,14 +180,12 @@ class ChatSettingsFragment : Fragment() {
         binding.switchDarkTheme.isChecked = securePrefs.darkTheme
         binding.switchDarkTheme.isEnabled = !securePrefs.followSystemTheme
         
-        // Material You поддерживается только с Android 12 (API 31, S)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             binding.switchMaterialYou.visibility = View.VISIBLE
             binding.switchMaterialYou.isChecked = securePrefs.useMaterialYou
             updateMaterialYouVisibility(securePrefs.useMaterialYou)
         } else {
             binding.switchMaterialYou.visibility = View.GONE
-            // Если устройство не поддерживает, форсируем отображение пресетов тем
             updateMaterialYouVisibility(false)
         }
 
@@ -224,8 +220,6 @@ class ChatSettingsFragment : Fragment() {
         binding.switchVibration.isChecked = securePrefs.vibrationEnabled
         binding.switchChatSounds.isChecked = securePrefs.chatSoundsEnabled
         binding.switchPhoneStatus.isChecked = securePrefs.phoneStatusEnabled
-
-        updateStorageInfo()
     }
 
     private fun updateMaterialYouVisibility(enabled: Boolean) {
@@ -282,44 +276,6 @@ class ChatSettingsFragment : Fragment() {
             Toast.makeText(requireContext(), R.string.background_updated, Toast.LENGTH_SHORT).show()
         } catch (_: Exception) {
             Toast.makeText(requireContext(), "Error saving background", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun updateStorageInfo() {
-        lifecycleScope.launch {
-            val cacheSize = viewModel.getCacheSize(requireContext())
-            val historySize = viewModel.getHistorySize()
-            
-            binding.tvCacheLabel.text = getString(R.string.cache_label_size, formatSize(cacheSize))
-            binding.tvMessagesLabel.text = getString(R.string.messages_label_size, formatSize(historySize))
-            
-            val total = cacheSize + historySize
-            binding.tvTotalSpace.text = getString(R.string.total_storage_usage, formatSize(total))
-            
-            binding.progressCache.progress = if (total > 0L) (cacheSize * 100 / total).toInt() else 0
-            binding.progressMessages.progress = if (total > 0L) (historySize * 100 / total).toInt() else 0
-        }
-    }
-
-    private fun formatSize(size: Long): String {
-        val kb = size / 1024
-        val mb = kb / 1024
-        return if (mb > 0) "$mb MB" else "$kb KB"
-    }
-
-    private fun clearCache() {
-        lifecycleScope.launch {
-            viewModel.clearCache(requireContext())
-            updateStorageInfo()
-            Toast.makeText(requireContext(), R.string.cache_cleared, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun clearHistory() {
-        lifecycleScope.launch {
-            viewModel.clearHistory()
-            updateStorageInfo()
-            Toast.makeText(requireContext(), R.string.clear_history, Toast.LENGTH_SHORT).show()
         }
     }
 

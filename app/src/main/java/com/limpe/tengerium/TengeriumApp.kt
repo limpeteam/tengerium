@@ -12,10 +12,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.LocaleListCompat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
-import com.limpe.tengerium.data.AppConfig
 import com.limpe.tengerium.data.MSNPRepository
-
-import com.limpe.tengerium.data.protocol.MSNPService
 import com.limpe.tengerium.data.security.SecurePrefs
 import net.sqlcipher.database.SQLiteDatabase
 import java.io.PrintWriter
@@ -110,7 +107,7 @@ class TengeriumApp : Application() {
             getProcessName()
         } else {
             val pid = android.os.Process.myPid()
-            val am = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            val am = getSystemService(ACTIVITY_SERVICE) as ActivityManager
             am.runningAppProcesses?.find { it.pid == pid }?.processName ?: ""
         }
         return processName.endsWith(":crash")
@@ -133,7 +130,7 @@ class TengeriumApp : Application() {
                 startActivity(intent)
                 
                 exitProcess(1)
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 defaultHandler?.uncaughtException(thread, throwable)
             }
         }

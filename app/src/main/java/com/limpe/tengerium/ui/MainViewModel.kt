@@ -9,7 +9,6 @@ import com.limpe.tengerium.data.db.MessageEntity
 import com.limpe.tengerium.data.protocol.MSNPService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -77,10 +76,11 @@ class MainViewModel(private val repository: MSNPRepository) : ViewModel() {
 
     suspend fun getHistorySize(): Long = withContext(Dispatchers.IO) {
         // Примерный расчет размера БД или просто запрашиваем из репозитория/базы
-        // В данном случае просто возвращаем 0 или размер файла БД если знаем путь
-        val dbFile = repository.context.getDatabasePath("tengerium.db")
+        val dbFile = repository.context.getDatabasePath("tengerium_secure.db")
         if (dbFile.exists()) dbFile.length() else 0L
     }
+
+    suspend fun getMessageCount(): Long = repository.getMessageCount()
 
     fun clearCache(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -90,7 +90,9 @@ class MainViewModel(private val repository: MSNPRepository) : ViewModel() {
     }
 
     fun clearHistory() {
-        repository.clearAllMessages()
+        viewModelScope.launch {
+            repository.clearAllMessages()
+        }
     }
 
     private fun getFolderSize(file: File): Long {

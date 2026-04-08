@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="250dp"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:cardBackgroundColor="?attr/colorSurfaceContainer"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Contact/Chat Context Items -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuPin"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/pin_chat"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_pin"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuNudge"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/send_nudge"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_nudge_menu"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuFolder"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/add_to_folder"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_folder"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuRemoveFolder"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_from_folder"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_folder_remove"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuMute"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/mute_notifications"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_notifications_off"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuExport"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/export_chat_history"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_export_menu"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuClear"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/clear_history"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_clear_chat"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMenuBlock"
+            style="@style/Widget.Material3.Button.TextButton.Icon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/block"
+            android:gravity="start|center_vertical"
+            app:icon="@drawable/ic_block"
+            android:textColor="?attr/colorOnSurface"
+            app:iconTint="?attr/colorOnSurface"
+            app:iconPadding="12dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -33,10 +33,8 @@
     <string name="background_removed">Фон выдалены</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Класічная</string>
-    <string name="theme_emerald">Ізумрудная</string>
-    <string name="theme_lavender">Лавандавая</string>
-    <string name="theme_dark">Цёмная</string>
+    <string name="theme_standard">Стандартная</string>
+    <string name="theme_turquoise">Біруза</string>
     <string name="preview_incoming">Пузырок уваходнага паведамлення</string>
     <string name="preview_outgoing">Пузырок выходнага паведамлення</string>
     <string name="theme">Тэма</string>
@@ -59,6 +57,7 @@
     <string name="connecting_to_msn">Падключэнне да MSN...</string>
     <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
     <string name="nexus_hint">Дамен Nexus (напр. m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Калі ласка, спачатку запоўніце налады сервера</string>
     <string name="reconnect">Перападключыцца</string>
     <string name="connection_lost">Злучэнне страчана</string>
     <string name="reconnecting_in">Перападключэнне праз %1$d сек...</string>
@@ -68,7 +67,7 @@
     <string name="today">Сёння</string>
     <string name="yesterday">Учора</string>
     <string name="copy">Скапіяваць</string>
-    <string name="copied">Скапіявана</string>
+    <string name="copied">Скапіяна</string>
     <string name="type_message">Увядзіце паведамленне...</string>
     <string name="empty_chats">Няма нядаўніх чатаў</string>
     <string name="empty_chats_title">Паведамленняў пакуль няма</string>
@@ -77,9 +76,11 @@
     <string name="not_in_contacts">Гэтага чалавека няма ў вашым спісе кантактаў</string>
     <string name="add_to_contacts">Дадаць у кантакты</string>
     <string name="block">Заблакіраваць</string>
+    <string name="unblock">Разблакіраваць</string>
     <string name="contact_unavailable">Суразмоўца недаступны</string>
     <string name="is_typing">піша...</string>
     <string name="send_nudge">Адправіць будзільнік</string>
+    <string name="send_nudge_cooldown">Будзільнік (%1$ds)</string>
     <string name="nudge_received">Атрыманы будзільнік!</string>
     <string name="nudge_sent_sys">Вы адправілі будзільнік!</string>
     <string name="nudge_received_sys">%1$s адправіў вам будзільнік!</string>
@@ -103,6 +104,17 @@
     <string name="resend">Адправіць зноў</string>
     <string name="chat_me_prefix">Я: %1$s</string>
     <string name="group_participants_updated">Спіс удзельнікаў абноўлены</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Замацаваць</string>
+    <string name="unpin_chat">Адмацаваць</string>
+    <string name="mute_notifications">Выключыць апавяшчэнні</string>
+    <string name="unmute_notifications">Уключыць апавяшчэнні</string>
+    <string name="blocked_group_name">Заблакіраваныя</string>
+    <string name="add_to_folder">Дадаць у папку</string>
+    <string name="move_to_folder">Перамясціць у папку</string>
+    <string name="select_folder">Выберыце папку</string>
+    <string name="remove_from_folder">Выдаліць з папкі</string>
 
     <!-- Contacts -->
     <string name="add_friend">Дадаць сябра</string>
@@ -161,8 +173,12 @@
     <string name="about_testers_list">probreakvs, inceptiontime</string>
     <string name="about_developed_by">Распрацавана Vasek Lednikofff</string>
     <string name="about_limpe_support">пры падтрымцы Limpe Team</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Дадзеныя і памяць</string>
+    <string name="memory_usage">Выкарыстанне памяці</string>
+    <string name="traffic_usage">Выкарыстанне трафіка</string>
     <string name="storage">Сховішча</string>
     <string name="storage_usage">Выкарыстанне сховішча</string>
     <string name="app_memory_percent">Праграма займае %1$s%% памяці прылады (%2$s)</string>
@@ -174,6 +190,24 @@
     <string name="clear_history_message">Гэта беззваротна выдаліць усе вашы паведамленні з усіх чатаў.</string>
     <string name="cache_cleared">Кэш ачышчаны</string>
     <string name="history_cleared">Гісторыя ачышчана</string>
+    <string name="cache_label_size">Кэш: %1$s</string>
+    <string name="messages_label_size">Гісторыя: %1$s</string>
+    <string name="total_storage_usage">Усяго выкарыстана: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium займае %1$d%% аб\'ёму кэша праграм</string>
+    <string name="storage_profiles">Фота профіляў</string>
+    <string name="storage_messages">Логі чатаў</string>
+    <string name="storage_avatars">Бібліятэка аватараў</string>
+    <string name="storage_contacts">Спіс кантактаў</string>
+    <string name="no_cache_message">Кэш не знойдзены</string>
+    <string name="clear_selected">Ачысціць</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Усе</string>
+    <string name="traffic_mobile">Мабільны</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Роўмінг</string>
+    <string name="traffic_sent">Адпраўлена</string>
+    <string name="traffic_received">Атрымана</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Цёмная тэма</string>
@@ -255,4 +289,29 @@
     <string name="logs_report_title">Справаздача аб памылцы Tengerium</string>
     <string name="no_logs_available">Інфармацыя аб логах недаступная</string>
     <string name="error_collecting_logs">Памылка збору логаў: %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Сервіс абнаўленняў</string>
+    <string name="update_checking">Праверка абнаўленняў...</string>
+    <string name="update_no_updates">Няма даступных абнаўленняў</string>
+    <string name="update_ready">Абнаўленне гатова да ўсталёўкі</string>
+    <string name="update_downloading">Загрузка абнаўлення (%1$d%%)</string>
+    <string name="update_unavailable">Сервіс абнаўленняў часова недаступны</string>
+    <string name="update_install">Усталяваць абнаўленне</string>
+    <string name="update_changelog">Спіс змен</string>
+    <string name="update_download">Спампаваць</string>
+    <string name="update_version_info">Бягучая: %1$s • Новая: %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Запыт на падключэнне</string>
+    <string name="deep_link_warning_title">Увага: Кастомны сервер!</string>
+    <string name="deep_link_warning_message">Гэтая спасылка спрабуе змяніць налады сервера на:\n\nСервер: %1$s\nNexus: %2$s\n\nВыкарыстанне іншых сервераў можа быць НЕБЯСПЕЧНЫМ. Уладальнік сервера можа бачыць ваш пароль і перахопліваць вашы паведамленні. Вы ўпэўнены, што давяраеце гэтаму серверу?</string>
+    <string name="deep_link_wait_format">Пачакайце %1$d сек...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">Сакрат назвы версіі %1$s</string>
+    <string name="easter_egg_content">Шакаладны торт \"Шахцёрскі\".\n\nСапраўдны. Толькі шакалад і арэхі. Рабіўся па рэцэптуры Луганскай кандытарскай фабрыкі. Для знатакоў сапраўднага шакаладу. Гісторыя гэтага торта вельмі дзіўная: яго рэцэпт быў распрацаваны ў 60-я гады на Луганскай кандытарскай фабрыцы, у той жа час быў распрацаваны і рэцэпт цукерак \"Планета\", калі хтосьці спрабаваў.\n\nКалі большасць тартоў фабрычнага вырабу рабіліся па ДАСТу, то торт \"Шахцёрскі\" і \"Планета\" рабіліся па ТУ, і іх рэцэпт мала каму вядомі. Яго арыгінальная рэцэптура не занесена ў рэестры. Без мукі і без выпечкі.\n\nПотым ён пагоршыўся, і яму змянілі назву на \"Кардынал\", а пад маркай \"Шахцёрскі\" пачалі прадаваць ужо нешта іншае, але таксама шакаладнае з арэхамі.\n\nПрычым гэты фірмовы выраб Луганскай кандытарскай фабрыкі быў дэфіцытным. Многія ўспамінаюць, што збіраючыся ў госці ў іншы горад, з вялікай цяжкасцю даставалі гэты салодкі сувенір. І які ён быў незвычайны на смак: з трыма рознымі сартамі шакаладу, арэхамі і шакаладнымі ружамі зверху. Словам, шакаладу не шкадавалі. Хоць само словазлучэнне \"шахцёрскі торт\" гучала дзіўна і нават уводзіла некаторых у зман, што гэта нейкая асаблівая тэхналогія здабычы вугалю.\n\nАрэхі і чарнасліў заліваліся трыма відамі шакаладу, дадавалася згушчанае малако, цэдра цытрусавых. Упрыгожваўся торт шакаладнымі ружамі, садавінай з глазуры і цукру і ядомай бутэлечкай \"Савецкага Шампанскага\" з лікёрам унутры. Важыў торт докілаграма і, вядома ж, быў страшным дэфіцытам. Але за кошт таго, што гэты кулінарны выраб - па сутнасці, адна вялікая шакаладка, захоўваецца ён дастаткова доўга і часта выкарыстоўваўся ў якасці сувеніра і падарунка.</string>
+    <string name="easter_egg_source">Крыніца %1$s</string>
+    <string name="whats_new_title">Што новага</string>
+
 </resources>

@@ -76,6 +76,12 @@
     <color name="status_offline">#9E9E9E</color>
     <color name="error_bubble">#FFEBEE</color>
 
+    <!-- Cache Category Colors -->
+    <color name="cache_profiles">#FF5252</color>
+    <color name="cache_messages">#FFD740</color>
+    <color name="cache_avatars">#69F0AE</color>
+    <color name="cache_contacts">#BDBDBD</color>
+
     <!-- Glass Specific -->
     <color name="glass_white_20">#33FFFFFF</color>
     <color name="glass_white_40">#66FFFFFF</color>

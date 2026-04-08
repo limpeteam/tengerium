@@ -33,10 +33,8 @@
     <string name="background_removed">背景已移除</string>
 
     <!-- Themes -->
-    <string name="theme_classic">经典</string>
-    <string name="theme_emerald">翡翠</string>
-    <string name="theme_lavender">薰衣草</string>
-    <string name="theme_dark">深色</string>
+    <string name="theme_standard">标准</string>
+    <string name="theme_turquoise">绿松石色</string>
     <string name="preview_incoming">接收消息气泡</string>
     <string name="preview_outgoing">发送消息气泡</string>
     <string name="theme">主题</string>
@@ -78,6 +76,7 @@
     <string name="not_in_contacts">此人不在您的联系人列表中</string>
     <string name="add_to_contacts">添加到联系人</string>
     <string name="block">屏蔽</string>
+    <string name="unblock">取消屏蔽</string>
     <string name="contact_unavailable">联系人不可用</string>
     <string name="is_typing">正在输入...</string>
     <string name="send_nudge">发送抖动窗口</string>
@@ -105,6 +104,17 @@
     <string name="resend">重发</string>
     <string name="chat_me_prefix">我：%1$s</string>
     <string name="group_participants_updated">参与者列表已更新</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">置顶</string>
+    <string name="unpin_chat">取消置顶</string>
+    <string name="mute_notifications">静音通知</string>
+    <string name="unmute_notifications">取消静音通知</string>
+    <string name="blocked_group_name">已屏蔽</string>
+    <string name="add_to_folder">添加到文件夹</string>
+    <string name="move_to_folder">移动到文件夹</string>
+    <string name="select_folder">选择文件夹</string>
+    <string name="remove_from_folder">从文件夹移除</string>
 
     <!-- Contacts -->
     <string name="add_friend">添加好友</string>
@@ -160,11 +170,15 @@
     <string name="about_library_title">使用的库：</string>
     <string name="about_library_name">campos02 的 MSNP-11 库</string>
     <string name="about_testers_title">活跃测试人员：</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">由 Vasek Lednikofff 开发</string>
     <string name="about_limpe_support">由 Limpe 团队提供支持</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">数据和存储</string>
+    <string name="memory_usage">内存使用情况</string>
+    <string name="traffic_usage">流量使用情况</string>
     <string name="storage">存储</string>
     <string name="storage_usage">存储使用情况</string>
     <string name="app_memory_percent">应用占用 %1$s%% 的设备内存 (%2$s)</string>
@@ -176,6 +190,24 @@
     <string name="clear_history_message">这将永久删除所有聊天中的所有消息。</string>
     <string name="cache_cleared">缓存已清除</string>
     <string name="history_cleared">历史记录已清除</string>
+    <string name="cache_label_size">缓存：%1$s</string>
+    <string name="messages_label_size">历史记录：%1$s</string>
+    <string name="total_storage_usage">总占用：%1$s</string>
+    <string name="tengerium_usage_format">Tengerium 占用应用缓存总量的 %1$d%%</string>
+    <string name="storage_profiles">个人资料照片</string>
+    <string name="storage_messages">聊天日志</string>
+    <string name="storage_avatars">头像库</string>
+    <string name="storage_contacts">联系人列表</string>
+    <string name="no_cache_message">未发现缓存</string>
+    <string name="clear_selected">清除</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">全部</string>
+    <string name="traffic_mobile">移动网络</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">漫游</string>
+    <string name="traffic_sent">已发送</string>
+    <string name="traffic_received">已接收</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">深色主题</string>
@@ -257,4 +289,29 @@
     <string name="logs_report_title">Tengerium 错误报告</string>
     <string name="no_logs_available">无可用日志信息</string>
     <string name="error_collecting_logs">收集日志时出错：%1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">更新服务</string>
+    <string name="update_checking">正在检查更新...</string>
+    <string name="update_no_updates">暂无更新</string>
+    <string name="update_ready">更新已准备好安装</string>
+    <string name="update_downloading">正在下载更新 (%1$d%%)</string>
+    <string name="update_unavailable">更新服务暂时不可用</string>
+    <string name="update_install">安装更新</string>
+    <string name="update_changelog">更新日志</string>
+    <string name="update_download">下载</string>
+    <string name="update_version_info">当前：%1$s • 新版本：%2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">连接请求</string>
+    <string name="deep_link_warning_title">警告：自定义服务器！</string>
+    <string name="deep_link_warning_message">此链接正尝试将服务器设置更改为：\n\n服务器：%1$s\nNexus：%2$s\n\n使用第三方服务器可能存在【危险】。服务器所有者可能会看到您的密码并拦截您的消息。您确定信任此服务器吗？</string>
+    <string name="deep_link_wait_format">等待 %1$d 秒...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">版本代号 %1$s 的秘密</string>
+    <string name="easter_egg_content">巧克力蛋糕“Shakhtyorsky”（矿工蛋糕）。\n\n货真价实。只有巧克力和坚果。它是根据卢甘斯克糖果厂的配方制作的。专为真正的巧克力爱好者打造。这个蛋糕的历史非常神奇：它的配方是 60 年代在卢甘斯克糖果厂开发的，与此同时还开发了 Planeta 糖果的配方（如果有人尝试过的话）。\n\n虽然大多数工厂生产的蛋糕都是按照 GOST 标准制作的，但 Shakhtyorsky 蛋糕和 Planeta 是按照 TU 标准制作的，其配方鲜为人知。其原始配方未进入登记册。无需面粉，无需烘烤。\n\n后来情况变糟了，它的名字被改为“Cardinal”，而在“Shakhtyorsky”品牌下，他们开始销售其他产品，但也是带有坚果且易消化的巧克力。\n\n此外，这款卢甘斯克糖果厂的招牌产品曾一度短缺。许多人记得，当他们去另一个城市探亲访友时，费尽周折才买到这份甜蜜的纪念品。它的味道是多么非凡：由三种不同类型的巧克力、坚果制成，顶部还有巧克力玫瑰。简而言之，他们在巧克力上毫不吝啬。虽然“矿工蛋糕”这个短语听起来很奇怪，甚至误导了一些人，以为这是某种特殊的煤炭开采技术。\n\n坚果和李子干淋上三种巧克力，加入炼乳和柑橘皮。蛋糕用巧克力玫瑰、糖釉制成的水果以及一瓶装有甜酒的可食用“苏联香槟”进行装饰。蛋糕重达一公斤，当然，当时极度稀缺。但由于这种烹饪产品本质上是一块巨大的巧克力棒，它可以保存足够长的时间，经常被用作纪念品和礼物。</string>
+    <string name="easter_egg_source">来源 %1$s</string>
+    <string name="whats_new_title">更新内容</string>
+
 </resources>

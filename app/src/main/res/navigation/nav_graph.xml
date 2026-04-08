@@ -104,6 +104,13 @@
             app:exitAnim="@anim/metro_exit"
             app:popEnterAnim="@anim/metro_pop_enter"
             app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_MainFragment_to_DataAndStorageFragment"
+            app:destination="@id/DataAndStorageFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
     </fragment>
 
     <fragment
@@ -156,7 +163,44 @@
         android:id="@+id/ChatSettingsFragment"
         android:name="com.limpe.tengerium.ui.ChatSettingsFragment"
         android:label="@string/app_settings"
-        tools:layout="@layout/fragment_chat_settings" />
+        tools:layout="@layout/fragment_chat_settings">
+        <action
+            android:id="@+id/action_ChatSettingsFragment_to_DataAndStorageFragment"
+            app:destination="@id/DataAndStorageFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/DataAndStorageFragment"
+        android:name="com.limpe.tengerium.ui.DataAndStorageFragment"
+        android:label="@string/data_and_storage"
+        tools:layout="@layout/fragment_data_and_storage">
+        <action
+            android:id="@+id/action_DataAndStorageFragment_to_MemoryUsageFragment"
+            app:destination="@id/MemoryUsageFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_DataAndStorageFragment_to_TrafficUsageFragment"
+            app:destination="@id/TrafficUsageFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/MemoryUsageFragment"
+        android:name="com.limpe.tengerium.ui.MemoryUsageFragment"
+        android:label="@string/memory_usage"
+        tools:layout="@layout/fragment_memory_usage" />
+
+    <fragment
+        android:id="@+id/TrafficUsageFragment"
+        android:name="com.limpe.tengerium.ui.TrafficUsageFragment"
+        android:label="@string/traffic_usage"
+        tools:layout="@layout/fragment_traffic_usage" />
 
     <fragment
         android:id="@+id/ContactsFragment"
@@ -191,6 +235,13 @@
         <action
             android:id="@+id/action_ProfileFragment_to_ChatSettingsFragment"
             app:destination="@id/ChatSettingsFragment"
+            app:enterAnim="@anim/metro_enter"
+            app:exitAnim="@anim/metro_exit"
+            app:popEnterAnim="@anim/metro_pop_enter"
+            app:popExitAnim="@anim/metro_pop_exit" />
+        <action
+            android:id="@+id/action_ProfileFragment_to_DataAndStorageFragment"
+            app:destination="@id/DataAndStorageFragment"
             app:enterAnim="@anim/metro_enter"
             app:exitAnim="@anim/metro_exit"
             app:popEnterAnim="@anim/metro_pop_enter"

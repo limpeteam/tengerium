@@ -33,10 +33,8 @@
     <string name="background_removed">Фон видалено</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Класична</string>
-    <string name="theme_emerald">Смарагдова</string>
-    <string name="theme_lavender">Лавандова</string>
-    <string name="theme_dark">Темна</string>
+    <string name="theme_standard">Стандартна</string>
+    <string name="theme_turquoise">Бірюзова</string>
     <string name="preview_incoming">Бульбашка вхідного повідомлення</string>
     <string name="preview_outgoing">Бульбашка вихідного повідомлення</string>
     <string name="theme">Тема</string>
@@ -59,6 +57,7 @@
     <string name="connecting_to_msn">Підключення до MSN...</string>
     <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
     <string name="nexus_hint">Домен Nexus (напр. m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Будь ласка, спочатку заповніть налаштування сервера</string>
     <string name="reconnect">Перепідключитися</string>
     <string name="connection_lost">З\'єднання розірвано</string>
     <string name="reconnecting_in">Повторне підключення через %1$d сек...</string>
@@ -77,6 +76,7 @@
     <string name="not_in_contacts">Цієї людини немає у вашому списку контактів</string>
     <string name="add_to_contacts">Додати до контактів</string>
     <string name="block">Заблокувати</string>
+    <string name="unblock">Розблокувати</string>
     <string name="contact_unavailable">Співрозмовник недоступний</string>
     <string name="is_typing">друкує...</string>
     <string name="send_nudge">Надіслати будильник</string>
@@ -105,6 +105,17 @@
     <string name="chat_me_prefix">Ви: %1$s</string>
     <string name="group_participants_updated">Список учасників оновлено</string>
 
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Закріпити</string>
+    <string name="unpin_chat">Відкріпити</string>
+    <string name="mute_notifications">Вимкнути сповіщення</string>
+    <string name="unmute_notifications">Увімкнути сповіщення</string>
+    <string name="blocked_group_name">Заблоковані</string>
+    <string name="add_to_folder">Додати до папки</string>
+    <string name="move_to_folder">Перемістити до папки</string>
+    <string name="select_folder">Виберіть папку</string>
+    <string name="remove_from_folder">Видалити з папки</string>
+
     <!-- Contacts -->
     <string name="add_friend">Додати друга</string>
     <string name="enter_msn_account">Введіть акаунт MSN:</string>
@@ -112,7 +123,7 @@
     <string name="contacts_settings">Налаштування контактів</string>
     <string name="show_online_first">Спочатку ті, хто в мережі</string>
     <string name="empty_contacts_title">Тут поки тихо...</string>
-    <string name="empty_contacts_message">Контактів поки немає. Натисніть кнопку «+», щоб додади першого друга!</string>
+    <string name="empty_contacts_message">Контактів поки немає. Натисніть кнопку «+», щоб додати першого друга!</string>
     <string name="not_connected_message">Ви не увійшли в мережу.</string>
     <string name="contact_requests">Запити контактів</string>
     <string name="accept">Прийняти</string>
@@ -159,11 +170,15 @@
     <string name="about_library_title">Використані бібліотеки:</string>
     <string name="about_library_name">Бібліотека MSNP-11 від campos02</string>
     <string name="about_testers_title">Активні тестувальники:</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Розроблено Vasek Lednikofff</string>
     <string name="about_limpe_support">за підтримки Limpe Team</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Дані та сховище</string>
+    <string name="memory_usage">Використання пам\'яті</string>
+    <string name="traffic_usage">Використання трафіку</string>
     <string name="storage">Сховище</string>
     <string name="storage_usage">Використання сховища</string>
     <string name="app_memory_percent">Програма займає %1$s%% пам\'яті пристрою (%2$s)</string>
@@ -175,6 +190,24 @@
     <string name="clear_history_message">Це безповоротно видалить усі ваші повідомлення з усіх чатів.</string>
     <string name="cache_cleared">Кеш очищено</string>
     <string name="history_cleared">Історію очищено</string>
+    <string name="cache_label_size">Кеш: %1$s</string>
+    <string name="messages_label_size">Історія: %1$s</string>
+    <string name="total_storage_usage">Загальне використання: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium займає %1$d%% об\'єму кешу програм</string>
+    <string name="storage_profiles">Фото профілів</string>
+    <string name="storage_messages">Логи чатів</string>
+    <string name="storage_avatars">Бібліотека аватарів</string>
+    <string name="storage_contacts">Список контактів</string>
+    <string name="no_cache_message">Кеш не знайдено</string>
+    <string name="clear_selected">Очистити</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Всі</string>
+    <string name="traffic_mobile">Мобільний</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Роумінг</string>
+    <string name="traffic_sent">Надіслано</string>
+    <string name="traffic_received">Отримано</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Темна тема</string>
@@ -214,7 +247,7 @@
 
     <!-- Crash Report -->
     <string name="crash_title">Ой! Сталася помилка</string>
-    <string name="crash_message">Tengerium аварійно завершила роботу. Ми зібрали технічну інформацію, яка допоможе нам виправити проблему.</string>
+    <string name="crash_message">Tengerium аварійно завершила роботу. Ми зібрали техніческую інформацію, яка допоможе нам виправити проблему.</string>
     <string name="restart">Перезапустити</string>
     <string name="send_report">Надіслати звіт</string>
     <string name="crash_report_subject">Звіт про помилку Tengerium</string>
@@ -257,8 +290,28 @@
     <string name="no_logs_available">Інформація про логи недоступна</string>
     <string name="error_collecting_logs">Помилка збору логів: %1$s</string>
 
+    <!-- Update Service -->
+    <string name="update_service">Сервіс оновлення</string>
+    <string name="update_checking">Перевірка оновлень...</string>
+    <string name="update_no_updates">Немає доступних оновлень</string>
+    <string name="update_ready">Оновлення готове до встановлення</string>
+    <string name="update_downloading">Завантаження оновлення (%1$d%%)</string>
+    <string name="update_unavailable">Сервіс оновлення тимчасово недоступний</string>
+    <string name="update_install">Встановити оновлення</string>
+    <string name="update_changelog">Список змін</string>
+    <string name="update_download">Завантажити</string>
+    <string name="update_version_info">Поточна: %1$s • Нова: %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Запит на підключення</string>
+    <string name="deep_link_warning_title">Увага: Кастомний сервер!</string>
+    <string name="deep_link_warning_message">Це посилання намагається змінити налаштування сервера на:\n\nСервер: %1$s\nNexus: %2$s\n\nВикористання сторонніх серверів може бути НЕБЕЗПЕЧНИМ. Власник сервера може бачити ваш пароль і перехоплювати ваші повідомлення. Ви впевнені, що довіряєте цьому серверу?</string>
+    <string name="deep_link_wait_format">Зачекайте %1$d сек...</string>
+
     <!-- Easter Egg -->
     <string name="easter_egg_title">Секрет назви версії %1$s</string>
-    <string name="easter_egg_content">Шоколадний торт \"Шахтарський\".\n\nСправжній. Тільки шоколад та горіхи. Виготовлявся за рецептурою Луганської кондитерської фабрики. Для поціновувачів справжнього шоколаду. Історія цього торта дуже дивовижна: Його рецепт був розроблений у 60-х роках на Луганській кондитерській фабриці, в той самий час був розроблений і рецепт цукерок Планета, якщо хтось пробував.\n\nЯкщо більшість тортів фабричного виготовлення робилися за ДСТУ (ГОСТ), то торт Шахтарський та Планета робилися за ТУ, і їхній рецепт мало кому відомий. Його оригінальна рецептура не занесена до реєстрів. Без борошна та без випічки.\n\nПотім він дещо зіпсувався, і йому змінили назву на \"Кардинал\", а під маркою \"Шахтарський\" стали продавати вже щось інше, але теж шоколадне з горіхами та цілком їстівне.\n\nПричому цей фірмовий виріб Луганської кондитерської фабрики був дефіцитним. Багато хто згадує, що збираючись у гості в інше місто, з великими труднощами діставали цей солодкий сувенір. І який він був незвичайний на смак: з трьома різними сортами шоколаду, горіхами та шоколадними трояндами зверху. Словом, шоколаду не шкодували. Хоча саме словосполучення \"шахтарський торт\" звучало дивно і навіть вводило деяких в оману, що це якась особлива технологія вуглевидобутку.\n\nГоріхи та чорнослив заливалися трьома видами шоколаду, додавалося згущене молоко, цедра цитрусових. Прикрашався торт шоколадними трояндами, фруктами з глазурі та цукру та їстівною пляшечкою \"Радянського Шампанського\" з лікером усередині. Важив торт до кілограма і, звичайно ж, був страшним дефіцитом. Але за рахунок того, що цей кулінарний виріб — по суті, одна велика шоколадка, зберігається він досить довго і часто використовувався як сувенір та подарунок.</string>
+    <string name="easter_egg_content">Шоколадний торт \"Шахтарський\".\n\nСправжній. Тільки шоколад та горіхи. Виготовлявся за рецептурою Луганської кондитерської фабрики. Для поціновувачів справжнього шоколаду. Історія цього торта дуже дивовижна: Його рецепт був розроблений у 60-х роках на Луганської кондитерської фабриці, в той самий час був розроблений і рецепт цукерок Планета, якщо хтось пробував.\n\nЯкщо більшість тортів фабричного виготовлення робилися за ДСТУ (ГОСТ), то торт Шахтарський та Планета робилися за ТУ, і їхній рецепт мало кому відомий. Його оригінальна рецептура не занесена до реєстрів. Без борошна та без випічки.\n\nПотім він дещо зіпсувався, і йому змінили назву на \"Кардинал\", а под маркою \"Шахтарський\" стали продавати вже щось інше, але теж шоколадне з горіхами та цілком їстівне.\n\nПричому цей фірмовий виріб Луганської кондитерської фабрики був дефіцитним. Багато хто згадує, що збіраючись у гості в інше місто, з великими труднощами діставали цей солодкий сувенір. І який він був незвичайний на смак: з трьома різними сортами шоколаду, горіхами та шоколадними трояндами зверху. Словом, шоколаду не шкодували. Хоча саме словосполучення \"шахтарський торт\" звучало дивно і навіть вводило деяких в оману, що це якась особлива технологія вуглевидобутку.\n\nГоріхи та чорнослив заливалися трьома видами шоколаду, додавалося згущене молоко, цедра цитрусових. Прикрашався торт шоколадними трояндами, фруктами з глазурі та цукру та їстівною пляшечкою \"Радянського Шампанського\" з лікером усередині. Важив торт до кілограма і, звичайно ж, був страшним дефіцитом. Але за рахунок того, що цей кулінарний виріб — по суті, одна велика шоколадка, зберігається він досить довго і часто використовувався як сувенір та подарунок.</string>
     <string name="easter_egg_source">Джерело %1$s</string>
+    <string name="whats_new_title">Що нового</string>
+
 </resources>

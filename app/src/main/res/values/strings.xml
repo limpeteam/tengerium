@@ -26,6 +26,7 @@
     <string name="theme_presets">Theme Presets</string>
     <string name="preview">Preview</string>
     <string name="choose_background">Choose Chat Background</string>
+    <string name="enable_debug_popups">Enable debug popups</string>
     <string name="language">Language</string>
     <string name="current_language">Change Language</string>
     <string name="background_updated">Background updated</string>
@@ -174,7 +175,10 @@
     <string name="about_limpe_support">supported by Limpe Team</string>
     <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Data and Storage</string>
+    <string name="memory_usage">Memory Usage</string>
+    <string name="traffic_usage">Traffic Usage</string>
     <string name="storage">Storage</string>
     <string name="storage_usage">Storage Usage</string>
     <string name="app_memory_percent">App takes %1$s%% of device memory (%2$s)</string>
@@ -189,6 +193,21 @@
     <string name="cache_label_size">Cache: %1$s</string>
     <string name="messages_label_size">History: %1$s</string>
     <string name="total_storage_usage">Total usage: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium takes %1$d%% of apps cache volume</string>
+    <string name="storage_profiles">Profiles Photos</string>
+    <string name="storage_messages">Chat Logs</string>
+    <string name="storage_avatars">Avatar Library</string>
+    <string name="storage_contacts">Contact List</string>
+    <string name="no_cache_message">No cache found</string>
+    <string name="clear_selected">Clear</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">All</string>
+    <string name="traffic_mobile">Mobile</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Roaming</string>
+    <string name="traffic_sent">Sent</string>
+    <string name="traffic_received">Received</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Dark Theme</string>
@@ -293,4 +312,6 @@
     <string name="easter_egg_title">Secret of Version Name %1$s</string>
     <string name="easter_egg_content">Chocolate cake \"Shakhtyorsky\" (Miner\'s Cake).\n\nReal. Only chocolate and nuts. It was made according to the recipe of the Lugansk confectionery factory. For connoisseurs of real chocolate. The history of this cake is very amazing: its recipe was developed in the 60s at the Lugansk confectionery factory, at the same time the recipe for Planeta candies was developed, if anyone tried them.\n\nWhile most factory-made cakes were made according to GOST, the Shakhtyorsky cake and Planeta were made according to TU, and their recipe is known to few. Its original formulation is not entered in the registers. No flour and no baking.\n\nThen it got a bit worse, and its name was changed to \"Cardinal\", and under the brand \"Shakhtyorsky\" they began to sell something else, but also chocolate with nuts and digestible.\n\nMoreover, this signature product of the Lugansk confectionery factory was in short supply. Many remember that when they went to visit another city, they got this sweet souvenir with great difficulty. And how extraordinary it tasted: with three different types of chocolate, nuts, and chocolate roses on top. In short, they did not spare the chocolate. Although the phrase \"miner\'s cake\" sounded strange and even misled some that it was some special coal mining technology.\n\nNuts and prunes were poured with three types of chocolate, condensed milk and citrus zest were added. The cake was decorated with chocolate roses, fruits made of glaze and sugar, and an edible bottle of \"Soviet Champagne\" with liqueur inside. The cake weighed up to a kilogram and, of course, was a terrible deficit. But due to the fact that this culinary product is, in essence, one big chocolate bar, it is stored long enough and was often used as a souvenir and a gift.</string>
     <string name="easter_egg_source">Source %1$s</string>
+    <string name="whats_new_title">What\'s new</string>
+
 </resources>

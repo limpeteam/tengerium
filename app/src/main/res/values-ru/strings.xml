@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Tengerium</string>
     <string name="action_settings">Настройки</string>
     <string name="profile_title">Профиль</string>
     <string name="nickname_hint">Никнейм</string>
@@ -56,6 +57,7 @@
     <string name="connecting_to_msn">Подключение к MSN...</string>
     <string name="host_hint">Хост (напр. messenger.hotmail.com)</string>
     <string name="nexus_hint">Домен Nexus (напр. m1.escargot.chat)</string>
+    <string name="error_missing_server_settings">Пожалуйста, сначала заполните настройки сервера</string>
     <string name="reconnect">Переподключиться</string>
     <string name="connection_lost">Соединение потеряно</string>
     <string name="reconnecting_in">Переподключение через %1$d сек...</string>
@@ -109,6 +111,10 @@
     <string name="mute_notifications">Выключить уведомления</string>
     <string name="unmute_notifications">Включить уведомления</string>
     <string name="blocked_group_name">Заблокированные</string>
+    <string name="add_to_folder">Добавить в папку</string>
+    <string name="move_to_folder">Переместить в папку</string>
+    <string name="select_folder">Выберите папку</string>
+    <string name="remove_from_folder">Удалить из папки</string>
 
     <!-- Contacts -->
     <string name="add_friend">Добавить друга</string>
@@ -161,13 +167,18 @@
     <string name="app_info_full_format">%1$s (%2$s) • %3$s v%4$s</string>
     <string name="app_version_details_format">%1$s • %2$s v%3$s</string>
     <string name="about_description">Открытый клиент для сервера MSN Messenger, разработан для коммуникации на современных устройствах.</string>
-    <string name="about_library_title">В разработке использована:</string>
+    <string name="about_library_title">В разработке использованы:</string>
     <string name="about_library_name">Библиотека MSNP-11 от campos02</string>
     <string name="about_testers_title">Активные тестировщики:</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Разработано Vasek Lednikofff</string>
     <string name="about_limpe_support">при поддержке Limpe Team</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Данные и память</string>
+    <string name="memory_usage">Использование памяти</string>
+    <string name="traffic_usage">Использование трафика</string>
     <string name="storage">Память</string>
     <string name="storage_usage">Использование памяти</string>
     <string name="app_memory_percent">Приложение занимает %1$s%% памяти устройства (%2$s)</string>
@@ -179,6 +190,24 @@
     <string name="clear_history_message">Это безвозвратно удалит все ваши сообщения из всех чатов.</string>
     <string name="cache_cleared">Кэш очищен</string>
     <string name="history_cleared">История очищена</string>
+    <string name="cache_label_size">Кэш: %1$s</string>
+    <string name="messages_label_size">История: %1$s</string>
+    <string name="total_storage_usage">Всего использовано: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium занимает %1$d%% объема кэша приложений</string>
+    <string name="storage_profiles">Фото профилей</string>
+    <string name="storage_messages">Логи чатов</string>
+    <string name="storage_avatars">Библиотека аватаров</string>
+    <string name="storage_contacts">Список контактов</string>
+    <string name="no_cache_message">Кэш не найден</string>
+    <string name="clear_selected">Очистить</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Все</string>
+    <string name="traffic_mobile">Мобильный</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Роуминг</string>
+    <string name="traffic_sent">Отправлено</string>
+    <string name="traffic_received">Получено</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Темная тема</string>
@@ -258,8 +287,20 @@
     <!-- Logs -->
     <string name="collect_logs">Собрать логи для поддержки</string>
     <string name="logs_report_title">Отчет об ошибке Tengerium</string>
-    <string name="no_logs_available">Информация о логах недоступная</string>
+    <string name="no_logs_available">Информация о логах недоступна</string>
     <string name="error_collecting_logs">Ошибка сбора логов: %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Сервис обновлений</string>
+    <string name="update_checking">Проверка обновлений...</string>
+    <string name="update_no_updates">Нет доступных обновлений</string>
+    <string name="update_ready">Обновление готово к установке</string>
+    <string name="update_downloading">Загрузка обновления (%1$d%%)</string>
+    <string name="update_unavailable">Сервис обновлений временно недоступен</string>
+    <string name="update_install">Установить обновление</string>
+    <string name="update_changelog">Список изменений</string>
+    <string name="update_download">Скачать</string>
+    <string name="update_version_info">Текущая: %1$s • Новая: %2$s</string>
 
     <!-- Deep Links -->
     <string name="deep_link_title">Запрос на подключение</string>
@@ -269,6 +310,8 @@
 
     <!-- Easter Egg -->
     <string name="easter_egg_title">Секрет названия версии %1$s</string>
-    <string name="easter_egg_content">Шоколадный торт \"Шахтерский\".\n\nНастоящий. Только шоколад и орехи. Делался по рецептуре Луганской кондитерской фабрики. Для ценителей настоящего шоколада. История этого торта очень удивительная: Его рецепт был разработан в 60-ых годах на Луганской кондитерской фабрике, в то же время был разработан и рецепт конфет Планета, если кто-то пробовал.\n\nЕсли большинство тортов фабричного изготовления делались по ГОСТу, то торт Шахтерский и Планета делались по ТУ, и их рецепт мало кому известен. Его оригинальная рецептура не занесена в реестры. Без муки и без выпечки.\n\nПотом он подиспортился, и ему поменяли название на \"Кардинал\", а под маркой \"Шахтерский\" стали продавать уже нечто другое, но тоже шоколадное с орехами и удобоваримое.\n\nПричем было это фирменное изделие Луганской кондитерской фабрики дефицитным. Многие вспоминают, что собираясь в гости в другой город, с большим трудом доставали этот сладкий сувенир. И какой он был необыкновенный на вкус: с тремя различными сортами шоколада, орехами и шоколадными розами сверху. Словом, шоколада не жалели. Хотя само словосочетание \"шахтерский торт\" звучало странно и даже вводило некоторых в заблуждение, что это какая-то особая технология угледобычи\".\n\nОрехи и чернослив заливались тремя видами шоколада, добавлялась сгущенка, цедра цитрусовых. Украшался торт шоколадными розами, фруктами из глазури и сахара и съедобной бутылочкой \"Советского Шампанского\" с ликером внутри. Весил торт до килограмма и, конечно же, был страшным дефицитом. Но за счет того что это кулинарное изделие - по сути, одна большая шоколадка, хранится он достаточно долго и зачастую использовался в качестве сувенира и подарка.</string>
+    <string name="easter_egg_content">Шоколадный торт \"Шахтерский\".\n\nНастоящий. Только шоколад и орехи. Делался по рецептуре Луганской кондитерской фабрики. Для ценителей настоящего шоколада. История этого торта очень удивительная: Его рецепт был разработан в 60-ых годах на Луганской кондитерской фабрике, в то же время был разработан и рецепт конфет Планета, если кто-то пробовал.\n\nЕсли большинство тортов фабричного изготовления делались по ГОСТу, то торт Шахтерский и Планета делались по ТУ, и их рецепт мало кому известен. Его оригинальная рецептура не занесена в реестры. Без муки и без выпечки.\n\nПотом он подиспортился, и ему поменяли название на \"Кардинал\", а под маркой \"Шахтерский\" стали продавать уже нечто другое, но тоже шоколадное с орехами и удобоваримое.\n\nПричем было это фирменное изделие Луганской кондитерской фабрики дефицитным. Многие вспоминают, что собираясь в гости в другой город, с большим трудом доставали этот сладкий сувенир. И какой он был необыкновенный на вкус: с тремя различными сортами шоколада, орехами и шоколадными розами сверху. Словом, шоколада не жалели. Хотя само словосочетание \"шахтарский торт\" звучало странно и даже вводило некоторых в заблуждение, что это какая-то особая технология угледобычи\".\n\nОрехи и чернослив заливались тремя видами шоколада, добавлялась сгущенка, цедра цитрусовых. Украшался торт шоколадными розами, фруктами из глазури и сахара и съедобной бутылочкой \"Советского Шампанського\" с ликером внутри. Весил торт до килограмма и, конечно же, был страшным дефицитом. Но за счет того что это кулинарное изделие - по сути, одна большая шоколадка, хранится он достаточно долго и зачастую использовался в качестве сувенира и подарка.</string>
     <string name="easter_egg_source">Источник %1$s</string>
+    <string name="whats_new_title">Что нового</string>
+
 </resources>

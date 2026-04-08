@@ -20,6 +20,9 @@ object AppConfig {
     // Новый вид страницы входа
     var USENEWLOGINEXP: Boolean = true
 
+    // Флаг для оффлайн работы со списком контактов
+    var OFFCLIS: Boolean = true
+
     // --- OOBE Configuration ---
     // Включение/выключение этапов первоначальной настройки
     var oobeWelcomeEnabled: Boolean = true

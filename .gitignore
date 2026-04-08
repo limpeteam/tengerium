@@ -15,7 +15,11 @@
 local.properties
 .idea/deploymentTargetSelector.xml
 /.idea
-/app
+/app/release
 .idea/deploymentTargetSelector.xml
 /temp
 *.keystore
+app/src/main/jnilibs/armeabi-v7a/libmsnp11_sdk.so
+app/src/main/jnilibs/arm64-v8a/libmsnp11_sdk.so
+app/src/main/jnilibs/x86/libmsnp11_sdk.so
+app/src/main/jnilibs/x86_64/libmsnp11_sdk.so

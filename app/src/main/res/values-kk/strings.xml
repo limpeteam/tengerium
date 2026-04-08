@@ -33,10 +33,8 @@
     <string name="background_removed">Фон жойылды</string>
 
     <!-- Themes -->
-    <string name="theme_classic">Классикалық</string>
-    <string name="theme_emerald">Зүбәржат</string>
-    <string name="theme_lavender">Лаванда</string>
-    <string name="theme_dark">Қараңғы</string>
+    <string name="theme_standard">Стандартты</string>
+    <string name="theme_turquoise">Көгілдір</string>
     <string name="preview_incoming">Кіріс хабарлама көпіршігі</string>
     <string name="preview_outgoing">Шығыс хабарлама көпіршігі</string>
     <string name="theme">Тақырып</string>
@@ -78,6 +76,7 @@
     <string name="not_in_contacts">Бұл адам сіздің контактілеріңізде жоқ</string>
     <string name="add_to_contacts">Контактілерге қосу</string>
     <string name="block">Блоктау</string>
+    <string name="unblock">Блоктан шығару</string>
     <string name="contact_unavailable">Контакт қолжетімсіз</string>
     <string name="is_typing">жазып жатыр...</string>
     <string name="send_nudge">Будильник жіберу</string>
@@ -105,6 +104,17 @@
     <string name="resend">Қайта жіберу</string>
     <string name="chat_me_prefix">Мен: %1$s</string>
     <string name="group_participants_updated">Қатысушылар тізімі жаңартылды</string>
+
+    <!-- Context Menu & Pinned -->
+    <string name="pin_chat">Бекіту</string>
+    <string name="unpin_chat">Босату</string>
+    <string name="mute_notifications">Хабарландыруларды өшіру</string>
+    <string name="unmute_notifications">Хабарландыруларды қосу</string>
+    <string name="blocked_group_name">Блокталғандар</string>
+    <string name="add_to_folder">Қапшыққа қосу</string>
+    <string name="move_to_folder">Қапшыққа жылжыту</string>
+    <string name="select_folder">Қапшықты таңдау</string>
+    <string name="remove_from_folder">Қапшықтан жою</string>
 
     <!-- Contacts -->
     <string name="add_friend">Дос қосу</string>
@@ -160,11 +170,15 @@
     <string name="about_library_title">Пайдаланылған кітапханалар:</string>
     <string name="about_library_name">campos02 ұсынған MSNP-11 кітапханасы</string>
     <string name="about_testers_title">Белсенді тестілеушілер:</string>
-    <string name="about_testers_list">probreakvs, inceptiontime</string>
+    <string name="about_testers_list">probreakvs, inceptiontime, campos</string>
     <string name="about_developed_by">Vasek Lednikofff әзірлеген</string>
     <string name="about_limpe_support">Limpe Team қолдауымен</string>
+    <string name="telegram">Telegram</string>
 
-    <!-- Storage -->
+    <!-- Storage & Data -->
+    <string name="data_and_storage">Деректер және жад</string>
+    <string name="memory_usage">Жадты пайдалану</string>
+    <string name="traffic_usage">Трафикті пайдалану</string>
     <string name="storage">Жад</string>
     <string name="storage_usage">Жадты пайдалану</string>
     <string name="app_memory_percent">Қолданба құрылғы жадының %1$s%%-ін алады (%2$s)</string>
@@ -176,6 +190,24 @@
     <string name="clear_history_message">Бұл барлық чаттардағы барлық хабарламаларыңызды біржола жояды.</string>
     <string name="cache_cleared">Кэш тазартылды</string>
     <string name="history_cleared">Тарих тазартылды</string>
+    <string name="cache_label_size">Кэш: %1$s</string>
+    <string name="messages_label_size">Тарих: %1$s</string>
+    <string name="total_storage_usage">Жалпы пайдалану: %1$s</string>
+    <string name="tengerium_usage_format">Tengerium қолданба кэші көлемінің %1$d%%-ін алады</string>
+    <string name="storage_profiles">Профиль фотолары</string>
+    <string name="storage_messages">Чат журналдары</string>
+    <string name="storage_avatars">Аватарлар кітапханасы</string>
+    <string name="storage_contacts">Контактілер тізімі</string>
+    <string name="no_cache_message">Кэш табылмады</string>
+    <string name="clear_selected">Тазарту</string>
+
+    <!-- Traffic -->
+    <string name="traffic_all">Барлығы</string>
+    <string name="traffic_mobile">Мобильді</string>
+    <string name="traffic_wifi">Wi-Fi</string>
+    <string name="traffic_roaming">Роуминг</string>
+    <string name="traffic_sent">Жіберілді</string>
+    <string name="traffic_received">Алынды</string>
 
     <!-- Settings / Privacy / Notifications -->
     <string name="dark_theme">Қараңғы тақырып</string>
@@ -239,7 +271,7 @@
     <!-- Misc -->
     <string name="system_default">Жүйелік тақырып</string>
     <string name="app_version_format">v%1$s</string>
-    <string name="session_failed">Сессия сәтсіз аяқталды</string>
+    <string name="session_failed">Сесія сәтсіз аяқталды</string>
 
     <!-- Navigation -->
     <string name="next">Келесі</string>
@@ -257,4 +289,29 @@
     <string name="logs_report_title">Tengerium қате туралы есебі</string>
     <string name="no_logs_available">Журнал ақпараты қолжетімсіз</string>
     <string name="error_collecting_logs">Журналдарды жинау қатесі: %1$s</string>
+
+    <!-- Update Service -->
+    <string name="update_service">Жаңарту қызметі</string>
+    <string name="update_checking">Жаңартулар тексерілуде...</string>
+    <string name="update_no_updates">Жаңартулар жоқ</string>
+    <string name="update_ready">Жаңарту орнатуға дайын</string>
+    <string name="update_downloading">Жаңарту жүктелуде (%1$d%%)</string>
+    <string name="update_unavailable">Жаңарту қызметі уақытша қолжетімсіз</string>
+    <string name="update_install">Жаңартуды орнату</string>
+    <string name="update_changelog">Өзгерістер тізімі</string>
+    <string name="update_download">Жүктеу</string>
+    <string name="update_version_info">Ағымдағы: %1$s • Жаңа: %2$s</string>
+
+    <!-- Deep Links -->
+    <string name="deep_link_title">Қосылу сұрауы</string>
+    <string name="deep_link_warning_title">Назар аударыңыз: Басқа сервер!</string>
+    <string name="deep_link_warning_message">Бұл сілтеме сервер баптауларын келесіге өзгерткісі келеді:\n\nСервер: %1$s\nNexus: %2$s\n\nБөгде серверлерді пайдалану ҚАУІПТІ болуы мүмкін. Сервер иесі құпия сөзіңізді көріп, хабарламаларыңызды ұстап алуы мүмкін. Бұл серверге сенетініңізге сенімдісіз бе?</string>
+    <string name="deep_link_wait_format">%1$d сек күте тұрыңыз...</string>
+
+    <!-- Easter Egg -->
+    <string name="easter_egg_title">%1$s нұсқа атауының құпиясы</string>
+    <string name="easter_egg_content">"Шахтерский" шоколад торты (Кенші торты).\n\nНағыз шоколад пен жаңғақтар. Луганск кондитерлік фабрикасының рецепті бойынша жасалған. Нағыз шоколадты бағалайтындар үшін. Бұл торттың тарихы таңқаларлық: оның рецепті 60-жылдары Луганск кондитерлік фабрикасында жасалған, сол уақытта "Планета" кәмпиттерінің рецепті де жасалған.\n\nЗауыттық торттардың көпшілігі МЕМСТ бойынша жасалса, "Шахтерский" торты мен "Планета" ТШ бойынша жасалған және олардың рецепті аз адамға мәлім. Оның түпнұсқалық құрамы тізілімдерге енгізілмеген. Ұнсыз және пісірусіз жасалады.\n\nКейін ол біраз нашарлап, аты "Кардинал" деп өзгертілді, ал "Шахтерский" брендімен басқа нәрсе сатыла бастады, бірақ ол да шоколад пен жаңғақтан тұратын.\n\nСонымен қатар, Луганск кондитерлік фабрикасының бұл қолтаңбалы өнімі тапшы болды. Көптеген адамдар басқа қалаға қонаққа барғанда, бұл тәтті сувенирді үлкен қиындықпен тапқандарын еске алады. Оның дәмі ерекше болатын: үш түрлі шоколад, жаңғақтар және үстінде шоколадты раушандар. Қысқасы, шоколадты аямаған. "Шахтер торты" деген тіркес оғаш естілгенімен, кейбіреулерді бұл көмір өндірудің қандай да бір ерекше технологиясы деген ойға қалдырған.\n\nЖаңғақтар мен қараөрікке үш түрлі шоколад құйылып, қойытылған сүт пен цитрус қабығы қосылатын. Торт шоколадты раушандармен, глазурь мен қанттан жасалған жемістермен және ішінде ликері бар "Советское Шампанское" жеуге жарамды бөтелкесімен безендірілетін. Торттың салмағы бір килограммға дейін жететін және, әрине, үлкен тапшылық болды. Бірақ бұл аспаздық өнім, негізінде, бір үлкен шоколад болғандықтан, ол ұзақ сақталады және жиі кәдесый мен сыйлық ретінде пайдаланылған.</string>
+    <string name="easter_egg_source">Дереккөз %1$s</string>
+    <string name="whats_new_title">Жаңалықтар</string>
+
 </resources>
