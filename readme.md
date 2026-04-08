@@ -1,4 +1,4 @@
-<img align="right" src="https://github.com/lednikofff/tengerium/blob/beta/app/src/main/res/drawable/beta_tengerium_logo_n26.png?raw=true" width="128" height="128">
+<img align="right" src="https://github.com/limpeteam/tengerium/blob/beta/app/src/main/res/drawable/beta_tengerium_logo_n26.png?raw=true" width="128" height="128">
 
 # Tengerium - Modern MSNP11 Client
 
