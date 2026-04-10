@@ -83,7 +83,7 @@ class MSNP11SwitchboardSession(
     }
 
     private fun getTarget(sender: String): String {
-        return initialTarget ?: sender
+        return if (isGroup) (currentSessionId ?: sender) else (initialTarget ?: sender)
     }
 
     private fun getString(resId: Int, vararg args: Any): String {
@@ -150,7 +150,14 @@ class MSNP11SwitchboardSession(
                             val isNew = !participants.contains(email)
                             participants.add(email)
                             Log.d(TAG, "Participant joined: $email")
-                            if (participants.size > 2) isGroup = true
+                            
+                            if (participants.size > 2) {
+                                isGroup = true
+                            }
+
+                            currentSessionId?.let { sid ->
+                                listener.onGroupStateChanged(sid, participants.toSet())
+                            }
 
                             if (isIncomingSession && (initialTarget == null || initialTarget == "pending_incoming") && email != myAccount) {
                                 initialTarget = email
@@ -171,8 +178,22 @@ class MSNP11SwitchboardSession(
                         }
                         is Event.ParticipantLeftSwitchboard -> {
                             val email = MSNPUtils.normalizeEmail(event.email)
-                            participants.remove(email)
+                            val wasPresent = participants.remove(email)
                             Log.d(TAG, "Participant left: $email")
+                            
+                            if (wasPresent) {
+                                currentSessionId?.let { sid ->
+                                    listener.onGroupStateChanged(sid, participants.toSet())
+                                }
+                                
+                                val target = getTarget(email)
+                                if (isGroup || participants.size >= 2) {
+                                    scope.safeLaunch(TAG) {
+                                        val msg = getString(R.string.user_left_chat, email) + " (${participants.size})"
+                                        listener.onMessageReceived(target, "SYSTEM", "SYSTEM", msg)
+                                    }
+                                }
+                            }
                             
                             if (participants.count { it != myAccount } == 0) {
                                 scope.safeLaunch(TAG) { handleClose() }

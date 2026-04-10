@@ -1,6 +1,7 @@
 package com.limpe.tengerium.data
 
 import android.content.Context
+import android.util.Base64
 import android.util.Log
 import androidx.core.net.toUri
 import com.limpe.tengerium.data.db.AppDatabase
@@ -527,7 +528,38 @@ class MSNPRepository @Inject constructor(val context: Context) : MSNPProtocolLis
 
     override fun onPrivacySettingChanged(type: String, value: String) {}
 
-    override fun onUrlReceived(urlType: String, url: String) {}
+    override fun onUrlReceived(urlType: String, url: String) {
+        if (urlType == "AVATAR_BYTES") {
+            val parts = url.split("|", limit = 2)
+            if (parts.size == 2) {
+                val email = parts[0]
+                val base64Data = parts[1]
+                scope.launch {
+                    try {
+                        val bytes = Base64.decode(base64Data, Base64.NO_WRAP)
+                        val sha1 = avatarManager.calculateSha1(bytes)
+                        val path = avatarManager.saveAvatar(bytes, sha1)
+                        
+                        // Обновляем контакт в менеджере, чтобы UI перерисовался
+                        contactManager.updateContactStatus(email, "", "", avatarUrl = path)
+                        
+                        // Если это наш собственный аватар
+                        if (email.lowercase(Locale.ROOT).trim() == currentAccount) {
+                            _loginState.update { state ->
+                                if (state is MSNPLoginState.Success) state.copy(avatarUrl = path) else state
+                            }
+                        }
+                        
+                        // Сохраняем в БД
+                        saveContactsAndGroupsToDb()
+                        
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to process received avatar for $email", e)
+                    }
+                }
+            }
+        }
+    }
 
     override fun onMessageReceived(target: String, senderAccount: String, nickname: String, message: String) {
         scope.launch {

@@ -17,12 +17,14 @@ import com.limpe.tengerium.R
 import com.limpe.tengerium.TengeriumApp
 import com.limpe.tengerium.data.AppConfig
 import com.limpe.tengerium.data.MSNPLoginState
+import com.limpe.tengerium.data.protocol.MSNPService
 import com.limpe.tengerium.data.security.SecurePrefs
 import com.limpe.tengerium.databinding.FragmentAuthBinding
 import com.limpe.tengerium.util.AnimationHelper
 import com.limpe.tengerium.util.ConnectionDialogHelper
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.system.exitProcess
 
 class AuthFragment : Fragment() {
 
@@ -192,12 +194,18 @@ class AuthFragment : Fragment() {
     private fun showPopupMenu(view: View) {
         val popup = PopupMenu(requireContext(), view)
         popup.menu.add(0, 1, 0, getString(R.string.connection_settings))
+        popup.menu.add(0, 2, 1, getString(R.string.close_app))
         
         popup.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 1 -> {
                     ConnectionDialogHelper.showConnectionDialog(requireContext(), securePrefs)
                     true
+                }
+                2 -> {
+                    MSNPService.stop(requireContext())
+                    requireActivity().finishAffinity()
+                    exitProcess(0)
                 }
                 else -> false
             }

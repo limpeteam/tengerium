@@ -363,28 +363,34 @@ class MSNP11NotificationManager(
     }
 
     override fun requestConfig(configUrl: String?) {
-        val urlInput = configUrl ?: listener.let { (it as? MSNPRepository)?.context?.let { ctx -> SecurePrefs(ctx).configUrl } }
+        val urlInput = (configUrl ?: listener.let { (it as? MSNPRepository)?.context?.let { ctx -> SecurePrefs(ctx).configUrl } })?.trim()
         if (urlInput.isNullOrEmpty()) {
             Log.w(TAG, "Could not determine config URL")
             return
         }
 
-        val finalUrl = if (!urlInput.startsWith("http")) {
-            "http://$urlInput/Config/MsgrConfig.asmx?op=GetClientConfig&Country=00&CLCID=0419&PLCID=0419&GeoID=203&ver=14.0.8117.416"
-        } else {
-            urlInput
-        }
+
+        val domain = urlInput.substringAfter("://").substringBefore("/")
+        val finalUrl = "https://$domain/Config/MsgrConfig.asmx?op=GetClientConfig&Country=00&CLCID=0419&PLCID=0419&GeoID=203"
 
         scope.safeLaunch(TAG) { 
             try {
-                Log.d(TAG, "DEBUG: Requesting config from URL: $finalUrl")
-                val config = rustClient?.getConfig(finalUrl)
+                val client = rustClient ?: return@safeLaunch
+                Log.d(TAG, "Requesting config from URL: $finalUrl")
+                val config = client.getConfig(finalUrl)
                 if (config != null) {
                     listener.onUrlReceived("CONFIG_XML", config.msnTodayUrl)
                     listener.onConfigReceived(config)
                 }
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to get config: ${e.message}")
+                if (e is CancellationException) throw e
+                val errorMsg = if (e.message.isNullOrBlank() || e.message == ".") e.javaClass.simpleName else e.message
+                Log.w(TAG, "Failed to get config from $finalUrl: $errorMsg")
+                
+                // Если это ошибка ConfigRequestException без сообщения, вероятно сервер недоступен или вернул 404
+                if (e !is SdkException.ConfigRequestException) {
+                    Log.w(TAG, "Detailed error trace:", e)
+                }
             }
         }
     }

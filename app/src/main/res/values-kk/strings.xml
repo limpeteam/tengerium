@@ -62,6 +62,7 @@
     <string name="connection_lost">Қосылым үзілді</string>
     <string name="reconnecting_in">Қайта қосылу %1$d секундтан кейін...</string>
     <string name="no_internet">Интернет байланысы жоқ</string>
+    <string name="close_app">Қолданбаны жабу</string>
 
     <!-- Chat -->
     <string name="today">Бүгін</string>

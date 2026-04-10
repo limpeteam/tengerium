@@ -62,6 +62,7 @@
     <string name="connection_lost">Соединение потеряно</string>
     <string name="reconnecting_in">Переподключение через %1$d сек...</string>
     <string name="no_internet">Нет соединения с интернетом</string>
+    <string name="close_app">Закрыть приложение</string>
 
     <!-- Chat -->
     <string name="today">Сегодня</string>

@@ -70,10 +70,16 @@
     <color name="on_incoming_bubble">#2196F3</color>
     <color name="on_outgoing_bubble">#FFFFFF</color>
 
-    <color name="status_online">#4CAF50</color>
-    <color name="status_busy">#F44336</color>
-    <color name="status_away">#FFC107</color>
-    <color name="status_offline">#9E9E9E</color>
+    <!-- Presence Colors -->
+    <color name="presence_green">#7fba00</color>
+    <color name="presence_red">#e81123</color>
+    <color name="presence_yellow">#ffd004</color>
+    <color name="presence_gray">#93999d</color>
+
+    <color name="status_online">@color/presence_green</color>
+    <color name="status_busy">@color/presence_red</color>
+    <color name="status_away">@color/presence_yellow</color>
+    <color name="status_offline">@color/presence_gray</color>
     <color name="error_bubble">#FFEBEE</color>
 
     <!-- Cache Category Colors -->

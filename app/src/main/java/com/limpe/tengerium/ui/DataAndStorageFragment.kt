@@ -31,10 +31,6 @@ class DataAndStorageFragment : Fragment() {
         binding.btnMemoryUsage.setOnClickListener {
             navigateToDetail(MemoryUsageFragment())
         }
-
-        binding.btnTrafficUsage.setOnClickListener {
-            navigateToDetail(TrafficUsageFragment())
-        }
     }
 
     private fun navigateToDetail(fragment: Fragment) {

@@ -18,8 +18,8 @@ object UiConstants {
     const val NUDGE_THROTTLE_TIMEOUT = 16000L
     
     // Цвета статусов (Hex)
-    const val COLOR_STATUS_ONLINE = "#4CAF50"
-    const val COLOR_STATUS_AWAY = "#FFC107"
-    const val COLOR_STATUS_BUSY = "#F44336"
-    const val COLOR_STATUS_OFFLINE = "#9E9E9E"
+    const val COLOR_STATUS_ONLINE = "#7fba00"
+    const val COLOR_STATUS_AWAY = "#ffd004"
+    const val COLOR_STATUS_BUSY = "#e81123"
+    const val COLOR_STATUS_OFFLINE = "#93999d"
 }

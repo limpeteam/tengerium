@@ -62,6 +62,7 @@
     <string name="connection_lost">Connexion perdue</string>
     <string name="reconnecting_in">Reconnexion dans %1$d secondes...</string>
     <string name="no_internet">Pas de connexion internet</string>
+    <string name="close_app">Fermer l\'application</string>
 
     <!-- Chat -->
     <string name="today">Aujourd\'hui</string>

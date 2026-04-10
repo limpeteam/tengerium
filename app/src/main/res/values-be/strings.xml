@@ -62,6 +62,7 @@
     <string name="connection_lost">Злучэнне страчана</string>
     <string name="reconnecting_in">Перападключэнне праз %1$d сек...</string>
     <string name="no_internet">Няма злучэння з інтэрнэтам</string>
+    <string name="close_app">Закрыць праграму</string>
 
     <!-- Chat -->
     <string name="today">Сёння</string>
@@ -112,7 +113,7 @@
     <string name="unmute_notifications">Уключыць апавяшчэнні</string>
     <string name="blocked_group_name">Заблакіраваныя</string>
     <string name="add_to_folder">Дадаць у папку</string>
-    <string name="move_to_folder">Перамясціць у папку</string>
+    <string name="move_to_folder">Перемясціць у папку</string>
     <string name="select_folder">Выберыце папку</string>
     <string name="remove_from_folder">Выдаліць з папкі</string>
 
@@ -141,7 +142,7 @@
     <string name="delete_group_confirm">Вы ўпэўнены, што хочаце выдаліць гэту групу?</string>
     <string name="no_groups_error">Няма даступных груп. Спачатку стварыце адну.</string>
     <string name="contact_guid_error">Памылка: GUID кантакту не знойдзены. Паспрабуйце перападключыцца.</string>
-    <string name="move_to_group_title">Перамясціць %1$s у групу</string>
+    <string name="move_to_group_title">Перамясціць %1$s ў групу</string>
     <string name="user_is_now_online">%1$s цяпер у сеціве</string>
 
     <!-- Main Tabs -->
@@ -303,7 +304,7 @@
     <string name="update_version_info">Бягучая: %1$s • Новая: %2$s</string>
 
     <!-- Deep Links -->
-    <string name="deep_link_title">Запыт на падключэнне</string>
+    <string name="deep_link_title">Запыт na падключэнне</string>
     <string name="deep_link_warning_title">Увага: Кастомны сервер!</string>
     <string name="deep_link_warning_message">Гэтая спасылка спрабуе змяніць налады сервера на:\n\nСервер: %1$s\nNexus: %2$s\n\nВыкарыстанне іншых сервераў можа быць НЕБЯСПЕЧНЫМ. Уладальнік сервера можа бачыць ваш пароль і перахопліваць вашы паведамленні. Вы ўпэўнены, што давяраеце гэтаму серверу?</string>
     <string name="deep_link_wait_format">Пачакайце %1$d сек...</string>

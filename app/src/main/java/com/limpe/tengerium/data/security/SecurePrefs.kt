@@ -2,10 +2,13 @@ package com.limpe.tengerium.data.security
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import java.io.File
 
 class SecurePrefs(private val context: Context) {
 
@@ -16,7 +19,29 @@ class SecurePrefs(private val context: Context) {
     }
 
     private val encryptedPrefs: SharedPreferences by lazy {
-        EncryptedSharedPreferences.create(
+        try {
+            createEncryptedPrefs()
+        } catch (e: Exception) {
+            Log.e("SecurePrefs", "Failed to initialize EncryptedSharedPreferences, clearing and retrying", e)
+            deleteSharedPreferences("secure_prefs")
+            createEncryptedPrefs()
+        }
+    }
+
+    private fun deleteSharedPreferences(name: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.deleteSharedPreferences(name)
+        } else {
+            val dir = File(context.applicationInfo.dataDir, "shared_prefs")
+            val file = File(dir, "$name.xml")
+            if (file.exists()) {
+                file.delete()
+            }
+        }
+    }
+
+    private fun createEncryptedPrefs(): SharedPreferences {
+        return EncryptedSharedPreferences.create(
             context,
             "secure_prefs",
             masterKey,
@@ -45,7 +70,7 @@ class SecurePrefs(private val context: Context) {
         encryptedPrefs.edit().putString("db_passphrase", passphrase).apply()
     }
 
-    fun getDatabasePassphrase(): String? = encryptedPrefs.getString("db_passphrase", null)
+    fun getDatabasePassphrase(): String? = safeGet { encryptedPrefs.getString("db_passphrase", null) }
 
     fun saveCredentials(account: String, pass: String) {
         encryptedPrefs.edit()
@@ -54,8 +79,17 @@ class SecurePrefs(private val context: Context) {
             .apply()
     }
 
-    fun getSavedAccount(): String? = encryptedPrefs.getString("saved_account", null)
-    fun getSavedPassword(): String? = encryptedPrefs.getString("saved_pass", null)
+    fun getSavedAccount(): String? = safeGet { encryptedPrefs.getString("saved_account", null) }
+    fun getSavedPassword(): String? = safeGet { encryptedPrefs.getString("saved_pass", null) }
+
+    private fun <T> safeGet(block: () -> T): T? {
+        return try {
+            block()
+        } catch (e: Exception) {
+            Log.e("SecurePrefs", "Error reading encrypted preference", e)
+            null
+        }
+    }
 
     fun clearCredentials() {
         encryptedPrefs.edit()

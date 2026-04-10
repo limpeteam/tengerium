@@ -205,11 +205,11 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="4dp"
-                    app:icon="@android:drawable/ic_menu_send"
+                    app:icon="@drawable/ic_send_message"
                     app:iconGravity="textStart"
                     app:iconPadding="0dp"
                     app:iconSize="24dp"
-                    app:iconTint="?attr/colorOnSurfaceVariant"
+                    app:iconTint="@null"
                     app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full" />
             </LinearLayout>
         </LinearLayout>

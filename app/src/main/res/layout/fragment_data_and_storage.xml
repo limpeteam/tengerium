@@ -19,7 +19,7 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="?attr/actionBarSize"
                 app:navigationIcon="@drawable/ic_arrow_back"
                 app:title="@string/data_and_storage" />
 
@@ -46,26 +46,6 @@
                 app:iconSize="28dp"
                 app:iconPadding="16dp"
                 app:iconTint="?attr/colorPrimary" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="16dp"
-                android:background="?attr/colorOutlineVariant"
-                android:alpha="0.3" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTrafficUsage"
-                style="@style/Widget.Material3.Button.TextButton"
-                android:layout_width="match_parent"
-                android:layout_height="72dp"
-                android:gravity="start|center_vertical"
-                android:text="@string/traffic_usage"
-                android:textSize="18sp"
-                app:icon="@drawable/ic_traffic_usage"
-                app:iconSize="28dp"
-                app:iconPadding="16dp"
-                app:iconTint="?attr/colorTertiary" />
 
         </LinearLayout>
 
