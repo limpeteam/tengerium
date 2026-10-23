@@ -312,7 +312,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkTimeBomb(): Boolean {
-        val bombDate = Calendar.getInstance().apply {
+        // Таймбомба удалена, иначе нельзя будет юзать клиент.
+        // При желании Ледкуз может вернуть. - Инс
+        /* val bombDate = Calendar.getInstance().apply {
             set(2026, Calendar.AUGUST, 10, 0, 0, 0)
         }
         if (System.currentTimeMillis() >= bombDate.timeInMillis) {
@@ -323,7 +325,7 @@ class MainActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.update) { _, _ -> }
                 .show()
             return true
-        }
+        } */
         return false
     }
 
